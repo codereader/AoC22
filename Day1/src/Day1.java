@@ -10,14 +10,15 @@ public class Day1 {
 		System.out.printf(String.format("Lines read: %d\n", lines.size()));
 		
 		// Find the elf with the highest amount of calories in their bag
-		var highestCalories = 0;
+		var sums = new ArrayList<Integer>();
+		
 		var currentSum = 0;
 		
 		for (var line : lines)
 		{
 			if (line.isBlank())
 			{
-				highestCalories = Math.max(currentSum, highestCalories);
+				sums.add(currentSum);
 				currentSum = 0;
 				continue;
 			}
@@ -25,7 +26,16 @@ public class Day1 {
 			currentSum += Integer.parseInt(line);
 		}
 		
+		Collections.sort(sums, Collections.reverseOrder());
+		
+		var highestCalories = sums.stream().findFirst().get();
+		
 		System.out.printf(String.format("Elf with highest calories: %d\n", highestCalories));
+		
+		// Take the top three elves
+		var topThreeSum = sums.stream().limit(3).reduce(0, Integer::sum);
+		
+		System.out.printf(String.format("Sum of the top three elves with the highest calories: %d\n", topThreeSum));
 	}
 	
 	// Read the given text file into a list of strings
