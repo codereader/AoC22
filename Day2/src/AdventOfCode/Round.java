@@ -1,23 +1,30 @@
 package AdventOfCode;
 
+/**
+ * Represents a single round of Rock/Paper/Scissors
+ * 
+ * Pass the original line (like "A Y") to the constructor.
+ * Use the getRoundScore() method to get the score of this round.
+ */
 public class Round {
 	
-	private String _inputLine;
+	private final String _inputLine;
 	
+	// Enumeration of possible outcomes, with the score attached
 	public enum Outcome
 	{
 		Win(6),
 		Tie(3),
 		Loss(0);
 		
-		private int _score;
+		private final int _score;
 		
 		Outcome(int score)
 		{
 			_score = score;
 		}
 		
-		public int getScore()
+		public final int getScore()
 		{
 			return _score;
 		}
@@ -38,7 +45,8 @@ public class Round {
 		return _inputLine;
 	}
 	
-	public Outcome getOutcome()
+	// Gets or calculates the outcome of this round
+	protected Outcome getOutcome()
 	{
 		switch (getOpponentChoice())
 		{
@@ -73,22 +81,24 @@ public class Round {
 		throw new IllegalArgumentException("This is rock, paper, scissors");
 	}
 	
+	// Gets or calculate the player's choice
 	protected char getPlayerChoice()
 	{
 		return _inputLine.charAt(2);
 	}
 	
-	protected char getOpponentChoice()
+	// Returns the opponent's choice (A, B or C)
+	protected final char getOpponentChoice()
 	{
 		return _inputLine.charAt(0);
 	}
 	
-	public final int getOutcomeScore()
+	private final int getOutcomeScore()
 	{
 		return getOutcome().getScore();
 	}
 	
-	public final int getPlayerChoiceScore()
+	private final int getPlayerChoiceScore()
 	{
 		switch (getPlayerChoice())
 		{
@@ -99,6 +109,10 @@ public class Round {
 		}
 	}
 	
+	/**
+	 * @return the total score of this round,
+	 * which is adding the score of the outcome to the one for the player's choice.
+	 */
 	public final int getRoundScore()
 	{
 		return getOutcomeScore() + getPlayerChoiceScore();

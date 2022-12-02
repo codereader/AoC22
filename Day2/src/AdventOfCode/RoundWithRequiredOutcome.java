@@ -1,7 +1,11 @@
 package AdventOfCode;
 
-import AdventOfCode.Round.Outcome;
-
+/**
+ * Special Round implementation used by Part 2.
+ * Since the outcome is already predetermined, the player choice
+ * is the moving part here. Overrides two superclass methods to
+ * implement the logic.
+ */
 public class RoundWithRequiredOutcome extends Round {
 
 	RoundWithRequiredOutcome(String inputLine)
