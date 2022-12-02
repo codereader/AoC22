@@ -1,16 +1,9 @@
 ﻿// See https://aka.ms/new-console-template for more information
+
+using Common;
 using System.Reflection;
 
-
-using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"RockPaperScissors.rockpaperscissors.txt");
-using var reader = new StreamReader(stream);
-
-string line;
-var txtFile = new List<string>();
-while ((line = reader.ReadLine()) != null)
-{
-    txtFile.Add(line);
-}
+var txtFile = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), $"RockPaperScissors.rockpaperscissors.txt");
 
 // A Y
 // A for Rock, B for Paper, and C for Scissors
@@ -23,7 +16,6 @@ var score = 0;
 
 foreach (var round in txtFile)
 {
-    
     var items = round.Split(" ");
 
     // I choose rock
@@ -82,16 +74,15 @@ foreach (var round in txtFile)
         }
         // else opponent chooses rock, I lose
     }
-
 }
 
+Console.WriteLine("Part 1");
 Console.WriteLine(score);
 
 // part 2
 // X means you need to lose, Y means you need to end the round in a draw, and Z means you need to win
 // (1 for Rock, 2 for Paper, and 3 for Scissors
 // 0 if you lost, 3 if the round was a draw, and 6 if you won
-
 
 var score2 = 0;
 foreach (var round in txtFile)
@@ -160,7 +151,7 @@ foreach (var round in txtFile)
     }
 }
 
-Console.WriteLine("part 2");
+Console.WriteLine("Part 2");
 Console.WriteLine(score2);
 
 Console.ReadLine();
