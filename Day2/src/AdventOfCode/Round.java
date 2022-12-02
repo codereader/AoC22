@@ -33,12 +33,17 @@ public class Round {
 		}
 	}
 	
+	protected final String getInputLine()
+	{
+		return _inputLine;
+	}
+	
 	public Outcome getOutcome()
 	{
-		switch (_inputLine.charAt(0))
+		switch (getOpponentChoice())
 		{
 		case 'A': // Rock
-			switch (_inputLine.charAt(2))
+			switch (getPlayerChoice())
 			{
 			case 'X': return Outcome.Tie; // Rock
 			case 'Y': return Outcome.Win; // Paper
@@ -47,7 +52,7 @@ public class Round {
 			break;
 			
 		case 'B': // Paper
-			switch (_inputLine.charAt(2))
+			switch (getPlayerChoice())
 			{
 			case 'X': return Outcome.Loss; // Rock
 			case 'Y': return Outcome.Tie; // Paper
@@ -56,7 +61,7 @@ public class Round {
 			break;
 			
 		case 'C': // Scissor
-			switch (_inputLine.charAt(2))
+			switch (getPlayerChoice())
 			{
 			case 'X': return Outcome.Win; // Rock
 			case 'Y': return Outcome.Loss; // Paper
@@ -68,14 +73,24 @@ public class Round {
 		throw new IllegalArgumentException("This is rock, paper, scissors");
 	}
 	
-	public int getOutcomeScore()
+	protected char getPlayerChoice()
+	{
+		return _inputLine.charAt(2);
+	}
+	
+	protected char getOpponentChoice()
+	{
+		return _inputLine.charAt(0);
+	}
+	
+	public final int getOutcomeScore()
 	{
 		return getOutcome().getScore();
 	}
 	
-	public int getPlayerChoiceScore()
+	public final int getPlayerChoiceScore()
 	{
-		switch (_inputLine.charAt(2))
+		switch (getPlayerChoice())
 		{
 		case 'X': return 1; // Rock
 		case 'Y': return 2; // Paper
@@ -84,7 +99,7 @@ public class Round {
 		}
 	}
 	
-	public int getRoundScore()
+	public final int getRoundScore()
 	{
 		return getOutcomeScore() + getPlayerChoiceScore();
 	}
