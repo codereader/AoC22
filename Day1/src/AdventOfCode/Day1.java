@@ -1,12 +1,13 @@
 package AdventOfCode;
-import java.io.*;
+
 import java.util.*;
+import AdventOfCode.Common.*;
 
 public class Day1 {
 
 	public static void main(String[] args) {
 		
-		var lines = ReadFile("./input.txt");
+		var lines = FileUtils.readFile("./input.txt");
 		
 		System.out.printf(String.format("Lines read: %d\n", lines.size()));
 		
@@ -41,29 +42,4 @@ public class Day1 {
 		
 		System.out.printf(String.format("Sum of the top three elves with the highest calories: %d\n", topThreeSum));
 	}
-	
-	// Read the given text file into a list of strings
-	public static List<String> ReadFile(String path)
-	{
-		var list = new ArrayList<String>();
-		
-		BufferedReader reader;
-
-		try {
-			reader = new BufferedReader(new FileReader(path));
-			String line = reader.readLine();
-
-			while (line != null) {
-				list.add(line);
-				line = reader.readLine();
-			}
-
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return list;
-	}
-
 }
