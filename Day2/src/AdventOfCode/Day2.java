@@ -18,35 +18,19 @@ public class Day2 {
 	public static void runPart1(List<String> sequence)
 	{
 		// Part 1
-		var rounds = new ArrayList<Round>();
-		
-		for (var line : sequence) {
-			
-			var round = new Round(line);
-			rounds.add(round);
-			
-			//System.out.println(String.format("Round %s yields %d", line, round.getRoundScore()));
-		}
+		var rounds = sequence.stream().map(line -> new Round(line));
 		
 		System.out.println(String.format("[Part1] Total Player Score: %d", 
-				rounds.stream().map(r -> r.getRoundScore()).reduce(Integer::sum).get()));
+				rounds.map(r -> r.getRoundScore()).reduce(Integer::sum).get()));
 	}
 	
 	public static void runPart2(List<String> sequence)
 	{
 		// Part 2
-		var rounds = new ArrayList<RoundWithRequiredOutcome>();
-		
-		for (var line : sequence) {
-			
-			var round = new RoundWithRequiredOutcome(line);
-			rounds.add(round);
-			
-			//System.out.println(String.format("Round %s yields %d", line, round.getRoundScore()));
-		}
+		var rounds = sequence.stream().map(line -> new RoundWithRequiredOutcome(line));
 		
 		System.out.println(String.format("[Part2] Total Player Score: %d", 
-				rounds.stream().map(r -> r.getRoundScore()).reduce(Integer::sum).get()));
+				rounds.map(r -> r.getRoundScore()).reduce(Integer::sum).get()));
 	}
 
 	// Read the given text file into a list of strings
