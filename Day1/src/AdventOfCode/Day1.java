@@ -1,3 +1,4 @@
+package AdventOfCode;
 import java.io.*;
 import java.util.*;
 
@@ -5,7 +6,7 @@ public class Day1 {
 
 	public static void main(String[] args) {
 		
-		var lines = ReadFile("C:\\Users\\Matthias Baumann\\aoc22\\Day1\\input.txt");
+		var lines = ReadFile("./input.txt");
 		
 		System.out.printf(String.format("Lines read: %d\n", lines.size()));
 		
@@ -26,14 +27,17 @@ public class Day1 {
 			currentSum += Integer.parseInt(line);
 		}
 		
-		Collections.sort(sums, Collections.reverseOrder());
+		if (currentSum > 0)
+		{
+			sums.add(currentSum);
+		}
 		
-		var highestCalories = sums.stream().findFirst().get();
+		var highestCalories = sums.stream().sorted((a,b) -> b.compareTo(a)).findFirst().get();
 		
 		System.out.printf(String.format("Elf with highest calories: %d\n", highestCalories));
 		
 		// Take the top three elves
-		var topThreeSum = sums.stream().limit(3).reduce(0, Integer::sum);
+		var topThreeSum = sums.stream().sorted((a,b) -> b.compareTo(a)).limit(3).reduce(0, Integer::sum);
 		
 		System.out.printf(String.format("Sum of the top three elves with the highest calories: %d\n", topThreeSum));
 	}
