@@ -8,12 +8,10 @@ namespace Rucksack
 {
     internal class Backpack
     {
+        private List<char> _compartment1;
+        private List<char> _compartment2;
+
         public List<char> Contents { get; private set; }
-
-        private List<char> _compartment1= new List<char>();
-        private List<char> _compartment2= new List<char>();
-
-        private char _duplicate;
 
         public Backpack(string str)
         {
@@ -21,17 +19,17 @@ namespace Rucksack
 
             var contentCount = Contents.Count;
 
+            // first half
             _compartment1 = str.Substring(0, contentCount / 2).ToList();
-            _compartment2 = str.Substring(contentCount / 2, contentCount / 2).ToList();
 
-            // Console.Write(_contents.Substring(0, contentCount / 2));
-            // Console.WriteLine($", " + _contents.Substring(contentCount / 2, contentCount / 2));
+            // second half
+            _compartment2 = str.Substring(contentCount / 2, contentCount / 2).ToList();
         }
 
         public char FindDuplicate()
         {
-            _duplicate =  _compartment1.Intersect(_compartment2).ToList().First();
-            return _duplicate;
+            // only one element is contained in both compartments
+            return _compartment1.Intersect(_compartment2).First();
         }
 
     }
