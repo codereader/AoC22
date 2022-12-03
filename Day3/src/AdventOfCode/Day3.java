@@ -31,13 +31,43 @@ public class Day3 {
 			var item = intersection.get(0);
 			System.out.println(String.format("Line: %s has common character %c", line, item));
 			
-			var priority = Character.isUpperCase(item) ? (item - 'A' + 27) : (item - 'a' + 1);
-
-			priorities.add(priority);
+			priorities.add(getPriority(item));
 		}
 		
 		System.out.println(String.format("[Part1]: Priority Sum is %d", 
 				priorities.stream().reduce(Integer::sum).get()));
+		
+		priorities.clear();
+		
+		// Part 2: Take three rucksacks and find the common item
+		for (var i = 0; i < lines.size(); i += 3)
+		{
+			var rucksack1 = lines.get(i);
+			var rucksack2 = lines.get(i + 1);
+			var rucksack3 = lines.get(i + 2);
+			
+			var sharedItems = rucksack1.chars().distinct().filter(c -> 
+			{
+				return rucksack2.indexOf(c) != -1 && rucksack3.indexOf(c) != -1;
+			}).mapToObj(e->(char)e).collect(Collectors.toList());
+			
+			if (sharedItems.size() != 1)
+			{
+				throw new IllegalArgumentException("No character found");
+			}
+			
+			var item = sharedItems.get(0);
+			
+			priorities.add(getPriority(item));
+		}
+		
+		System.out.println(String.format("[Part2]: Priority Sum is %d", 
+				priorities.stream().reduce(Integer::sum).get()));
+	}
+	
+	private static int getPriority(char item)
+	{
+		return Character.isUpperCase(item) ? (item - 'A' + 27) : (item - 'a' + 1);
 	}
 
 }
