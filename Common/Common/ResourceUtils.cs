@@ -9,6 +9,9 @@ namespace Common
         {
             var txtFile = new List<string>();
 
+            // Console.WriteLine(assembly.FullName);
+            // Console.WriteLine(string.Join(", ", assembly.GetManifestResourceNames()));
+
             using var stream = assembly.GetManifestResourceStream(path);
             if (stream != null)
             {
