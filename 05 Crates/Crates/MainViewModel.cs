@@ -12,12 +12,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Crates
 {
     class MainViewModel : ViewModelBase
     {
+        private bool _simulationRunning = false;
+
         private CrateOperator _crateOperator = new CrateOperator();
 
         public VisualStackCollection VStackCollection { get; set; } = new VisualStackCollection();
@@ -55,10 +58,10 @@ namespace Crates
         }
 
 
-        public ICommand RunAll { get; }
+        public RelayCommand RunAll { get; }
         public bool CanRunAll()
         {
-            return true;
+            return !_simulationRunning;
         }
         public void DoRunAll()
         {
@@ -66,10 +69,10 @@ namespace Crates
             UpdateVisuals();
         }
 
-        public ICommand SimpleSimulation { get; }
+        public RelayCommand SimpleSimulation { get; }
         public bool CanSimpleSimulation()
         {
-            return true;
+            return !_simulationRunning;
         }
         public void DoSimpleSimulation()
         {
@@ -77,7 +80,21 @@ namespace Crates
         }
         public async Task StartSimpleSimulation()
         {
+            _simulationRunning = true;
+            RunAll.RaiseCanExecuteChanged();
+            SimpleSimulation.RaiseCanExecuteChanged();
+            RunAllAdvanced.RaiseCanExecuteChanged();
+            AdvancedSimulation.RaiseCanExecuteChanged();
+            Reset.RaiseCanExecuteChanged();
+
             await Task.Run(() => RunSimpleSimulation());
+
+            _simulationRunning = false;
+            RunAll.RaiseCanExecuteChanged();
+            SimpleSimulation.RaiseCanExecuteChanged();
+            RunAllAdvanced.RaiseCanExecuteChanged();
+            AdvancedSimulation.RaiseCanExecuteChanged();
+            Reset.RaiseCanExecuteChanged();
         }
 
         private void RunSimpleSimulation()
@@ -105,10 +122,10 @@ namespace Crates
 
 
 
-        public ICommand RunAllAdvanced { get; }
+        public RelayCommand RunAllAdvanced { get; }
         public bool CanRunAllAdvanced()
         {
-            return true;
+            return !_simulationRunning;
         }
         public void DoRunAllAdvanced()
         {
@@ -116,10 +133,10 @@ namespace Crates
             UpdateVisuals();
         }
 
-        public ICommand AdvancedSimulation { get; }
+        public RelayCommand AdvancedSimulation { get; }
         public bool CanAdvancedSimulation()
         {
-            return true;
+            return !_simulationRunning;
         }
         public void DoAdvancedSimulation()
         {
@@ -127,7 +144,23 @@ namespace Crates
         }
         public async Task StartAdvancedSimulation()
         {
+            _simulationRunning = true;
+            RunAll.RaiseCanExecuteChanged();
+            SimpleSimulation.RaiseCanExecuteChanged();
+            RunAllAdvanced.RaiseCanExecuteChanged();
+            AdvancedSimulation.RaiseCanExecuteChanged();
+            Reset.RaiseCanExecuteChanged();
+
+
             await Task.Run(() => RunAdvancedSimulation());
+
+            _simulationRunning = false;
+            RunAll.RaiseCanExecuteChanged();
+            SimpleSimulation.RaiseCanExecuteChanged();
+            RunAllAdvanced.RaiseCanExecuteChanged();
+            AdvancedSimulation.RaiseCanExecuteChanged();
+            Reset.RaiseCanExecuteChanged();
+
         }
 
         private void RunAdvancedSimulation()
@@ -149,17 +182,10 @@ namespace Crates
 
                 Task.Delay(50).Wait();
                 currentInstruction++;
-
             }
         }
 
-
-
-
-
-
-
-        public ICommand Reset { get; }
+        public RelayCommand Reset { get; }
         public bool CanReset()
         {
             return true;
@@ -181,7 +207,6 @@ namespace Crates
         private void UpdateVisuals()
         {
             VStackCollection.UpdateVisuals(_crateOperator.StackColl);
-
             TopCrateSequence = _crateOperator.TopCrateSequence;
         }
     }
