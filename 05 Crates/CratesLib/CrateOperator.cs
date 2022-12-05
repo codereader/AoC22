@@ -8,6 +8,7 @@ namespace CratesLib
 {
     public class CrateOperator
     {
+        // for reset
         private StackCollection _startConfig;
         public StackCollection StackColl { get; private set; } = new StackCollection();
         public List<Instruction> Instructions { get; private set; } = new List<Instruction>();
@@ -125,6 +126,11 @@ namespace CratesLib
             var moveCrate = source.Crates.First();
             destination.Crates.Insert(0, moveCrate);
             source.Crates.RemoveAt(0);
+        }
+
+        public void Reset()
+        {
+            StackColl = new StackCollection(_startConfig);
         }
     }
 }

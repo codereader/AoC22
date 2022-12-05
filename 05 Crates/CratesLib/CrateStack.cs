@@ -15,6 +15,12 @@ namespace CratesLib
         {
             Id= id;
             Crates = crates;
-        }   
+        }
+
+        public CrateStack(CrateStack otherCrateStack)
+        {
+            Id = otherCrateStack.Id;
+            Crates = new List<char>(otherCrateStack.Crates);
+        }
     }
 }

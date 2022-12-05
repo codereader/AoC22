@@ -12,9 +12,13 @@ namespace CratesLib
     {
         public List<CrateStack> Stacks { get; private set; } = new List<CrateStack>();
 
-        public StackCollection(StackCollection stacks)
+        public StackCollection(StackCollection otherStacks)
         {
-            Stacks = new List<CrateStack>(stacks.Stacks);
+            foreach (var crateStack in otherStacks.Stacks)
+            {
+
+                Stacks.Add(new CrateStack(crateStack));
+            }
         }
 
         public StackCollection() {}

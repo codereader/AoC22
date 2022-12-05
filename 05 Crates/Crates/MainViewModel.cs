@@ -4,6 +4,7 @@ using CratesLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -29,7 +30,7 @@ namespace Crates
 
             RunAll = new RelayCommand(CanRunAll, DoRunAll);
             RunAllAdvanced = new RelayCommand(CanRunAllAdvanced, DoRunAllAdvanced);
-
+            Reset = new RelayCommand(CanReset, DoReset);
 
         }
 
@@ -52,6 +53,17 @@ namespace Crates
         public void DoRunAllAdvanced()
         {
             _crateOperator.PerformAllInstructionsAdvanced();
+            UpdateVisuals();
+        }
+
+        public ICommand Reset { get; }
+        public bool CanReset()
+        {
+            return true;
+        }
+        public void DoReset()
+        {
+            _crateOperator.Reset();
             UpdateVisuals();
         }
 
