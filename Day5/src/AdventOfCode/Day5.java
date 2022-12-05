@@ -1,5 +1,6 @@
 package AdventOfCode;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -31,6 +32,13 @@ public class Day5 {
 				}
 			}
 		}
+		
+		// Clone the whole state for part 2
+		var stacks2 = new ArrayList<Stack<Character>>();
+		for (var stack : stacks)
+		{
+			stacks2.add((Stack<Character>)stack.clone());
+		}
 
 		for (var lineIndex = 10; lineIndex < lines.size(); ++lineIndex)
 		{
@@ -45,19 +53,49 @@ public class Day5 {
 		    var from = Integer.parseInt(matcher.group(2)) - 1;
 		    var to = Integer.parseInt(matcher.group(3)) - 1;
 		    
-		    var fromStack = stacks.get(from);
-		    var toStack = stacks.get(to);
-		    
-		    for (var c = 0; c < count; ++c)
-		    {
-		    	toStack.push(fromStack.pop());
-		    }
+		    executeCrateCommand9000(stacks, count, from, to);
+		    executeCrateCommand9001(stacks2, count, from, to);
 		}
 		
+		System.out.print("[Part1]: Final configuration => ");
 		for (var stack : stacks)
 		{
 			System.out.print(stack.peek());
 		}
+		
+		System.out.print("\n[Part2]: Final configuration => ");
+		for (var stack : stacks2)
+		{
+			System.out.print(stack.peek());
+		}
+	}
+	
+	private static void executeCrateCommand9000(ArrayList<Stack<Character>> stacks, int count, int fromIndex, int toIndex)
+	{
+		var fromStack = stacks.get(fromIndex);
+	    var toStack = stacks.get(toIndex);
+	    
+	    for (var c = 0; c < count; ++c)
+	    {
+	    	toStack.push(fromStack.pop());
+	    }
 	}
 
+	private static void executeCrateCommand9001(ArrayList<Stack<Character>> stacks, int count, int fromIndex, int toIndex)
+	{
+		var fromStack = stacks.get(fromIndex);
+	    var toStack = stacks.get(toIndex);
+	    
+	    var buffer = new ArrayDeque<Character>();
+	    
+	    for (var c = 0; c < count; ++c)
+	    {
+	    	buffer.add(fromStack.pop());
+	    }
+	    
+	    while (!buffer.isEmpty())
+	    {
+	    	toStack.push(buffer.pollLast());
+	    }
+	}
 }
