@@ -52,10 +52,19 @@
 
         <StackPanel Grid.Column="1">
             
-            <Button Width="300" Margin="0,10,0,0" Command="{Binding RunAll}" >Run all instructions</Button>
-            <Button Width="300" Margin="0,10,0,0" Command="{Binding RunAllAdvanced}" >Run all instructions - advanced method</Button>
+            <Button Width="300" Margin="0,10,0,0" HorizontalAlignment="Left"
+                    Command="{Binding RunAll}" >Run all instructions</Button>
+            <Button Width="300" Margin="0,10,0,0" HorizontalAlignment="Left" 
+                    Command="{Binding RunAllAdvanced}" >Run all instructions - advanced method</Button>
 
-            <Button Width="300" Margin="0,20,0,0" Command="{Binding Reset}" >Reset</Button>
+            <Button Width="300" Margin="0,20,0,0" HorizontalAlignment="Left" 
+                    Command="{Binding Reset}" >Reset</Button>
+
+            <StackPanel Orientation="Horizontal" Margin="0,40,0,0" HorizontalAlignment="Left">
+
+                <TextBlock Text="Top crate sequence: " />
+                <TextBlock Text="{Binding TopCrateSequence}" />
+            </StackPanel>
 
 
         </StackPanel>

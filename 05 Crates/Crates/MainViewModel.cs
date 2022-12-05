@@ -19,6 +19,12 @@ namespace Crates
 
         public VisualStackCollection VStackCollection { get; set; } = new VisualStackCollection();
 
+        public string TopCrateSequence
+        {
+            get => GetValue<string>();
+            set => SetValue(value);
+        }
+
 
         public MainViewModel()
         {
@@ -31,7 +37,6 @@ namespace Crates
             RunAll = new RelayCommand(CanRunAll, DoRunAll);
             RunAllAdvanced = new RelayCommand(CanRunAllAdvanced, DoRunAllAdvanced);
             Reset = new RelayCommand(CanReset, DoReset);
-
         }
 
         public ICommand RunAll { get; }
@@ -71,6 +76,8 @@ namespace Crates
         private void UpdateVisuals()
         {
             VStackCollection.UpdateVisuals(_crateOperator.StackColl);
+
+            TopCrateSequence = _crateOperator.TopCrateSequence;
         }
     }
 }

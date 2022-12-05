@@ -13,6 +13,8 @@ namespace CratesLib
         public StackCollection StackColl { get; private set; } = new StackCollection();
         public List<Instruction> Instructions { get; private set; } = new List<Instruction>();
 
+        public string TopCrateSequence { get; set; }
+
 
 
         public void Parse(List<string> input)
@@ -70,6 +72,8 @@ namespace CratesLib
             }
             _startConfig = new StackCollection(StackColl);
 
+            GenerateTopCrateSequence();
+
             // second part of input
             // moving instructions
             for (; i < input.Count; i++)
@@ -80,12 +84,24 @@ namespace CratesLib
             }
         }
 
+        public void GenerateTopCrateSequence()
+        {
+            var topCrates = new List<char>();
+            foreach (var stack in StackColl.Stacks)
+            {
+                topCrates.Add(stack.Crates.First());
+            }
+            TopCrateSequence = string.Join("", topCrates);
+        }
+
         public void PerformAllInstructions()
         {
             foreach (var inst in Instructions)
             {
                 PerformInstruction(inst);
             }
+
+            GenerateTopCrateSequence();
         }
 
         public void PerformInstruction(Instruction instruction)
@@ -105,6 +121,8 @@ namespace CratesLib
             {
                 PerformInstructionAdvanced(inst);
             }
+
+            GenerateTopCrateSequence();
         }
 
         public void PerformInstructionAdvanced(Instruction instruction)
@@ -118,8 +136,6 @@ namespace CratesLib
             source.Crates.RemoveRange(0, instruction.NumberOfCrates);
         }
 
-
-
         private void MoveCrate(CrateStack source, CrateStack destination)
         {
             // Lists are sorted from top to bottom so we have to remove the first crate and add it at the front of the other list
@@ -128,9 +144,11 @@ namespace CratesLib
             source.Crates.RemoveAt(0);
         }
 
+
         public void Reset()
         {
             StackColl = new StackCollection(_startConfig);
+            GenerateTopCrateSequence();
         }
     }
 }
