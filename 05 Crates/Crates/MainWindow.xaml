@@ -1,0 +1,60 @@
+﻿<Window x:Class="Crates.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Crates"
+        mc:Ignorable="d"
+        Title="Crates" WindowState="Maximized" Height="450" Width="800"
+        Background="LightGray">
+    
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="820" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0">
+            
+        <ItemsControl ItemsSource="{Binding VStackCollection.VisualStacks}" 
+                      Height="800" Width="800"  VerticalAlignment="Top" HorizontalAlignment="Left">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    
+                    <ItemsControl ItemsSource="{Binding Crates}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Margin="20" VerticalAlignment="Bottom" />
+                                
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#333333" Margin="5" Height="30" Width="30" BorderThickness="1" BorderBrush="Black">
+                                    <TextBlock Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Text="{Binding .}" />
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        </StackPanel>
+
+        <StackPanel Grid.Column="1">
+            
+            <Button Margin="0,10,0,0" Command="{Binding RunAll}" >Run all instructions</Button>
+            <Button Margin="0,10,0,0" Command="{Binding RunAllAdvanced}" >Run all instructions - advanced method</Button>
+
+        </StackPanel>
+    </Grid>
+</Window>
