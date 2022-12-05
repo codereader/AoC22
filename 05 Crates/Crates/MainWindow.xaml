@@ -5,19 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Crates"
         mc:Ignorable="d"
-        Title="Crates" WindowState="Maximized" Height="450" Width="800"
+        Title="Crates" WindowState="Maximized" Height="1000" Width="1800"
         Background="LightGray">
     
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="820" />
+            <ColumnDefinition Width="320" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
+        <!--- Stacks -->
         <StackPanel Grid.Column="0">
             
         <ItemsControl ItemsSource="{Binding VStackCollection.VisualStacks}" 
-                      Height="800" Width="800"  VerticalAlignment="Top" HorizontalAlignment="Left">
+                      Height="900" Width="800"  VerticalAlignment="Top" HorizontalAlignment="Left">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" />
@@ -30,14 +32,14 @@
                     <ItemsControl ItemsSource="{Binding Crates}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Margin="20" VerticalAlignment="Bottom" />
+                                <StackPanel Width="50" Margin="20" VerticalAlignment="Bottom" />
                                 
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="#333333" Margin="5" Height="30" Width="30" BorderThickness="1" BorderBrush="Black">
+                                <Border Background="#333333" Margin="3" Height="30" Width="30" BorderThickness="1" BorderBrush="Black">
                                     <TextBlock Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Text="{Binding .}" />
                                 </Border>
                             </DataTemplate>
@@ -50,14 +52,31 @@
 
         </StackPanel>
 
+        <!-- Buttons -->
         <StackPanel Grid.Column="1">
-            
-            <Button Width="300" Margin="0,10,0,0" HorizontalAlignment="Left"
-                    Command="{Binding RunAll}" >Run all instructions</Button>
-            <Button Width="300" Margin="0,10,0,0" HorizontalAlignment="Left" 
-                    Command="{Binding RunAllAdvanced}" >Run all instructions - advanced method</Button>
 
-            <Button Width="300" Margin="0,20,0,0" HorizontalAlignment="Left" 
+            <TextBlock Text="Simple method" />
+
+            <Button Width="300" Margin="0,10,0,0" HorizontalAlignment="Left"
+                    Command="{Binding RunAll}" >Show result</Button>
+            <Button Width="300" Margin="0,10,0,0" HorizontalAlignment="Left"
+                    Command="{Binding SimpleSimulation}" >Run All Instructions</Button>
+
+            <TextBlock Margin="0,20,0,0" Text="Advanced method" />
+
+            <Button Width="300" Margin="0,10,0,0" HorizontalAlignment="Left" 
+                    Command="{Binding RunAllAdvanced}" >Show result</Button>
+            <Button Width="300" Margin="0,10,0,0" HorizontalAlignment="Left"
+                    Command="{Binding AdvancedSimulation}" >Run All Instructions</Button>
+
+            <StackPanel Margin="0,40,0,0" Orientation="Horizontal">
+                <TextBlock Text="Current instruction: " />
+                <TextBlock Text="{Binding CurrentInstruction}" />
+            </StackPanel>
+
+
+
+            <Button Width="300" Margin="0,40,0,0" HorizontalAlignment="Left" 
                     Command="{Binding Reset}" >Reset</Button>
 
             <StackPanel Orientation="Horizontal" Margin="0,40,0,0" HorizontalAlignment="Left">
@@ -66,7 +85,25 @@
                 <TextBlock Text="{Binding TopCrateSequence}" />
             </StackPanel>
 
+        </StackPanel>
+        
+        <!-- Instructions -->
+        <StackPanel Grid.Column="2" Margin="20, 0, 0, 0" Width="200">
+            <TextBlock Text="Instructions" />
 
+            <ScrollViewer Grid.Column="2" Margin="0, 10, 0, 0" Height="800" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                      HorizontalScrollBarVisibility="Disabled"  VerticalScrollBarVisibility="Auto">
+
+            <ItemsControl ItemsSource="{Binding VInstructions}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Margin="0, 10, 0, 0" Text="{Binding InstructionStr}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+        </ScrollViewer>
+            
         </StackPanel>
     </Grid>
 </Window>

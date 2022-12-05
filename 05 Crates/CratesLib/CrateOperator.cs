@@ -103,6 +103,10 @@ namespace CratesLib
 
             GenerateTopCrateSequence();
         }
+        public void PerformInstructionId(int currentInstruction)
+        {
+            PerformInstruction(Instructions[currentInstruction]);
+        }
 
         public void PerformInstruction(Instruction instruction)
         {
@@ -124,6 +128,12 @@ namespace CratesLib
 
             GenerateTopCrateSequence();
         }
+
+        public void PerformAdvancedInstructionId(int currentInstruction)
+        {
+            PerformInstructionAdvanced(Instructions[currentInstruction]);
+        }
+
 
         public void PerformInstructionAdvanced(Instruction instruction)
         {
@@ -150,5 +160,6 @@ namespace CratesLib
             StackColl = new StackCollection(_startConfig);
             GenerateTopCrateSequence();
         }
+
     }
 }
