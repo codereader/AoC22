@@ -4,6 +4,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import AdventOfCode.Common.FileUtils;
 
@@ -14,11 +16,9 @@ public class Day5 {
 		
 		var stacks = new ArrayList<Stack<Character>>();
 
-		for (var i = 0; i < 9 ; ++i)
-		{
-			stacks.add(new Stack<Character>());
-		}
+		IntStream.range(0, 9).forEach(i -> stacks.add(new Stack<Character>()));
 		
+		// Read the initial stack configuration
 		for (var lineIndex = 7; lineIndex >= 0; --lineIndex)
 		{
 			var line = lines.get(lineIndex);
@@ -40,6 +40,7 @@ public class Day5 {
 			stacks2.add((Stack<Character>)stack.clone());
 		}
 
+		// Read commands
 		for (var lineIndex = 10; lineIndex < lines.size(); ++lineIndex)
 		{
 			var line = lines.get(lineIndex);
@@ -57,17 +58,10 @@ public class Day5 {
 		    executeCrateCommand9001(stacks2, count, from, to);
 		}
 		
-		System.out.print("[Part1]: Final configuration => ");
-		for (var stack : stacks)
-		{
-			System.out.print(stack.peek());
-		}
-		
-		System.out.print("\n[Part2]: Final configuration => ");
-		for (var stack : stacks2)
-		{
-			System.out.print(stack.peek());
-		}
+		System.out.println(String.format("[Part1]: Final configuration => %s", 
+				stacks.stream().map(s -> s.peek().toString()).collect(Collectors.joining())));
+		System.out.println(String.format("[Part2]: Final configuration => %s", 
+				stacks2.stream().map(s -> s.peek().toString()).collect(Collectors.joining())));
 	}
 	
 	private static void executeCrateCommand9000(ArrayList<Stack<Character>> stacks, int count, int fromIndex, int toIndex)
