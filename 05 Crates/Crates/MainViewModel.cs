@@ -33,7 +33,6 @@ namespace Crates
             set => SetValue(value);
         }
 
-
         public string TopCrateSequence
         {
             get => GetValue<string>();
@@ -61,18 +60,19 @@ namespace Crates
         public RelayCommand RunAll { get; }
         public bool CanRunAll()
         {
-            return !_simulationRunning;
+            return !_simulationRunning && CurrentInstruction == -1;
         }
         public void DoRunAll()
         {
             _crateOperator.PerformAllInstructions();
+            CurrentInstruction = VInstructions.Count;
             UpdateVisuals();
         }
 
         public RelayCommand SimpleSimulation { get; }
         public bool CanSimpleSimulation()
         {
-            return !_simulationRunning;
+            return !_simulationRunning && CurrentInstruction < VInstructions.Count - 1;
         }
         public void DoSimpleSimulation()
         {
@@ -99,44 +99,26 @@ namespace Crates
 
         private void RunSimpleSimulation()
         {
-            var currentInstruction = 0;
-
-            while (true)
-            {
-                if (currentInstruction >= VInstructions.Count)
-                {
-                    break;
-                }
-                _crateOperator.PerformInstructionId(currentInstruction);
-                 App.Current.Dispatcher.Invoke(() =>
-                {
-                    UpdateVisuals();
-                    CurrentInstruction = currentInstruction;
-                });
-
-                Task.Delay(50).Wait();
-                currentInstruction++;
-
-            }
+            RunSimulation(false);
         }
-
 
 
         public RelayCommand RunAllAdvanced { get; }
         public bool CanRunAllAdvanced()
         {
-            return !_simulationRunning;
+            return !_simulationRunning && CurrentInstruction == -1;
         }
         public void DoRunAllAdvanced()
         {
             _crateOperator.PerformAllInstructionsAdvanced();
+            CurrentInstruction = VInstructions.Count;
             UpdateVisuals();
         }
 
         public RelayCommand AdvancedSimulation { get; }
         public bool CanAdvancedSimulation()
         {
-            return !_simulationRunning;
+            return !_simulationRunning && CurrentInstruction < VInstructions.Count - 1;
         }
         public void DoAdvancedSimulation()
         {
@@ -165,15 +147,28 @@ namespace Crates
 
         private void RunAdvancedSimulation()
         {
-            var currentInstruction = 0;
+            RunSimulation(true);
+        }
+
+        private void RunSimulation(bool advanced)
+        {
+            var currentInstruction = CurrentInstruction;
 
             while (true)
             {
+                currentInstruction++;
                 if (currentInstruction >= VInstructions.Count)
                 {
                     break;
                 }
-                _crateOperator.PerformAdvancedInstructionId(currentInstruction);
+                if (advanced)
+                {
+                    _crateOperator.PerformAdvancedInstructionId(currentInstruction);
+                }
+                else
+                {
+                    _crateOperator.PerformInstructionId(currentInstruction);
+                }
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateVisuals();
@@ -181,18 +176,27 @@ namespace Crates
                 });
 
                 Task.Delay(50).Wait();
-                currentInstruction++;
             }
         }
+
+
 
         public RelayCommand Reset { get; }
         public bool CanReset()
         {
-            return true;
+            return !_simulationRunning;
         }
         public void DoReset()
         {
             _crateOperator.Reset();
+            CurrentInstruction = -1;
+
+            RunAll.RaiseCanExecuteChanged();
+            SimpleSimulation.RaiseCanExecuteChanged();
+            RunAllAdvanced.RaiseCanExecuteChanged();
+            AdvancedSimulation.RaiseCanExecuteChanged();
+            Reset.RaiseCanExecuteChanged();
+
             UpdateVisuals();
         }
 

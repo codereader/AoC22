@@ -15,8 +15,6 @@ namespace CratesLib
 
         public string TopCrateSequence { get; set; }
 
-
-
         public void Parse(List<string> input)
         {
             // first part of input
@@ -78,12 +76,11 @@ namespace CratesLib
             // moving instructions
             for (; i < input.Count; i++)
             {
-                line = input[i];
-
-                Instructions.Add(new Instruction(line));
+                Instructions.Add(new Instruction(input[i]));
             }
         }
 
+        // string containing the top crates
         public void GenerateTopCrateSequence()
         {
             var topCrates = new List<char>();
@@ -94,21 +91,24 @@ namespace CratesLib
             TopCrateSequence = string.Join("", topCrates);
         }
 
+        // Simple method
+        // move one crate at the time
         public void PerformAllInstructions()
         {
             foreach (var inst in Instructions)
             {
                 PerformInstruction(inst);
             }
-
             GenerateTopCrateSequence();
         }
+
         public void PerformInstructionId(int currentInstruction)
         {
             PerformInstruction(Instructions[currentInstruction]);
+            GenerateTopCrateSequence();
         }
 
-        public void PerformInstruction(Instruction instruction)
+        private void PerformInstruction(Instruction instruction)
         {
             var source = StackColl.Stacks.Single(s => s.Id == instruction.SourceStack);
             var destination = StackColl.Stacks.Single(s => s.Id == instruction.DestinationStack);
@@ -119,13 +119,22 @@ namespace CratesLib
             }
         }
 
+        private void MoveCrate(CrateStack source, CrateStack destination)
+        {
+            // Lists are sorted from top to bottom so we have to remove the first crate and add it at the front of the other list
+            var moveCrate = source.Crates.First();
+            destination.Crates.Insert(0, moveCrate);
+            source.Crates.RemoveAt(0);
+        }
+
+        // advanced method
+        // all crates together
         public void PerformAllInstructionsAdvanced()
         {
             foreach (var inst in Instructions)
             {
                 PerformInstructionAdvanced(inst);
             }
-
             GenerateTopCrateSequence();
         }
 
@@ -133,7 +142,6 @@ namespace CratesLib
         {
             PerformInstructionAdvanced(Instructions[currentInstruction]);
         }
-
 
         public void PerformInstructionAdvanced(Instruction instruction)
         {
@@ -145,15 +153,6 @@ namespace CratesLib
             destination.Crates.InsertRange(0, cratesToBeMoved);
             source.Crates.RemoveRange(0, instruction.NumberOfCrates);
         }
-
-        private void MoveCrate(CrateStack source, CrateStack destination)
-        {
-            // Lists are sorted from top to bottom so we have to remove the first crate and add it at the front of the other list
-            var moveCrate = source.Crates.First();
-            destination.Crates.Insert(0, moveCrate);
-            source.Crates.RemoveAt(0);
-        }
-
 
         public void Reset()
         {
