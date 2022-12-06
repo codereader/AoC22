@@ -69,18 +69,20 @@
             <Button Width="300" Margin="0,10,0,0" HorizontalAlignment="Left"
                     Command="{Binding AdvancedSimulation}" >Run All Instructions</Button>
 
+            <Button Width="300" Margin="0,40,0,0" HorizontalAlignment="Left" 
+                    Command="{Binding Reset}" >Reset</Button>
+
+
+            <Button Width="300" Margin="0,20,0,0" HorizontalAlignment="Left" 
+                    Command="{Binding StopSimulation}" >Stop Simulation</Button>
+
+
             <StackPanel Margin="0,40,0,0" Orientation="Horizontal">
                 <TextBlock Text="Current instruction: " />
                 <TextBlock Text="{Binding CurrentInstruction}" />
             </StackPanel>
 
-
-
-            <Button Width="300" Margin="0,40,0,0" HorizontalAlignment="Left" 
-                    Command="{Binding Reset}" >Reset</Button>
-
-            <StackPanel Orientation="Horizontal" Margin="0,40,0,0" HorizontalAlignment="Left">
-
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Left">
                 <TextBlock Text="Top crate sequence: " />
                 <TextBlock Text="{Binding TopCrateSequence}" />
             </StackPanel>

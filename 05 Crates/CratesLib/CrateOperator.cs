@@ -86,7 +86,7 @@ namespace CratesLib
             var topCrates = new List<char>();
             foreach (var stack in StackColl.Stacks)
             {
-                topCrates.Add(stack.Crates.First());
+                topCrates.Add(stack.Crates.FirstOrDefault());
             }
             TopCrateSequence = string.Join("", topCrates);
         }

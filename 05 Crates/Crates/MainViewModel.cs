@@ -20,6 +20,7 @@ namespace Crates
     class MainViewModel : ViewModelBase
     {
         private bool _simulationRunning = false;
+        private CancellationTokenSource _tokenSource;
 
         private CrateOperator _crateOperator = new CrateOperator();
 
@@ -54,6 +55,8 @@ namespace Crates
             RunAllAdvanced = new RelayCommand(CanRunAllAdvanced, DoRunAllAdvanced);
             AdvancedSimulation = new RelayCommand(CanAdvancedSimulation, DoAdvancedSimulation);
             Reset = new RelayCommand(CanReset, DoReset);
+            StopSimulation = new RelayCommand(CanStopSimulation, DoStopSimulation);
+
         }
 
 
@@ -69,40 +72,6 @@ namespace Crates
             UpdateVisuals();
         }
 
-        public RelayCommand SimpleSimulation { get; }
-        public bool CanSimpleSimulation()
-        {
-            return !_simulationRunning && CurrentInstruction < VInstructions.Count - 1;
-        }
-        public void DoSimpleSimulation()
-        {
-            StartSimpleSimulation();
-        }
-        public async Task StartSimpleSimulation()
-        {
-            _simulationRunning = true;
-            RunAll.RaiseCanExecuteChanged();
-            SimpleSimulation.RaiseCanExecuteChanged();
-            RunAllAdvanced.RaiseCanExecuteChanged();
-            AdvancedSimulation.RaiseCanExecuteChanged();
-            Reset.RaiseCanExecuteChanged();
-
-            await Task.Run(() => RunSimpleSimulation());
-
-            _simulationRunning = false;
-            RunAll.RaiseCanExecuteChanged();
-            SimpleSimulation.RaiseCanExecuteChanged();
-            RunAllAdvanced.RaiseCanExecuteChanged();
-            AdvancedSimulation.RaiseCanExecuteChanged();
-            Reset.RaiseCanExecuteChanged();
-        }
-
-        private void RunSimpleSimulation()
-        {
-            RunSimulation(false);
-        }
-
-
         public RelayCommand RunAllAdvanced { get; }
         public bool CanRunAllAdvanced()
         {
@@ -115,6 +84,17 @@ namespace Crates
             UpdateVisuals();
         }
 
+
+        public RelayCommand SimpleSimulation { get; }
+        public bool CanSimpleSimulation()
+        {
+            return !_simulationRunning && CurrentInstruction < VInstructions.Count - 1;
+        }
+        public void DoSimpleSimulation()
+        {
+            StartSimulation(false);
+        }
+
         public RelayCommand AdvancedSimulation { get; }
         public bool CanAdvancedSimulation()
         {
@@ -122,63 +102,83 @@ namespace Crates
         }
         public void DoAdvancedSimulation()
         {
-            StartAdvancedSimulation();
+            StartSimulation(true);
         }
-        public async Task StartAdvancedSimulation()
+
+        public async void StartSimulation(bool advanced)
         {
+            _tokenSource = new CancellationTokenSource();
+
             _simulationRunning = true;
+
             RunAll.RaiseCanExecuteChanged();
             SimpleSimulation.RaiseCanExecuteChanged();
             RunAllAdvanced.RaiseCanExecuteChanged();
             AdvancedSimulation.RaiseCanExecuteChanged();
             Reset.RaiseCanExecuteChanged();
+            StopSimulation.RaiseCanExecuteChanged();
 
-
-            await Task.Run(() => RunAdvancedSimulation());
+            await Task.Run(() => RunSimulation(advanced, _tokenSource.Token));
 
             _simulationRunning = false;
+
             RunAll.RaiseCanExecuteChanged();
             SimpleSimulation.RaiseCanExecuteChanged();
             RunAllAdvanced.RaiseCanExecuteChanged();
             AdvancedSimulation.RaiseCanExecuteChanged();
             Reset.RaiseCanExecuteChanged();
+            StopSimulation.RaiseCanExecuteChanged();
 
+            _tokenSource.Dispose();
         }
 
-        private void RunAdvancedSimulation()
-        {
-            RunSimulation(true);
-        }
-
-        private void RunSimulation(bool advanced)
+        private void RunSimulation(bool advanced, CancellationToken token)
         {
             var currentInstruction = CurrentInstruction;
-
-            while (true)
+            try
             {
-                currentInstruction++;
-                if (currentInstruction >= VInstructions.Count)
+                while (true)
                 {
-                    break;
-                }
-                if (advanced)
-                {
-                    _crateOperator.PerformAdvancedInstructionId(currentInstruction);
-                }
-                else
-                {
-                    _crateOperator.PerformInstructionId(currentInstruction);
-                }
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    UpdateVisuals();
-                    CurrentInstruction = currentInstruction;
-                });
+                    currentInstruction++;
+                    if (currentInstruction >= VInstructions.Count)
+                    {
+                        break;
+                    }
+                    if (advanced)
+                    {
+                        _crateOperator.PerformAdvancedInstructionId(currentInstruction);
+                    }
+                    else
+                    {
+                        _crateOperator.PerformInstructionId(currentInstruction);
+                    }
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        UpdateVisuals();
+                        CurrentInstruction = currentInstruction;
+                    });
 
-                Task.Delay(50).Wait();
+                    token.ThrowIfCancellationRequested();
+
+                    Thread.Sleep(50);
+                }
             }
+            catch (OperationCanceledException)
+            { }
         }
 
+        public RelayCommand StopSimulation { get; }
+        public bool CanStopSimulation(object obj)
+        {
+            return _simulationRunning;
+        }
+        public void DoStopSimulation(object obj)
+        {
+            if (_tokenSource != null)
+            {
+                _tokenSource.Cancel();
+            }
+        }
 
 
         public RelayCommand Reset { get; }
