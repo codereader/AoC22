@@ -10,8 +10,10 @@ namespace FilesLib
     public class DeviceFilesystem
     {
         private DeviceDirectory _root = new DeviceDirectory();
-
         private List<DeviceDirectory> _directories = new List<DeviceDirectory>();
+
+        private int _totalSpace = 70000000;
+        private int _requiredFreeSpace = 30000000;
 
         public void Parse(List<string> input)
         {
@@ -78,13 +80,22 @@ namespace FilesLib
             _root.CalculateOverallSize();
         }
 
-
+        // part 1: sum of folders with overall size <= 100000
         public int GetSumOfSmallFolders()
         {
             var smallFolders = _directories.Where(d => d.OverallSize <= 100000);
             var sum = smallFolders.Sum(f => f.OverallSize);
             return sum;
+        }
 
+        public int DetermineSizeOfDirToDelete()
+        {
+            var freeSpace = _totalSpace - _root.OverallSize;
+            var freeSpaceDifference = _requiredFreeSpace - freeSpace;
+
+            // the smallest folder increasing free space over required free space
+            var applicableFolders = _directories.Where(d => d.OverallSize >= freeSpaceDifference);
+            return applicableFolders.Min(f => f.OverallSize);
         }
 
     }
