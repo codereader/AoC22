@@ -10,10 +10,7 @@ public class Day7 {
 	public static void main(String[] args) {
 		var lines = FileUtils.readFile("./input.txt");
 		
-		var walker = new LogWalker(lines);
-		walker.ProcessLines();
-		
-		var fileSystem = walker.getFileSystem();
+		var fileSystem = LogParser.ProcessLog(lines);
 		
 		fileSystem.foreachDirectory(dir -> 
 		{
