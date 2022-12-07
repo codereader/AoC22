@@ -2,7 +2,7 @@ package AdventOfCode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 public class Directory {
 	
@@ -42,14 +42,13 @@ public class Directory {
 		_size += size;
 	}
 
-	public void foreachChildDirectory(Function<Directory, Boolean> functor)
+	public void foreachChildDirectory(Consumer<Directory> functor)
 	{
 		for (var dir : _children)
 		{
-			if (functor.apply(dir))
-			{
-				dir.foreachChildDirectory(functor);
-			}
+			functor.accept(dir);
+			// Iterate depth-first
+			dir.foreachChildDirectory(functor);
 		}
 	}
 

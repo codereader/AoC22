@@ -24,8 +24,6 @@ public class Day7 {
 				System.out.println(String.format("Found %s with size: %d", dir.getName(), size));
 				_part1Sum += size;
 			}
-			
-			return true; // inspect further
 		});
 		
 		System.out.println(String.format("[Part1]: Total sum: %d", _part1Sum));
@@ -50,8 +48,6 @@ public class Day7 {
 					_part2Directory = dir;
 				}
 			}
-			
-			return true; // inspect further
 		});
 		
 		System.out.println(String.format("[Part2]: Total size of best directory %s: %d", 

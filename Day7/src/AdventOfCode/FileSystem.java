@@ -1,7 +1,7 @@
 package AdventOfCode;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 public class FileSystem {
 	
@@ -19,7 +19,7 @@ public class FileSystem {
 	}
 	
 	// Functor should return false to not go any deeper
-	public void foreachDirectory(Function<Directory, Boolean> functor)
+	public void foreachDirectory(Consumer<Directory> functor)
 	{
 		_root.foreachChildDirectory(functor);
 	}
