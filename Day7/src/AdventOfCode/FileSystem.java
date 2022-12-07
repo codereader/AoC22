@@ -23,4 +23,8 @@ public class FileSystem {
 	{
 		_root.foreachChildDirectory(functor);
 	}
+
+	public Directory getRootDirectory() {
+		return _root;
+	}
 }
