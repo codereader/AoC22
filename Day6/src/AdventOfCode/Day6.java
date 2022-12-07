@@ -1,7 +1,5 @@
 package AdventOfCode;
 
-import java.util.stream.Collectors;
-
 import AdventOfCode.Common.FileUtils;
 
 public class Day6 {
@@ -20,10 +18,8 @@ public class Day6 {
 	{
 		for (var index = numUniqueChars - 1; index < line.length(); ++index)
 		{
-			var hashSet = line.subSequence(index - numUniqueChars + 1, index + 1)
-					.chars().mapToObj(c -> (char)c).collect(Collectors.toSet());
-			
-			if (hashSet.size() == numUniqueChars)
+			if (line.subSequence(index - numUniqueChars + 1, index + 1)
+					.chars().distinct().count() == numUniqueChars)
 			{
 				return index;
 			}
