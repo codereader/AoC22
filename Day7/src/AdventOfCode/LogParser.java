@@ -1,29 +1,29 @@
 package AdventOfCode;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 public class LogParser {
 	
-	public static FileSystem ProcessLog(List<String> lines)
+	public static FileSystem ProcessLog(Deque<String> lines)
 	{
 		var fileSystem = new FileSystem();
 		var currentPath = new ArrayList<String>();
 		
-		var currentLine = 0;
-		
-		while (currentLine < lines.size())
+		while (!lines.isEmpty())
 		{
-			if (lines.get(currentLine).equals("$ cd /"))
+			var line = lines.pollFirst();
+			
+			if (line.equals("$ cd /"))
 			{
 				currentPath = new ArrayList<String>();
-				++currentLine;
 				continue;
 			}
 			
-			if (lines.get(currentLine).startsWith("$ cd "))
+			if (line.startsWith("$ cd "))
 			{
-				var dirName = lines.get(currentLine).substring("$ cd ".length());
+				var dirName = line.substring("$ cd ".length());
 				
 				if (dirName.equals(".."))
 				{
@@ -33,35 +33,31 @@ public class LogParser {
 				{
 					currentPath.add(dirName);
 				}
-				++currentLine;
 				continue;
 			}
 				
-			if (lines.get(currentLine).equals("$ ls"))
+			if (line.equals("$ ls"))
 			{
 				// Proceed until next $ command is found
-				++currentLine;
-				
-				while (currentLine < lines.size() && !lines.get(currentLine).startsWith("$"))
+				while (!lines.isEmpty() && !lines.peekFirst().startsWith("$"))
 				{
-					if (lines.get(currentLine).startsWith("dir "))
+					line = lines.pollFirst();
+					if (line.startsWith("dir "))
 					{
-						++currentLine;
 						continue;
 					}
 					
-					var parts = lines.get(currentLine).split(" ");
+					var parts = line.split(" ");
 					var size = Long.parseLong(parts[0]);
 					var fileName = parts[1];
 					
 					fileSystem.registerFile((List<String>)currentPath.clone(), fileName, size);
-					++currentLine;
 				}
 				
 				continue;
 			}
 			
-			throw new IllegalArgumentException("Unrecognised line: " + lines.get(currentLine));
+			throw new IllegalArgumentException("Unrecognised line: " + line);
 		}
 		
 		return fileSystem;

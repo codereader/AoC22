@@ -1,5 +1,9 @@
 package AdventOfCode;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.stream.Collectors;
+
 import AdventOfCode.Common.FileUtils;
 
 public class Day7 {
@@ -8,7 +12,7 @@ public class Day7 {
 	private static Directory _part2Directory = null;
 	
 	public static void main(String[] args) {
-		var lines = FileUtils.readFile("./input.txt");
+		var lines = FileUtils.readFile("./input.txt").stream().collect(Collectors.toCollection(ArrayDeque::new));
 		
 		var fileSystem = LogParser.ProcessLog(lines);
 		
