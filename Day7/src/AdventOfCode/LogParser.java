@@ -15,28 +15,23 @@ public class LogParser {
 		{
 			var line = lines.pollFirst();
 			
-			if (line.equals("$ cd /"))
-			{
-				currentPath = new ArrayList<String>();
-				continue;
-			}
-			
 			if (line.startsWith("$ cd "))
 			{
 				var dirName = line.substring("$ cd ".length());
 				
-				if (dirName.equals(".."))
+				switch (dirName)
 				{
+				case "/":
+					currentPath.clear();
+					break;
+				case "..":
 					currentPath.remove(currentPath.size() - 1);
+					break;
+				default:
+					currentPath.add(dirName);				
 				}
-				else
-				{
-					currentPath.add(dirName);
-				}
-				continue;
 			}
-				
-			if (line.equals("$ ls"))
+			else if (line.equals("$ ls"))
 			{
 				// Proceed until next $ command is found
 				while (!lines.isEmpty() && !lines.peekFirst().startsWith("$"))
@@ -53,11 +48,11 @@ public class LogParser {
 					
 					fileSystem.registerFile((List<String>)currentPath.clone(), fileName, size);
 				}
-				
-				continue;
 			}
-			
-			throw new IllegalArgumentException("Unrecognised line: " + line);
+			else
+			{
+				throw new IllegalArgumentException("Unrecognised line: " + line);
+			}
 		}
 		
 		return fileSystem;
