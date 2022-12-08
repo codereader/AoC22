@@ -21,7 +21,7 @@ namespace TreeHouse
             set => SetValue(value);
         }
 
-        public bool Isvisible
+        public bool IsVisible
         {
             get => GetValue<bool>();
             set => SetValue(value);

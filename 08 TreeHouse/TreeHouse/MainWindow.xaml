@@ -11,20 +11,21 @@
     <Window.Resources>
         <local:PositionConverter x:Key="DrawPosition" />
         <local:BorderBackgroundConverter x:Key="BorderBackgroundConverter" />
+        <local:BorderBrushConverter x:Key="BorderBrushConverter" />
 
     </Window.Resources>
 
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="800" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <ItemsControl Grid.Column="0" Width="1000" Height="1000" ItemsSource="{Binding Forest.TreePositions}">
+        <ItemsControl Grid.Column="0" Width="1100" Height="1100" ItemsSource="{Binding Forest.TreePositions}">
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas Width="1000" Height="1000" />
+                    <Canvas Width="1100" Height="1100" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
@@ -37,7 +38,7 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Height="10" Width="10" Background="{Binding Height, Converter={StaticResource BorderBackgroundConverter}}" BorderThickness="1">
+                    <Border Height="9" Width="9" BorderBrush="{Binding IsVisible, Converter={StaticResource BorderBrushConverter}}" Background="{Binding Height, Converter={StaticResource BorderBackgroundConverter}}" BorderThickness="1">
                         <TextBlock FontSize="6" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"  Text="{Binding Height}" />
                     </Border>
                 </DataTemplate>

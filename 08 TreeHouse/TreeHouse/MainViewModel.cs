@@ -59,7 +59,6 @@ namespace TreeHouse
             _ranger.DetermineVisibleTreeCounts();
             MaxVisibleScore = _ranger.GetMaxScore();
 
-
             UpdateVisuals();
         }
 
@@ -75,6 +74,7 @@ namespace TreeHouse
                     visualTreePos.X = x;
                     visualTreePos.Y = y;
                     visualTreePos.Height = _ranger.GetTreePosHeight(pos);
+                    visualTreePos.IsVisible = _ranger.GetTreePosVisible(pos);
                     Forest.TreePositions.Add(visualTreePos);
                 }
             }
