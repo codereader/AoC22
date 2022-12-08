@@ -31,6 +31,51 @@ public class TreeGrid
 		return numVisibleTrees;
 	}
 	
+	public int getHighestScenicScore()
+	{
+		int highestScore = 0;
+		
+		for (int row = 0; row < _tree.length; ++row)
+		{
+			for (int column = 0; column < _tree[row].length; ++column)
+			{
+				highestScore = Math.max(getScenicScore(row, column), highestScore);
+			} 
+		} 
+		
+		return highestScore;
+	}
+	
+	public int getScenicScore(int row, int column)
+	{
+		return getNumVisibleTreesInDirection(row, column, 0, -1) *
+			getNumVisibleTreesInDirection(row, column, 0, +1) *
+			getNumVisibleTreesInDirection(row, column, -1, 0) *
+			getNumVisibleTreesInDirection(row, column, +1, 0);
+	}
+	
+	private int getNumVisibleTreesInDirection(int row, int column, int rowIncrement, int columnIncrement)
+	{
+		if (rowIncrement + columnIncrement == 0) throw new IllegalArgumentException("One increment must be != 0");
+		
+		int treeHeight = _tree[row][column];
+		int visibleCount = 0;
+		
+		for (int r = row + rowIncrement, c = column + columnIncrement;
+			 r >= 0 && r < _tree.length && c >= 0 && c < _tree[r].length;
+			 r += rowIncrement, c += columnIncrement)
+		{
+			++visibleCount;
+			
+			if (_tree[r][c] >= treeHeight)
+			{
+				break;
+			}
+		}
+		
+		return visibleCount;
+	}
+	
 	private boolean treeIsVisible(int row, int column)
 	{
 		// If there's no higher tree from any directions this tree is visible
