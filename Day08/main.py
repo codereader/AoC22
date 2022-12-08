@@ -1,8 +1,8 @@
 import util
+from functools import reduce
 
 
 def solve():
-
     lines = util.input_as_strings()
 
     max_len = len(lines)  # row and column length (we just assume as many columns as rows)
@@ -51,7 +51,58 @@ def solve():
     print(f'Part 1: {visible_tree_count}')  # 1763
 
     # Part 2
-    # print(f'Part 2: {}')  #
+    reverse_matrix(trees)
+
+    max_score = 0
+    for i in range(max_len):
+        for j in range(max_len):
+            current = trees[i][j]
+            visibilities = []
+
+            # left
+            visible = 0
+            x = j - 1
+            while x >= 0:
+                visible += 1
+                if trees[i][x] >= current:
+                    break
+                x -= 1
+            visibilities.append(visible)
+
+            # right
+            visible = 0
+            x = j + 1
+            while x < max_len:
+                visible += 1
+                if trees[i][x] >= current:
+                    break
+                x += 1
+            visibilities.append(visible)
+
+            # top
+            visible = 0
+            y = i - 1
+            while y >= 0:
+                visible += 1
+                if trees[y][j] >= current:
+                    break
+                y -= 1
+            visibilities.append(visible)
+
+            # bottom
+            visible = 0
+            y = i + 1
+            while y < max_len:
+                visible += 1
+                if trees[y][j] >= current:
+                    break
+                y += 1
+            visibilities.append(visible)
+
+            score = reduce(lambda x, y: x*y, visibilities)  # Multiply all elements
+            max_score = max(score, max_score)
+
+    print(f'Part 2: {max_score}')  # 671160
 
 
 solve()
