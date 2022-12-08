@@ -1,7 +1,6 @@
 package AdventOfCode;
 
 import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.stream.Collectors;
 
 import AdventOfCode.Common.FileUtils;
