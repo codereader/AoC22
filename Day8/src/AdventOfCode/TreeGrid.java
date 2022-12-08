@@ -56,24 +56,7 @@ public class TreeGrid
 	
 	private int getNumVisibleTreesInDirection(int row, int column, int rowIncrement, int columnIncrement)
 	{
-		if (rowIncrement + columnIncrement == 0) throw new IllegalArgumentException("One increment must be != 0");
-		
-		int treeHeight = _tree[row][column];
-		int visibleCount = 0;
-		
-		for (int r = row + rowIncrement, c = column + columnIncrement;
-			 r >= 0 && r < _tree.length && c >= 0 && c < _tree[r].length;
-			 r += rowIncrement, c += columnIncrement)
-		{
-			++visibleCount;
-			
-			if (_tree[r][c] >= treeHeight)
-			{
-				break;
-			}
-		}
-		
-		return visibleCount;
+		return runTrace(row, column, rowIncrement, columnIncrement).NumVisibleTrees;
 	}
 	
 	private boolean treeIsVisible(int row, int column)
@@ -84,25 +67,42 @@ public class TreeGrid
 			treeIsVisibleFrom(row, column, -1, 0) ||
 			treeIsVisibleFrom(row, column, +1, 0);
 	}
-
-	private boolean treeIsVisibleFrom(int row, int column, int rowIncrement, int columnIncrement) 
+	
+	private class VisibilityTraceResult
+	{
+		public int NumVisibleTrees = 0;
+		public boolean TreeIsVisibleFromOutside = false;
+	}
+	
+	private VisibilityTraceResult runTrace(int row, int column, int rowIncrement, int columnIncrement) 
 	{
 		if (rowIncrement + columnIncrement == 0) throw new IllegalArgumentException("One increment must be != 0");
 		
 		int treeHeight = _tree[row][column];
 		
+		var result = new VisibilityTraceResult();
+		
 		for (int r = row + rowIncrement, c = column + columnIncrement;
 			 r >= 0 && r < _tree.length && c >= 0 && c < _tree[r].length;
 			 r += rowIncrement, c += columnIncrement)
 		{
+			result.NumVisibleTrees++;
+			
 			if (_tree[r][c] >= treeHeight)
 			{
-				return false;
+				result.TreeIsVisibleFromOutside = false;
+				return result;
 			}
 		}
 		
 		// No higher tree encountered
-		return true;
+		result.TreeIsVisibleFromOutside = true;
+		return result;
+	}
+
+	private boolean treeIsVisibleFrom(int row, int column, int rowIncrement, int columnIncrement) 
+	{
+		return runTrace(row, column, rowIncrement, columnIncrement).TreeIsVisibleFromOutside;
 	}
 
 	// Named constructor parsing the grid from the given set of lines
