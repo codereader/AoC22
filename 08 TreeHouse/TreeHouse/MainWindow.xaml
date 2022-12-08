@@ -10,6 +10,7 @@
 
     <Window.Resources>
         <local:PositionConverter x:Key="DrawPosition" />
+        <local:BorderBackgroundConverter x:Key="BorderBackgroundConverter" />
 
     </Window.Resources>
 
@@ -36,8 +37,8 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Height="10" Width="10" BorderBrush="DarkGray" BorderThickness="1">
-                        <TextBlock FontSize="6" HorizontalAlignment="Center" VerticalAlignment="Center"  Text="{Binding Height}" />
+                    <Border Height="10" Width="10" Background="{Binding Height, Converter={StaticResource BorderBackgroundConverter}}" BorderThickness="1">
+                        <TextBlock FontSize="6" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"  Text="{Binding Height}" />
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
