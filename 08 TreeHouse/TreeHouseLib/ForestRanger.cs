@@ -113,6 +113,64 @@ namespace TreeHouseLib
             return _forestGrid.Count(t => t.Value.IsVisible);
         }
 
+
+        public void DetermineVisibleTreeCounts()
+        {
+            for (int currentX = 0; currentX < _xMax; currentX++)
+            {
+                for (int currentY = 0; currentY < _yMax; currentY++)
+                {
+                    var pos = new Vector2(currentX, currentY);
+                    var treePos = _forestGrid[pos];
+                    var currentHeight = treePos.Height;
+
+                    // move in all directions as long as the other trees are smaller
+                    for (int x = currentX - 1; x >= 0; x--)
+                    {
+                        var testTreePos = _forestGrid[new Vector2(x, currentY)];
+                        treePos.VisibleLeft++;
+                        if (testTreePos.Height >= currentHeight)
+                        {
+                            break;
+                        }
+                    }
+                    for (int x = currentX + 1; x  < _xMax; x++)
+                    {
+                        var testTreePos = _forestGrid[new Vector2(x, currentY)];
+                        treePos.VisibleRight++;
+                        if (testTreePos.Height >= currentHeight)
+                        {
+                            break;
+                        }
+                    }
+                    for (int y = currentY - 1; y >= 0; y--)
+                    {
+                        var testTreePos = _forestGrid[new Vector2(currentX, y)];
+                        treePos.VisibleTop++;
+                        if (testTreePos.Height >= currentHeight)
+                        {
+                            break;
+                        }
+                    }
+                    for (int y = currentY + 1; y< _yMax; y++)
+                    {
+                        var testTreePos = _forestGrid[new Vector2(currentX, y)];
+                        treePos.VisibleBottom++;
+                        if (testTreePos.Height >= currentHeight)
+                        {
+                            break;
+                        }
+                    }
+                    treePos.VisibleScore = treePos.VisibleTop * treePos.VisibleBottom * treePos.VisibleLeft * treePos.VisibleRight;
+                }
+            }
+        }
+
+        public int GetMaxScore()
+        {
+            return _forestGrid.Max(t => t.Value.VisibleScore);
+        }
+
         public int XMax => _xMax;
         public int YMax => _yMax;
 

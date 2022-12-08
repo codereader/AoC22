@@ -11,10 +11,15 @@
             <ColumnDefinition Width="800" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        
-       
-        
-        
+
+
+
+        <StackPanel>
+            
         <TextBlock Text="{Binding VisibleTreeCount}" />
+
+        <TextBlock Text="{Binding MaxVisibleScore}" />
+        </StackPanel>
+
     </Grid>
 </Window>

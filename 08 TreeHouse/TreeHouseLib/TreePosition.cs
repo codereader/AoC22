@@ -16,5 +16,13 @@ namespace TreeHouseLib
         internal int MaxHeightYBottom { get; set; }
 
         internal bool IsVisible { get; set; }
+
+
+        internal int VisibleLeft { get; set; }
+        internal int VisibleRight { get; set; }
+        internal int VisibleTop { get; set; }
+        internal int VisibleBottom { get; set; }
+        internal int VisibleScore { get; set; }
+
     }
 }

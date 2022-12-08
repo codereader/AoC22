@@ -35,6 +35,13 @@ namespace TreeHouse
             get => GetValue<int>();
             set => SetValue(value);
         }
+        public int MaxVisibleScore
+        {
+            get => GetValue<int>();
+            set => SetValue(value);
+        }
+
+
 
         public MainViewModel()
         {
@@ -45,14 +52,19 @@ namespace TreeHouse
             XMax = _ranger.XMax;
             YMax = _ranger.YMax;
 
+            // part 1
             _ranger.CalculateMaxHeights();
             _ranger.DetermineVisibilities();
-
-
-
             VisibleTreeCount = _ranger.GetVisibleTreeCount();
 
+            // part 2
+            _ranger.DetermineVisibleTreeCounts();
+            MaxVisibleScore = _ranger.GetMaxScore();
+
+
             UpdateVisuals();
+
+
 
         }
 
