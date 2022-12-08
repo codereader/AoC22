@@ -5,20 +5,58 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TreeHouse"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid Margin="30">
+        Title="MainWindow" WindowState="Maximized" Height="1200" Width="1800">
+
+
+    <Window.Resources>
+        <local:PositionConverter x:Key="DrawPosition" />
+
+    </Window.Resources>
+
+    <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="800" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
+        <ItemsControl Grid.Column="0" Width="1000" Height="1000" ItemsSource="{Binding Forest.TreePositions}">
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas Width="1000" Height="1000" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Canvas.Left" Value="{Binding X, Converter={StaticResource DrawPosition}}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Y, Converter={StaticResource DrawPosition}}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Height="10" Width="10" BorderBrush="DarkGray" BorderThickness="1">
+                        <TextBlock FontSize="6" HorizontalAlignment="Center" VerticalAlignment="Center"  Text="{Binding Height}" />
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+        </ItemsControl>
 
 
-        <StackPanel>
-            
-        <TextBlock Text="{Binding VisibleTreeCount}" />
+        <StackPanel Grid.Column="1" Margin="30">
 
-        <TextBlock Text="{Binding MaxVisibleScore}" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Visbile trees: " />
+                <TextBlock Text="{Binding VisibleTreeCount}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Best tree score: " />
+                <TextBlock Text="{Binding MaxVisibleScore}" />
+            </StackPanel>
+
         </StackPanel>
 
     </Grid>

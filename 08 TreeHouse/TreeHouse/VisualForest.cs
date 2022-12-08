@@ -10,6 +10,6 @@ namespace TreeHouse
 {
     class VisualForest : ViewModelBase
     {
-        public ObservableCollection<VisualTreePosition> TreePositions { get; set; }
+        public ObservableCollection<VisualTreePosition> TreePositions { get; set; } = new ObservableCollection<VisualTreePosition>();
     }
 }

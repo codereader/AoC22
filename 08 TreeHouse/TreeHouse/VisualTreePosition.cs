@@ -10,18 +10,18 @@ namespace TreeHouse
             set => SetValue(value);
         }
 
-        public int x
+        public int X
         {
             get => GetValue<int>();
             set => SetValue(value);
         }
-        public int y
+        public int Y
         {
             get => GetValue<int>();
             set => SetValue(value);
         }
 
-        public bool Isvisble
+        public bool Isvisible
         {
             get => GetValue<bool>();
             set => SetValue(value);

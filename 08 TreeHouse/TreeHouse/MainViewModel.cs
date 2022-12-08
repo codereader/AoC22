@@ -3,6 +3,7 @@ using CommonWPF;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace TreeHouse
     {
         private ForestRanger _ranger = new ForestRanger();
 
-        public VisualForest Forest = new VisualForest();
+        public VisualForest Forest { get; set; } = new VisualForest();
 
         public int XMax
         {
@@ -29,7 +30,6 @@ namespace TreeHouse
         }
 
 
-
         public int VisibleTreeCount
         {
             get => GetValue<int>();
@@ -40,8 +40,6 @@ namespace TreeHouse
             get => GetValue<int>();
             set => SetValue(value);
         }
-
-
 
         public MainViewModel()
         {
@@ -63,18 +61,21 @@ namespace TreeHouse
 
 
             UpdateVisuals();
-
-
-
         }
 
         private void UpdateVisuals()
         {
+            Forest.TreePositions.Clear();
             for (int x = 0; x < XMax; x++)
             {
                 for (int y = 0; y < YMax; y++)
                 {
-
+                    var pos = new Vector2(x, y);
+                    var visualTreePos = new VisualTreePosition();
+                    visualTreePos.X = x;
+                    visualTreePos.Y = y;
+                    visualTreePos.Height = _ranger.GetTreePosHeight(pos);
+                    Forest.TreePositions.Add(visualTreePos);
                 }
             }
         }

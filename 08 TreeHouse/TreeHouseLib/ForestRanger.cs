@@ -171,6 +171,11 @@ namespace TreeHouseLib
             return _forestGrid.Max(t => t.Value.VisibleScore);
         }
 
+        public int GetTreePosHeight(Vector2 pos)
+        {
+            return _forestGrid[pos].Height;
+        }
+
         public int XMax => _xMax;
         public int YMax => _yMax;
 
