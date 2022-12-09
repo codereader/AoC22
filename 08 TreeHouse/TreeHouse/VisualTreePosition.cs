@@ -1,33 +1,26 @@
 ﻿using CommonWPF;
+using System.Numerics;
+using TreeHouseLib;
 
 namespace TreeHouse
 {
     public class VisualTreePosition : ViewModelBase
     {
-        public int Height
-        {
-            get => GetValue<int>();
-            set => SetValue(value);
-        }
+        private TreePosition _treePos;
+        
+        public int X { get; set; }
+        public int Y { get; set; }
 
-        public int X
-        {
-            get => GetValue<int>();
-            set => SetValue(value);
-        }
-        public int Y
-        {
-            get => GetValue<int>();
-            set => SetValue(value);
-        }
+        public int Height =>_treePos.Height;
+        public bool IsVisible => _treePos.IsVisible;
+        public bool IsBestPosition => _treePos.IsBestPosition;
 
-        public bool IsVisible
+        public VisualTreePosition(Vector2 pos, TreePosition treePos)
         {
-            get => GetValue<bool>();
-            set => SetValue(value);
+            _treePos = treePos;
+            X = (int)pos.X;
+            Y = (int)pos.Y;
         }
-
-
 
     }
 }

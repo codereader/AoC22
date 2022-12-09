@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Security.Cryptography.X509Certificates;
 
 namespace TreeHouseLib
@@ -23,7 +24,8 @@ namespace TreeHouseLib
                 }
             }
         }
-        public void CalculateMaxHeights()
+
+        private void CalculateMaxHeights()
         {
             for (int y = 0; y < _yMax; y++)
             {
@@ -78,7 +80,7 @@ namespace TreeHouseLib
             }
         }
 
-        public void DetermineVisibilities()
+        private void DetermineVisibilities()
         {
             for (int x = 0; x < _xMax; x++)
             {
@@ -110,12 +112,17 @@ namespace TreeHouseLib
 
         public int GetVisibleTreeCount()
         {
+            CalculateMaxHeights();
+            DetermineVisibilities();
+
             return _forestGrid.Count(t => t.Value.IsVisible);
         }
 
 
-        public void DetermineVisibleTreeCounts()
+        private void DetermineVisibleTreeCounts()
         {
+            var maxScore = 0;
+
             for (int currentX = 0; currentX < _xMax; currentX++)
             {
                 for (int currentY = 0; currentY < _yMax; currentY++)
@@ -168,17 +175,16 @@ namespace TreeHouseLib
 
         public int GetMaxScore()
         {
-            return _forestGrid.Max(t => t.Value.VisibleScore);
+            DetermineVisibleTreeCounts();
+            var maxScore = _forestGrid.Max(t => t.Value.VisibleScore);
+            var bestPos = _forestGrid.Single(t => t.Value.VisibleScore == maxScore);
+            _forestGrid[bestPos.Key].IsBestPosition = true;
+            return maxScore;
         }
 
-        public int GetTreePosHeight(Vector2 pos)
+        public TreePosition GetTreePosition(Vector2 pos)
         {
-            return _forestGrid[pos].Height;
-        }
-
-        public bool GetTreePosVisible(Vector2 pos)
-        {
-            return _forestGrid[pos].IsVisible;
+            return _forestGrid[pos];
         }
 
         public int XMax => _xMax;

@@ -7,12 +7,10 @@
         mc:Ignorable="d"
         Title="MainWindow" WindowState="Maximized" Height="1200" Width="1800">
 
-
     <Window.Resources>
         <local:PositionConverter x:Key="DrawPosition" />
         <local:BorderBackgroundConverter x:Key="BorderBackgroundConverter" />
         <local:BorderBrushConverter x:Key="BorderBrushConverter" />
-
     </Window.Resources>
 
     <Grid Margin="5">
@@ -21,7 +19,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <ItemsControl Grid.Column="0" Width="1100" Height="1100" ItemsSource="{Binding Forest.TreePositions}">
+        <ItemsControl Grid.Column="0" Width="1100" Height="1100" ItemsSource="{Binding VisualTreePositions}">
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -38,8 +36,8 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Height="9" Width="9" BorderBrush="{Binding IsVisible, Converter={StaticResource BorderBrushConverter}}" Background="{Binding Height, Converter={StaticResource BorderBackgroundConverter}}" BorderThickness="1">
-                        <TextBlock FontSize="6" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"  Text="{Binding Height}" />
+                    <Border Height="9" Width="9" BorderBrush="{Binding ., Converter={StaticResource BorderBrushConverter}}" Background="{Binding Height, Converter={StaticResource BorderBackgroundConverter}}" BorderThickness="1">
+                        <TextBlock FontSize="6" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Text="{Binding Height}" />
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

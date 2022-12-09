@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TreeHouseLib
 {
-    internal class TreePosition
+    public class TreePosition
     {
         public int Height { get; internal set; }
 
@@ -15,14 +15,16 @@ namespace TreeHouseLib
         internal int MaxHeightYTop { get; set; }
         internal int MaxHeightYBottom { get; set; }
 
-        internal bool IsVisible { get; set; }
+        public bool IsVisible { get; internal set; }
 
 
         internal int VisibleLeft { get; set; }
         internal int VisibleRight { get; set; }
         internal int VisibleTop { get; set; }
         internal int VisibleBottom { get; set; }
-        internal int VisibleScore { get; set; }
+        public int VisibleScore { get; internal set; }
+
+        public bool IsBestPosition { get; internal set; }
 
     }
 }
