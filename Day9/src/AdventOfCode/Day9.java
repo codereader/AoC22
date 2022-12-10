@@ -7,7 +7,7 @@ public class Day9 {
 	public static void main(String[] args) {
 		var lines = FileUtils.readFile("./input.txt");
 				
-		var rope = new Rope();
+		var rope = new Rope(1);
 		
 		for (var line : lines)
 		{
