@@ -1,13 +1,16 @@
 package AdventOfCode;
 
+import java.io.IOException;
+
 import AdventOfCode.Common.FileUtils;
 
 public class Day9 {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		var lines = FileUtils.readFile("./input.txt");
 				
-		var rope = new Rope(1);
+		var ropePart1 = new Rope(2);
+		var ropePart2 = new Rope(10);
 		
 		for (var line : lines)
 		{
@@ -16,11 +19,13 @@ public class Day9 {
 			
 			for (var i = 0; i < times; ++i)
 			{
-				rope.moveBy(direction);
+				ropePart1.moveBy(direction);
+				ropePart2.moveBy(direction);
 			}
 		}
 		
-		System.out.println(String.format("[Part1]: Number of visited tail positions: %d", rope.getNumVisitedTailPositions()));
+		System.out.println(String.format("[Part1]: Number of visited tail positions: %d", ropePart1.getNumVisitedTailPositions()));
+		System.out.println(String.format("[Part2]: Number of visited tail positions: %d", ropePart2.getNumVisitedTailPositions()));
 	}
 
 	private static Vector2 getDirection(String line)

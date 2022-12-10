@@ -16,7 +16,7 @@ public class Rope {
 		_knots = new ArrayList<Vector2>();
 		_knots.add(new Vector2(0, 0)); // head
 		
-		for (int i = 0; i < numberOfKnots; i++)
+		for (int i = 0; i < numberOfKnots - 1; i++)
 		{
 			_knots.add(new Vector2(0, 0));
 		}
@@ -49,5 +49,42 @@ public class Rope {
 		
 		//  Record tail position
 		_visitedPositions.add(_knots.get(_knots.size() - 1));
+	}
+
+	@Override
+	public String toString()
+	{
+		int fieldWidth = 1;
+		int fieldHeight = 1;
+		fieldWidth = Math.max(Math.abs(_knots.get(0).getX()) * 2 + 1, fieldWidth);
+		fieldHeight = Math.max(Math.abs(_knots.get(0).getY()) * 2 + 1, fieldHeight);
+		
+		var positions = new char[fieldHeight][fieldWidth];
+		
+		for (int h = 0; h < fieldHeight; ++h)
+		{
+			for (int w = 0; w < fieldWidth; ++w)
+			{
+				positions[h][w] = '.';
+			}
+		}
+		
+		for (int i = 0; i < _knots.size(); ++i)
+		{
+			var ropeId = i == 0 ? 'H' : (char) ('1' + i - 1);
+			var knot = _knots.get(i);
+			positions[-knot.getY() + fieldHeight / 2][knot.getX() + fieldWidth / 2] = ropeId;
+		}
+		
+		var text = new StringBuilder();
+		
+		for (int h = 0; h < fieldHeight; ++h)
+		{
+			var row = new String(positions[h]);
+			text.append(row);
+			text.append("\n");
+		}
+		
+		return text.toString();
 	}
 }
