@@ -14,27 +14,29 @@ public class Day11 {
 		
 		var monkeys = getProductiveMonkeySetup();
 		
-		for (int i = 0; i < 20; i++)
-		{
-			monkeys.stream().forEach(m -> m.runRound());
-		}
-		
-		for (var monkey : monkeys)
-		{
-			System.out.println(String.format("Monkey %d => %d", monkey.getIndex(), monkey.getActivityIndex()));
-		}
-		
-		var businessLevel = monkeys.stream().map(m -> m.getActivityIndex())
-				.sorted((idx1, idx2) -> Long.compare(idx2, idx1)) // reverse order
-				.limit(2).reduce(1L, (a, b) -> a * b);
-		
-		System.out.println(String.format("[Part1]: Monkey Business Level: %d", businessLevel));
+		runRounds(monkeys, 20);
+		displayBusinessLevel(monkeys, 1);
 		
 		// Part 2
 		monkeys = getProductiveMonkeySetup();
 		monkeys.forEach(Monkey::disableWorryDivision);
 		
-		for (int i = 0; i < 10000; i++)
+		runRounds(monkeys, 10000);
+		displayBusinessLevel(monkeys, 2);
+	}
+	
+	private static void displayBusinessLevel(List<Monkey> monkeys, int part)
+	{
+		var businessLevel = monkeys.stream().map(m -> m.getActivityIndex())
+				.sorted((idx1, idx2) -> Long.compare(idx2, idx1)) // reverse order
+				.limit(2).reduce(1L, (a, b) -> a * b);
+		
+		System.out.println(String.format("[Part%d]: Monkey Business Level: %d", part, businessLevel));
+	}
+	
+	private static void runRounds(List<Monkey> monkeys, int numRounds)
+	{
+		for (int i = 0; i < numRounds; i++)
 		{
 			monkeys.stream().forEach(m -> m.runRound());
 		}
@@ -43,12 +45,6 @@ public class Day11 {
 		{
 			System.out.println(String.format("Monkey %d => %d", monkey.getIndex(), monkey.getActivityIndex()));
 		}
-		
-		businessLevel = monkeys.stream().map(m -> m.getActivityIndex())
-				.sorted((idx1, idx2) -> Long.compare(idx2, idx1)) // reverse order
-				.limit(2).reduce(1L, (a, b) -> a * b);
-		
-		System.out.println(String.format("[Part2]: Monkey Business Level: %d", businessLevel));
 	}
 
 	private static List<Monkey> getProductiveMonkeySetup()
