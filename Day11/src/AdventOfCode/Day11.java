@@ -1,5 +1,6 @@
 package AdventOfCode;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,10 +19,30 @@ public class Day11 {
 		}
 		
 		var businessLevel = monkeys.stream().map(m -> m.getActivityIndex())
-				.sorted((idx1, idx2) -> Integer.compare(idx2, idx1)) // reverse order
-				.limit(2).reduce(1, (a, b) -> a * b);
+				.sorted((idx1, idx2) -> Long.compare(idx2, idx1)) // reverse order
+				.limit(2).reduce(1L, (a, b) -> a * b);
 		
-		System.out.println(String.format("Monkey Business Level: %d", businessLevel));
+		System.out.println(String.format("[Part1]: Monkey Business Level: %d", businessLevel));
+		
+		// Part 2
+		monkeys = getMonkeyTestSetup();
+		monkeys.forEach(Monkey::disableWorryDivision);
+		
+		for (int i = 0; i < 1000; i++)
+		{
+			monkeys.stream().forEach(m -> m.runRound());
+		}
+		
+		for (var monkey : monkeys)
+		{
+			System.out.println(String.format("Monkey %d => %d", monkey.getIndex(), monkey.getActivityIndex()));
+		}
+		
+		businessLevel = monkeys.stream().map(m -> m.getActivityIndex())
+				.sorted((idx1, idx2) -> Long.compare(idx2, idx1)) // reverse order
+				.limit(2).reduce(1L, (a, b) -> a * b);
+		
+		System.out.println(String.format("[Part2]: Monkey Business Level: %d", businessLevel));
 	}
 
 	private static List<Monkey> getMonkeySetupPart1()
