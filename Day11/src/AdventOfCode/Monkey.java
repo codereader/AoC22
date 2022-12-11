@@ -1,32 +1,33 @@
 package AdventOfCode;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 public class Monkey {
 	
 	private final int _index;
-	private final Function<Long, Long> _worryFunction;
-	private final ArrayList<Long> _items;
-	private final Long _divisor;
+	private final Function<Integer, Integer> _worryFunction;
+	private final ArrayList<Item> _items;
+	private final int _divisor;
 	private Monkey _targetMonkeyIfTrue;
 	private Monkey _targetMonkeyIfFalse;
-	private long _numInspections;
-	private Long _worryDivisor;
+	private int _numInspections;
+	private int _worryDivisor;
 	
-	public Monkey(int index, String items, Function<Long, Long> worryFunction, int divisor)
+	public Monkey(int index, String items, Function<Integer, Integer> worryFunction, int divisor)
 	{
 		_index = index;
 		_worryFunction = worryFunction;
-		_divisor = Long.valueOf(divisor);
+		_divisor = divisor;
 		_numInspections = 0;
-		_worryDivisor = Long.valueOf(3L); // by default
+		_worryDivisor = 3; // by default
 		
-		_items = new ArrayList<Long>();
+		_items = new ArrayList<Item>();
 		
 		for (var worry : items.split(", "))
 		{
-			_items.add(Long.valueOf(Long.parseLong(worry)));
+			_items.add(new Item(Integer.parseInt(worry)));
 		}
 	}
 	
@@ -40,20 +41,33 @@ public class Monkey {
 		return _numInspections;
 	}
 	
+	public int getDivisor()
+	{
+		return _divisor;
+	}
+	
+	public void setDivisors(List<Integer> divisors)
+	{
+		for (var item : _items)
+		{
+			item.setDivisors(divisors);
+		}
+	}
+	
 	public void setTargetMonkeys(Monkey targetMonkeyIfTrue, Monkey targetMonkeyIfFalse)
 	{
 		_targetMonkeyIfTrue = targetMonkeyIfTrue;
 		_targetMonkeyIfFalse = targetMonkeyIfFalse;
 	}
 	
-	private void acceptItem(Long item)
+	private void acceptItem(Item item)
 	{
 		_items.add(item); // add to end
 	}
 	
 	public void disableWorryDivision()
 	{
-		_worryDivisor = Long.valueOf(1L);
+		_worryDivisor = 1;
 	}
 
 	public void runRound()
@@ -62,18 +76,26 @@ public class Monkey {
 		{
 			++_numInspections;
 			
-			var level = _worryFunction.apply(item);
-			
-			level = Math.floorDiv(level, _worryDivisor);
-			
-			// The item's new level is thrown to the other monkey
-			if (level % _divisor == 0)
+			if (_worryDivisor != 1)
 			{
-				_targetMonkeyIfTrue.acceptItem(level);
+				item.apply(i -> 
+				{
+					return Math.floorDiv(_worryFunction.apply(i), _worryDivisor);
+				});
 			}
 			else
 			{
-				_targetMonkeyIfFalse.acceptItem(level);
+				item.apply(_worryFunction);
+			}
+			
+			// The item's new level is thrown to the other monkey
+			if (item.isDivisableForMonkey(_index))
+			{
+				_targetMonkeyIfTrue.acceptItem(item);
+			}
+			else
+			{
+				_targetMonkeyIfFalse.acceptItem(item);
 			}
 		}
 		

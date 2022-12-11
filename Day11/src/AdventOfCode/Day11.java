@@ -3,6 +3,7 @@ package AdventOfCode;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import AdventOfCode.Common.FileUtils;
 
@@ -11,11 +12,16 @@ public class Day11 {
 	public static void main(String[] args) {
 		var lines = FileUtils.readFile("./input.txt");
 		
-		var monkeys = getMonkeySetupPart1();
+		var monkeys = getProductiveMonkeySetup();
 		
 		for (int i = 0; i < 20; i++)
 		{
 			monkeys.stream().forEach(m -> m.runRound());
+		}
+		
+		for (var monkey : monkeys)
+		{
+			System.out.println(String.format("Monkey %d => %d", monkey.getIndex(), monkey.getActivityIndex()));
 		}
 		
 		var businessLevel = monkeys.stream().map(m -> m.getActivityIndex())
@@ -25,10 +31,10 @@ public class Day11 {
 		System.out.println(String.format("[Part1]: Monkey Business Level: %d", businessLevel));
 		
 		// Part 2
-		monkeys = getMonkeyTestSetup();
+		monkeys = getProductiveMonkeySetup();
 		monkeys.forEach(Monkey::disableWorryDivision);
 		
-		for (int i = 0; i < 1000; i++)
+		for (int i = 0; i < 10000; i++)
 		{
 			monkeys.stream().forEach(m -> m.runRound());
 		}
@@ -45,7 +51,7 @@ public class Day11 {
 		System.out.println(String.format("[Part2]: Monkey Business Level: %d", businessLevel));
 	}
 
-	private static List<Monkey> getMonkeySetupPart1()
+	private static List<Monkey> getProductiveMonkeySetup()
 	{
 		var monkeys = new ArrayList<Monkey>();
 		
@@ -67,6 +73,8 @@ public class Day11 {
 		monkeys.get(6).setTargetMonkeys(monkeys.get(1), monkeys.get(2));
 		monkeys.get(7).setTargetMonkeys(monkeys.get(3), monkeys.get(5));
 		
+		setupDivisors(monkeys);
+		
 		return monkeys;
 	}
 	
@@ -84,6 +92,14 @@ public class Day11 {
 		monkeys.get(2).setTargetMonkeys(monkeys.get(1), monkeys.get(3));
 		monkeys.get(3).setTargetMonkeys(monkeys.get(0), monkeys.get(1));
 		
+		setupDivisors(monkeys);
+		
 		return monkeys;
+	}
+
+	private static void setupDivisors(List<Monkey> monkeys)
+	{
+		var divisors = monkeys.stream().map(m -> m.getDivisor()).collect(Collectors.toList());
+		monkeys.forEach(m -> m.setDivisors(divisors));
 	}
 }
