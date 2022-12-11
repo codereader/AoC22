@@ -76,20 +76,26 @@ public class Monkey {
 		{
 			++_numInspections;
 			
+			var itemIsDivisable = false;
+			
 			if (_worryDivisor != 1)
 			{
-				item.apply(i -> 
+				item.applyToRawValue(i -> 
 				{
 					return Math.floorDiv(_worryFunction.apply(i), _worryDivisor);
 				});
+				
+				itemIsDivisable = item.getRawValue() % _divisor == 0;
 			}
 			else
 			{
+				// No worry divisor, use the modulus-based logic on Item
 				item.apply(_worryFunction);
+				itemIsDivisable = item.isDivisableForMonkey(_index);
 			}
-			
-			// The item's new level is thrown to the other monkey
-			if (item.isDivisableForMonkey(_index))
+
+			// Throw item to the correct target monkey
+			if (itemIsDivisable)
 			{
 				_targetMonkeyIfTrue.acceptItem(item);
 			}

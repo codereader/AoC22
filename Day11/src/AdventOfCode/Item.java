@@ -8,13 +8,14 @@ public class Item {
 	private List<Integer> _divisors;
 	private List<Integer> _modulos;
 	
-	private int _initialValue;
+	private int _rawValue;
 	
 	public Item(int initialValue)
 	{
-		_initialValue = initialValue;
+		_rawValue = initialValue;
 	}
 	
+	// Initialises the modulus array with the given set of divisors
 	public void setDivisors(List<Integer> divisors)
 	{
 		_divisors = divisors;
@@ -23,8 +24,19 @@ public class Item {
 		
 		for (var divisor : _divisors)
 		{
-			_modulos.add(_initialValue % divisor);
+			_modulos.add(_rawValue % divisor);
 		}
+	}
+	
+	public int getRawValue()
+	{
+		return _rawValue;
+	}
+	
+	// Setting the raw value, needed for part1 with no worry divisors 
+	public void applyToRawValue(Function<Integer, Integer> function)
+	{
+		_rawValue = function.apply(_rawValue);
 	}
 	
 	public boolean isDivisableForMonkey(int monkeyIndex)

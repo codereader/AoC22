@@ -1,6 +1,5 @@
 package AdventOfCode;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +13,7 @@ public class Day11 {
 		
 		var monkeys = getProductiveMonkeySetup();
 		
+		// Part 1
 		runRounds(monkeys, 20);
 		displayBusinessLevel(monkeys, 1);
 		
