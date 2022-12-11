@@ -8,8 +8,11 @@ var instructions = new Instructions();
 
 instructions.Parse(input);
 
-instructions.DoRounds(20);
+// part 1
+// instructions.DoRounds1(20);
+//Console.WriteLine(instructions.GetProduct());
 
+instructions.DoRounds2(10000);
 Console.WriteLine(instructions.GetProduct());
 
 

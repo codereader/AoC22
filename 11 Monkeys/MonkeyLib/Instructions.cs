@@ -11,6 +11,8 @@ namespace MonkeyLib
     {
         internal List<Monkey> Monkeys { get; set; } = new List<Monkey>();
 
+        internal List<int> Divisors { get; set; } = new List<int>();
+
         Monkey currentMonkey;
 
         public void Parse(List<string> input)
@@ -56,6 +58,7 @@ namespace MonkeyLib
                 {
                     var parts = line.Split(" ", StringSplitOptions.RemoveEmptyEntries);
                     currentMonkey.TestDivisor = int.Parse(parts.Last());
+                    Divisors.Add(currentMonkey.TestDivisor);
                 }
 
                 //     If true: throw to monkey 0
@@ -72,28 +75,60 @@ namespace MonkeyLib
                     currentMonkey.NextMonkeyIfFalse = int.Parse(parts.Last());
                 }
             }
+
+            foreach (var monkey in Monkeys)
+            {
+                monkey.SetupDivisors(Divisors);
+            }
+
         }
 
-        public void DoRounds(int rounds)
+        public void DoRounds1(int rounds)
         {
+            ResetMonkeyCounts();
             for (int i = 0; i < rounds; i++)
             {
-                DoRound();
+                DoRound1();
             }
         }
-
-        private void DoRound()
+        private void DoRound1()
         {
             foreach (var monkey in Monkeys)
             {
-                monkey.DoRound(Monkeys);
+                monkey.DoRound1(Monkeys);
             }
         }
+
+        public void DoRounds2(long rounds)
+        {
+            ResetMonkeyCounts();
+            for (long i = 0; i < rounds; i++)
+            {
+                DoRound2();
+            }
+        }
+        public void DoRound2()
+        {
+            foreach (var monkey in Monkeys)
+            {
+                monkey.DoRound2(Monkeys);
+            }
+        }
+
+        private void ResetMonkeyCounts()
+        {
+            foreach (var monkey in Monkeys)
+            {
+                monkey.InspectionCount = 0;
+            }
+        }
+
 
         public long GetProduct()
         {
             var orderedList = Monkeys.OrderByDescending(m => m.InspectionCount).Select(m => m.InspectionCount).ToList();
             return orderedList[0] * orderedList[1];
         }
+
     }
 }

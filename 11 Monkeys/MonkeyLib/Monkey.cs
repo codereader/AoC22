@@ -8,7 +8,7 @@ namespace MonkeyLib
 {
     internal class Monkey
     {
-        internal int InspectionCount { get; set; }
+        internal long InspectionCount { get; set; }
         public List<Item> Items { get; set; } = new List<Item>();
 
         public int Number { get; set; }
@@ -18,13 +18,13 @@ namespace MonkeyLib
         public int NextMonkeyIfTrue { get; set; }
         public int NextMonkeyIfFalse { get; set; }
 
-        internal void DoRound(List<Monkey> monkeys)
+        internal void DoRound1(List<Monkey> monkeys)
         {
             foreach (var item in Items)
             {
                 InspectionCount++;
-                item.PerformOperation(Operation);
-                if (item.Decide(TestDivisor) == true)
+                item.PerformOperation1(Operation);
+                if (item.Decide1(TestDivisor) == true)
                 {
                     monkeys[NextMonkeyIfTrue].Items.Add(item);
                 }
@@ -35,6 +35,34 @@ namespace MonkeyLib
             }
 
             Items.Clear();
+        }
+
+        internal void DoRound2(List<Monkey> monkeys)
+        {
+            foreach (var item in Items)
+            {
+                InspectionCount++;
+                item.PerformOperation2(Operation);
+                if (item.Decide2(TestDivisor) == true)
+                {
+                    monkeys[NextMonkeyIfTrue].Items.Add(item);
+                }
+                else
+                {
+                    monkeys[NextMonkeyIfFalse].Items.Add(item);
+                }
+            }
+
+            Items.Clear();
+        }
+
+
+        internal void SetupDivisors(List<int> divisors)
+        {
+            foreach (var item in Items)
+            {
+                item.SetupDivisors(divisors);
+            }
         }
     }
 }
