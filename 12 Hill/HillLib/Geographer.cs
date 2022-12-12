@@ -44,7 +44,9 @@ namespace HillLib
         public int FindShortestPathfromStartToEnd()
         {
             FindConnections(StartPosition, true);
+            HighlightPath(EndPosition);
             return EndPosition.ShortestConnectionLength;
+
         }
 
         public void FindConnections(Location startLocation, bool movingUp)
@@ -78,6 +80,7 @@ namespace HillLib
                 location.Value.ShortestConnection = new List<Location>();
                 location.Value.ShortestConnectionLength = 0;
                 location.Value.IsEvaluated = false;
+                location.Value.BelongsToPath = false;
             }
         }
 
@@ -129,7 +132,16 @@ namespace HillLib
             var candidates = Heightmap.Where(l => l.Value.Height == 0 && l.Value.ShortestConnectionLength > 0);
             var bestDist = candidates.Min(l => l.Value.ShortestConnectionLength);
             BestStartPosition = candidates.First(l => l.Value.ShortestConnectionLength == bestDist).Value;
+            HighlightPath(BestStartPosition);
             return bestDist;
+        }
+
+        private void HighlightPath(Location startLocation)
+        {
+            foreach (var location in startLocation.ShortestConnection)
+            {
+                location.BelongsToPath = true;
+            }
         }
     }
 }

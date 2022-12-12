@@ -16,6 +16,9 @@ namespace Hill
 
         public int Height => _location.Height;
 
+        public bool BelongsToPath
+            => _location.BelongsToPath;
+
         public int X => (int)_location.Position.X;
         public int Y => (int)_location.Position.Y;
 

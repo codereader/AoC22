@@ -19,6 +19,8 @@ namespace HillLib
 
         public bool IsEvaluated { get; set; }
 
+        public bool BelongsToPath { get; set; }
+
 
         public Location(Vector2 pos, char letter)
         {

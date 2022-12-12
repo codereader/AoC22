@@ -49,6 +49,7 @@ namespace Hill
         public void DoFindShortestPathStartToEnd()
         {
             ShortestPathStartToEnd = Geo.FindShortestPathfromStartToEnd();
+            CreateVisuals();
         }
 
         public RelayCommand FindShortestPathBestPosToEnd { get; }
@@ -59,11 +60,13 @@ namespace Hill
         public void DoFindShortestPathBestPosToEnd()
         {
             ShortestPathBestPosToEnd = Geo.FindShortestPathBestPosToEnd();
+            CreateVisuals();
         }
 
 
         private void CreateVisuals()
         {
+            VisualLocations.Clear();
             foreach (var location in Geo.Heightmap)
             {
                 VisualLocations.Add(new VisualLocation(location.Value));

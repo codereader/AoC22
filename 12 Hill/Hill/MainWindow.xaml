@@ -10,6 +10,7 @@
     <Window.Resources>
         <local:PositionConverter x:Key="PositionConverter" />
         <local:BackgroundConverter x:Key="BackgroundConverter" />
+        <local:BorderConverter x:Key="BorderConverter" />
         <local:TextConverter x:Key="TextConverter" />
 
     </Window.Resources>
@@ -36,7 +37,8 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="Gray" Background="{Binding Height, Converter={StaticResource BackgroundConverter}}" BorderThickness="2" Height="20" Width="20" >
+                    <Border BorderBrush="{Binding BelongsToPath, Converter={StaticResource BorderConverter}}" 
+                            Background="{Binding Height, Converter={StaticResource BackgroundConverter}}" BorderThickness="2" Height="20" Width="20" >
                         <TextBlock Text="{Binding Str}" Foreground="{Binding Height, Converter={StaticResource TextConverter}}" />
                     </Border>
                 </DataTemplate>
