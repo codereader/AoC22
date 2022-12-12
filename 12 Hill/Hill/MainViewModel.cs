@@ -17,11 +17,17 @@ namespace Hill
 
         public ObservableCollection<VisualLocation> VisualLocations { get; set; } = new ObservableCollection<VisualLocation>();
 
-        public int ShortestDist
+        public int ShortestPathStartToEnd
         {
             get => GetValue<int>();
             set => SetValue(value);
         }
+        public int ShortestPathBestPosToEnd
+        {
+            get => GetValue<int>();
+            set => SetValue(value);
+        }
+
 
         public MainViewModel()
         {
@@ -31,19 +37,28 @@ namespace Hill
 
             CreateVisuals();
 
-            FindShortestPath = new RelayCommand(CanFindShortestPath, DoFindShortestPath);
-
+            FindShortestPathStartToEnd = new RelayCommand(CanFindShortestPathStartToEnd, DoFindShortestPathStartToEnd);
+            FindShortestPathBestPosToEnd = new RelayCommand(CanFindShortestPathBestPosToEnd, DoFindShortestPathBestPosToEnd);
         }
 
-        public RelayCommand FindShortestPath { get; }
-        public bool CanFindShortestPath()
+        public RelayCommand FindShortestPathStartToEnd { get; }
+        public bool CanFindShortestPathStartToEnd()
         {
             return true;
         }
-        public void DoFindShortestPath()
+        public void DoFindShortestPathStartToEnd()
         {
-            Geo.FindConnections();
-            ShortestDist = Geo.ShortestDistanceToDestination();
+            ShortestPathStartToEnd = Geo.FindShortestPathfromStartToEnd();
+        }
+
+        public RelayCommand FindShortestPathBestPosToEnd { get; }
+        public bool CanFindShortestPathBestPosToEnd()
+        {
+            return true;
+        }
+        public void DoFindShortestPathBestPosToEnd()
+        {
+            ShortestPathBestPosToEnd = Geo.FindShortestPathBestPosToEnd();
         }
 
 

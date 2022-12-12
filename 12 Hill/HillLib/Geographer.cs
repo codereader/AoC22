@@ -11,6 +11,8 @@ namespace HillLib
 
         public Location StartPosition { get; private set; }
         public Location EndPosition { get; private set; }
+        public Location BestStartPosition { get; private set; }
+
 
         public int XMax { get; private set; }
         public int YMax { get; private set; }
@@ -39,11 +41,20 @@ namespace HillLib
             }
         }
 
-        public void FindConnections()
+        public int FindShortestPathfromStartToEnd()
         {
-            _availablePositions.Add(StartPosition);
+            FindConnections(StartPosition, true);
+            return EndPosition.ShortestConnectionLength;
+        }
 
-           while (true)
+        public void FindConnections(Location startLocation, bool movingUp)
+        {
+            _availablePositions.Clear();
+            ClearLocationConnections();
+
+            _availablePositions.Add(startLocation);
+
+            while (true)
             {
                 if (_availablePositions.Count == 0)
                 {
@@ -54,13 +65,23 @@ namespace HillLib
                 var nextPosition = _availablePositions.Where(p => p.ShortestConnectionLength == minLength).First();
 
                 // FInd neighbors that have not been evaluated and can be reached
-                var neighbors = ExamineNeighbors(nextPosition);
+                var neighbors = ExamineNeighbors(nextPosition, movingUp);
                 _availablePositions.Remove(nextPosition);
                 nextPosition.IsEvaluated = true;
             }
         }
 
-        private List<Location> ExamineNeighbors(Location location)
+        private void ClearLocationConnections()
+        {
+            foreach (var location in Heightmap)
+            {
+                location.Value.ShortestConnection = new List<Location>();
+                location.Value.ShortestConnectionLength = 0;
+                location.Value.IsEvaluated = false;
+            }
+        }
+
+        private List<Location> ExamineNeighbors(Location location, bool movingUp)
         {
             var neighbors = new List<Location>();
             var testPositions = new List<Vector2>
@@ -75,7 +96,7 @@ namespace HillLib
             {
                 if (Heightmap.TryGetValue(location.Position + position, out var neighbor))
                 {
-                    if (!neighbor.IsEvaluated && CanReach(location, neighbor) && !_availablePositions.Contains(neighbor))
+                    if (!neighbor.IsEvaluated && CanReach(location, neighbor, movingUp) && !_availablePositions.Contains(neighbor))
                     {
                         _availablePositions.Add(neighbor);
                         neighbor.ShortestConnectionLength = location.ShortestConnectionLength + 1;
@@ -88,15 +109,27 @@ namespace HillLib
             return neighbors;
         }
 
-        private bool CanReach(Location location, Location neighbor)
+        private bool CanReach(Location location, Location neighbor, bool movingUp)
         {
-            // new height can be lower or at most 1 higher
-            return neighbor.Height <= location.Height + 1;
+            if (movingUp)
+            {
+                // new height can be lower or at most 1 higher
+                return neighbor.Height <= location.Height + 1;
+            }
+            else
+            {
+                return location.Height <= neighbor.Height + 1;
+            }
         }
 
-        public int ShortestDistanceToDestination()
+        public int FindShortestPathBestPosToEnd()
         {
-            return EndPosition.ShortestConnectionLength;
+            // find connections starting from the end position, moving down
+            FindConnections(EndPosition, false);
+            var candidates = Heightmap.Where(l => l.Value.Height == 0 && l.Value.ShortestConnectionLength > 0);
+            var bestDist = candidates.Min(l => l.Value.ShortestConnectionLength);
+            BestStartPosition = candidates.First(l => l.Value.ShortestConnectionLength == bestDist).Value;
+            return bestDist;
         }
     }
 }

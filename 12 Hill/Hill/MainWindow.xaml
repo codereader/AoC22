@@ -47,13 +47,21 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1">
 
             <StackPanel Margin="10" >
-                <Button Command="{Binding FindShortestPath}" Width="200">Find shortest path</Button>
+                <Button Command="{Binding FindShortestPathStartToEnd}" Width="200">Find shortest path between S and E</Button>
                 <StackPanel Orientation="Horizontal" Margin="0, 10,0,0" >
                     <TextBlock Text="Shortest path between S and E: " />
-                    <TextBlock Text="{Binding ShortestDist}" />
+                    <TextBlock Text="{Binding ShortestPathStartToEnd}" />
                 </StackPanel>
-
             </StackPanel>
+
+            <StackPanel Margin="10" >
+                <Button Command="{Binding FindShortestPathBestPosToEnd}" Width="200">Find shortest path from best position</Button>
+                <StackPanel Orientation="Horizontal" Margin="0, 10,0,0" >
+                    <TextBlock Text="Shortest path between best position and E: " />
+                    <TextBlock Text="{Binding ShortestPathBestPosToEnd}" />
+                </StackPanel>
+            </StackPanel>
+
 
         </StackPanel>
     </Grid>
