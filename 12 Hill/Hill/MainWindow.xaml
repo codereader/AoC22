@@ -5,8 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hill"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" WindowState="Maximized" Height="1000" Width="1800">
+
+    <Window.Resources>
+        <local:PositionConverter x:Key="PositionConverter" />
+    </Window.Resources>
+    
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <ItemsControl ItemsSource="{Binding VisualLocations}" Grid.Column="0" >
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Canvas.Left" Value="{Binding X, Converter={StaticResource PositionConverter}}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Y, Converter={StaticResource PositionConverter}}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="Gray" BorderThickness="2" Height="20" Width="20" >
+                        <TextBlock Text="{Binding Str}" />
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            
+            
+        </ItemsControl>
 
     </Grid>
 </Window>
