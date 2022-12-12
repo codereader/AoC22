@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,13 +29,11 @@ namespace Hill
             set => SetValue(value);
         }
 
-
         public MainViewModel()
         {
             var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @"Hill.input.txt");
 
             Geo.Parse(input);
-
             CreateVisuals();
 
             FindShortestPathStartToEnd = new RelayCommand(CanFindShortestPathStartToEnd, DoFindShortestPathStartToEnd);
@@ -49,7 +48,7 @@ namespace Hill
         public void DoFindShortestPathStartToEnd()
         {
             ShortestPathStartToEnd = Geo.FindShortestPathfromStartToEnd();
-            CreateVisuals();
+            HighlightPath();
         }
 
         public RelayCommand FindShortestPathBestPosToEnd { get; }
@@ -60,9 +59,16 @@ namespace Hill
         public void DoFindShortestPathBestPosToEnd()
         {
             ShortestPathBestPosToEnd = Geo.FindShortestPathBestPosToEnd();
-            CreateVisuals();
+            HighlightPath();
         }
 
+        private void HighlightPath()
+        {
+            foreach (var vLocation in VisualLocations)
+            {
+                vLocation.BelongsToPath = Geo.Heightmap[new Vector2(vLocation.X, vLocation.Y)].BelongsToPath;
+            }
+        }
 
         private void CreateVisuals()
         {

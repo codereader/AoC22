@@ -13,7 +13,6 @@ namespace HillLib
         public Location EndPosition { get; private set; }
         public Location BestStartPosition { get; private set; }
 
-
         public int XMax { get; private set; }
         public int YMax { get; private set; }
 
@@ -46,8 +45,19 @@ namespace HillLib
             FindConnections(StartPosition, true);
             HighlightPath(EndPosition);
             return EndPosition.ShortestConnectionLength;
-
         }
+
+        public int FindShortestPathBestPosToEnd()
+        {
+            // find connections starting from the end position, moving down
+            FindConnections(EndPosition, false);
+            var candidates = Heightmap.Where(l => l.Value.Height == 0 && l.Value.ShortestConnectionLength > 0);
+            var bestDist = candidates.Min(l => l.Value.ShortestConnectionLength);
+            BestStartPosition = candidates.First(l => l.Value.ShortestConnectionLength == bestDist).Value;
+            HighlightPath(BestStartPosition);
+            return bestDist;
+        }
+
 
         public void FindConnections(Location startLocation, bool movingUp)
         {
@@ -67,26 +77,14 @@ namespace HillLib
                 var nextPosition = _availablePositions.Where(p => p.ShortestConnectionLength == minLength).First();
 
                 // FInd neighbors that have not been evaluated and can be reached
-                var neighbors = ExamineNeighbors(nextPosition, movingUp);
+                ExamineNeighbors(nextPosition, movingUp);
                 _availablePositions.Remove(nextPosition);
                 nextPosition.IsEvaluated = true;
             }
         }
 
-        private void ClearLocationConnections()
+        private void ExamineNeighbors(Location location, bool movingUp)
         {
-            foreach (var location in Heightmap)
-            {
-                location.Value.ShortestConnection = new List<Location>();
-                location.Value.ShortestConnectionLength = 0;
-                location.Value.IsEvaluated = false;
-                location.Value.BelongsToPath = false;
-            }
-        }
-
-        private List<Location> ExamineNeighbors(Location location, bool movingUp)
-        {
-            var neighbors = new List<Location>();
             var testPositions = new List<Vector2>
             {
                 new Vector2(1, 0),
@@ -105,11 +103,9 @@ namespace HillLib
                         neighbor.ShortestConnectionLength = location.ShortestConnectionLength + 1;
                         neighbor.ShortestConnection = new List<Location>(location.ShortestConnection);
                         neighbor.ShortestConnection.Add(neighbor);
-                        neighbors.Add(neighbor);
                     }
                 }
             }
-            return neighbors;
         }
 
         private bool CanReach(Location location, Location neighbor, bool movingUp)
@@ -125,18 +121,18 @@ namespace HillLib
             }
         }
 
-        public int FindShortestPathBestPosToEnd()
+        private void ClearLocationConnections()
         {
-            // find connections starting from the end position, moving down
-            FindConnections(EndPosition, false);
-            var candidates = Heightmap.Where(l => l.Value.Height == 0 && l.Value.ShortestConnectionLength > 0);
-            var bestDist = candidates.Min(l => l.Value.ShortestConnectionLength);
-            BestStartPosition = candidates.First(l => l.Value.ShortestConnectionLength == bestDist).Value;
-            HighlightPath(BestStartPosition);
-            return bestDist;
+            foreach (var location in Heightmap)
+            {
+                location.Value.ShortestConnection = new List<Location>();
+                location.Value.ShortestConnectionLength = 0;
+                location.Value.IsEvaluated = false;
+                location.Value.BelongsToPath = false;
+            }
         }
 
-        private void HighlightPath(Location startLocation)
+        public void HighlightPath(Location startLocation)
         {
             foreach (var location in startLocation.ShortestConnection)
             {

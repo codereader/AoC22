@@ -14,7 +14,7 @@ namespace Hill
         {
             if ((bool)value == true) 
             {
-                return "#00FFFF";
+                return "#0000AA";
             }
             return "#888888";
         }
