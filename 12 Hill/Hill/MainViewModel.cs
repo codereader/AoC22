@@ -28,6 +28,7 @@ namespace Hill
             var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @"Hill.input.txt");
 
             Geo.Parse(input);
+
             CreateVisuals();
             //Geo.FindConnections();
             //ShortestDist = Geo.ShortestDistanceToDestination();

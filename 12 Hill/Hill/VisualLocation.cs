@@ -14,6 +14,8 @@ namespace Hill
 
         public string Str => _location.Letter.ToString();
 
+        public int Height => _location.Height;
+
         public int X => (int)_location.Position.X;
         public int Y => (int)_location.Position.Y;
 
