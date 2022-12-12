@@ -30,10 +30,22 @@ namespace Hill
             Geo.Parse(input);
 
             CreateVisuals();
-            //Geo.FindConnections();
-            //ShortestDist = Geo.ShortestDistanceToDestination();
+
+            FindShortestPath = new RelayCommand(CanFindShortestPath, DoFindShortestPath);
 
         }
+
+        public RelayCommand FindShortestPath { get; }
+        public bool CanFindShortestPath()
+        {
+            return true;
+        }
+        public void DoFindShortestPath()
+        {
+            Geo.FindConnections();
+            ShortestDist = Geo.ShortestDistanceToDestination();
+        }
+
 
         private void CreateVisuals()
         {

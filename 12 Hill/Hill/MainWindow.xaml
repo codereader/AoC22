@@ -10,16 +10,17 @@
     <Window.Resources>
         <local:PositionConverter x:Key="PositionConverter" />
         <local:BackgroundConverter x:Key="BackgroundConverter" />
-        
-    </Window.Resources>
-    
-    <Grid Margin="20">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <local:TextConverter x:Key="TextConverter" />
 
-        <ItemsControl ItemsSource="{Binding VisualLocations}" Grid.Column="0" >
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="850" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ItemsControl ItemsSource="{Binding VisualLocations}"  Margin="10" Grid.Row="0" >
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas />
@@ -36,13 +37,24 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Gray" Background="{Binding Height, Converter={StaticResource BackgroundConverter}}" BorderThickness="2" Height="20" Width="20" >
-                        <TextBlock Text="{Binding Str}" />
+                        <TextBlock Text="{Binding Str}" Foreground="{Binding Height, Converter={StaticResource TextConverter}}" />
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
-            
-            
+
         </ItemsControl>
 
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+
+            <StackPanel Margin="10" >
+                <Button Command="{Binding FindShortestPath}" Width="200">Find shortest path</Button>
+                <StackPanel Orientation="Horizontal" Margin="0, 10,0,0" >
+                    <TextBlock Text="Shortest path between S and E: " />
+                    <TextBlock Text="{Binding ShortestDist}" />
+                </StackPanel>
+
+            </StackPanel>
+
+        </StackPanel>
     </Grid>
 </Window>
