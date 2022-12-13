@@ -63,7 +63,7 @@ public class Elements extends ArrayList<Object> implements Comparable<Elements>
 					elements.add(Integer.parseInt(tokens));
 					tokens = "";
 				}
-				break;
+				return elements;
 			default:
 				// Must be a numeric type, accumulate that
 				if (!Character.isDigit(ch)) throw new IllegalArgumentException("Unknown character " + ch);
@@ -78,6 +78,8 @@ public class Elements extends ArrayList<Object> implements Comparable<Elements>
 	@Override
 	public int compareTo(Elements other)
 	{
+		System.out.println(String.format("Compare %s vs %s", this.toString(), other.toString()));
+		
 		// Both are of type Element, so we are comparing lists
 		return compare(this, other);
 	}
@@ -86,13 +88,16 @@ public class Elements extends ArrayList<Object> implements Comparable<Elements>
 	{
 		for (int i = 0; i <= left.size(); i++)
 		{
+			if (i >= left.size())
+			{
+				System.out.println(String.format("Left side ran out of items, so inputs are in the right order"));
+				return -1; // left ran out of elements
+			}
+			
 			if (i >= right.size())
 			{
+				System.out.println(String.format("Right side ran out of items, so inputs are not in the right order"));
 				return +1; // right ran out of elements
-			}
-			else if (i >= left.size())
-			{
-				return i < right.size() ? -1 : 0; // left ran out of elements
 			}
 			
 			// Compare elements
@@ -101,6 +106,15 @@ public class Elements extends ArrayList<Object> implements Comparable<Elements>
 			if (elementComparison == 0)
 			{
 				continue; // go on
+			}
+			
+			if (elementComparison < 0)
+			{
+				System.out.println(String.format("Left side is smaller => right order"));
+			}
+			else
+			{
+				System.out.println(String.format("Right side is smaller => incorrect order"));
 			}
 			
 			// Elements are not equal, propagate the result
@@ -114,14 +128,18 @@ public class Elements extends ArrayList<Object> implements Comparable<Elements>
 	{
 		if (left.getClass() == Integer.class && right.getClass() == Integer.class)
 		{
+			System.out.println(String.format("- Compare %s vs %s", left.toString(), right.toString()));
 			return ((Integer)left).compareTo((Integer)right);
 		}
 		
 		// Both of them must be a list
 		if (left.getClass() == Elements.class && right.getClass() == Elements.class)
 		{
+			System.out.println(String.format("- Compare %s vs %s", left.toString(), right.toString()));
 			return compare((Elements)left, (Elements)right);
 		}
+		
+		System.out.println(String.format("- Compare %s vs %s", left.toString(), right.toString()));
 		
 		// One of them is not a list
 		if (left.getClass() == Elements.class)
@@ -129,12 +147,14 @@ public class Elements extends ArrayList<Object> implements Comparable<Elements>
 			// Convert right to a temporary list
 			var tempList = new Elements();
 			tempList.add(right);
+			System.out.println(String.format("- Mixed types; convert right to %s and retry comparison", tempList.toString()));
 			return compare((Elements)left, tempList);
 		}
 		else // Convert left to a temporary list
 		{
 			var tempList = new Elements();
 			tempList.add(left);
+			System.out.println(String.format("- Mixed types; convert left to %s and retry comparison", tempList.toString()));
 			return compare(tempList, (Elements)right);
 		}
 	}

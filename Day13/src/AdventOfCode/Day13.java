@@ -25,7 +25,7 @@ public class Day13 {
 			System.out.println(String.format("Line2: %s", entry2.toString()));
 			System.out.println();
 			
-			if (entry1.compareTo(entry2) == -1)
+			if (entry1.compareTo(entry2) < 0)
 			{
 				System.out.println(String.format("Packets with index %d are in correct order", pairIndex));
 				correctIndexSum += pairIndex;
