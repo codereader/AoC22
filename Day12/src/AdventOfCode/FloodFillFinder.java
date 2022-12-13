@@ -2,6 +2,7 @@ package AdventOfCode;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.function.BiFunction;
 
 import AdventOfCode.Common.Vector2;
 
@@ -10,6 +11,7 @@ public class FloodFillFinder
 	private final Map _map;
 	private final Vector2 _mapDimensions;
 	private HashSet<Vector2> _positionsToInvestigate;
+	private BiFunction<Integer, Integer, Boolean> _stepEvaluator;
 	
 	private class Field
 	{
@@ -25,11 +27,12 @@ public class FloodFillFinder
 	
 	private HashMap<Vector2, Field> _fields;
 	
-	public FloodFillFinder(Map map)
+	public FloodFillFinder(Map map, BiFunction<Integer, Integer, Boolean> stepEvaluator)
 	{
 		_map = map;
 		_mapDimensions = _map.getDimensions();
 		_fields = new HashMap<Vector2, Field>();
+		_stepEvaluator = stepEvaluator;
 	}
 	
 	final Vector2 _up = new Vector2(0, 1);
@@ -37,13 +40,13 @@ public class FloodFillFinder
 	final Vector2 _left = new Vector2(-1, 0);
 	final Vector2 _right = new Vector2(1 ,0);
 	
-	public int getFastestPathToTarget()
+	public void evaluateField(Vector2 startPosition)
 	{
+		_fields.clear();
 		_positionsToInvestigate = new HashSet<Vector2>();
 		
-		var startPosition = _map.getStartPosition();
 		_positionsToInvestigate.add(startPosition);
-		_fields.put(startPosition, new Field(0, _map.getHeight(startPosition))); // start pos has path length 0
+		_fields.put(startPosition, new Field(0, _map.getHeight(startPosition))); // start position has cost 0
 		
 		while (!_positionsToInvestigate.isEmpty())
 		{
@@ -58,7 +61,7 @@ public class FloodFillFinder
 			inspectPosition(position.plus(_right), field);
 		}
 		
-		// Dump field to console
+		/*// Dump field to console
 		for (int row = 0; row < _mapDimensions.getY(); row++)
 		{
 			for (int col = 0; col < _mapDimensions.getX(); col++)
@@ -67,18 +70,31 @@ public class FloodFillFinder
 				if (_fields.containsKey(pos))
 				{
 					var field = _fields.get(pos);
-					System.out.print(String.format("%03d ", field.Cost));
+					System.out.print(String.format("%c%03d ", 'a' + (char)_map.getHeight(pos), field.Cost));
 				}
 				else
 				{
-					System.out.print(String.format("??? "));
+					System.out.print(String.format("%c??? ",'a' + (char)_map.getHeight(pos)));
 				}
 			}
 			
 			System.out.println();
+		}*/
+	}
+	
+	public int getCost(Vector2 position)
+	{
+		if (!_fields.containsKey(position))
+		{
+			return Integer.MAX_VALUE;
 		}
 		
-		return _fields.get(_map.getTargetPosition()).Cost;
+		return _fields.get(position).Cost;
+	}
+	
+	public static boolean oneStepUpwardsAnyDownwards(int sourceHeight, int destinationHeight)
+	{
+		return destinationHeight <= sourceHeight + 1;
 	}
 	
 	private void inspectPosition(Vector2 position, Field sourceField)
@@ -91,7 +107,8 @@ public class FloodFillFinder
 		
 		// Get the height of that field
 		int height = _map.getHeight(position);
-		if (height > sourceField.Height + 1)
+		
+		if (!_stepEvaluator.apply(sourceField.Height, height))
 		{
 			return; // not reachable from here
 		}
