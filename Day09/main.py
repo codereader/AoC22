@@ -30,29 +30,17 @@ def solve():
                     delta_x = knot_before[0] - current_knot[0]
                     delta_y = knot_before[1] - current_knot[1]
                     knot_moves = False if abs(knot_before[0] - current_knot[0]) <= 1 and abs(knot_before[1] - current_knot[1]) <= 1 else True
-                    next_direction = ""
                     if knot_moves:
-                        if abs(delta_x) > 1 and abs(delta_y) > 1:
-                            x = delta_x // abs(delta_x)
-                            y = delta_y // abs(delta_y)
-                            current_knot = (knot_before[0] - x, knot_before[1] - y)
-                            knots[i] = current_knot
-                            if i == number_of_knots - 1:
-                                tail_visited.append(f'{current_knot[0]},{current_knot[1]}')
-                            continue
-                        elif abs(delta_x) > 1:
-                            next_direction = "R" if delta_x > 0 else "L"
-                        elif abs(delta_y) > 1:
-                            next_direction = "U" if delta_y > 0 else "D"
-
-                        if next_direction == "L":
-                            current_knot = (knot_before[0] + 1, knot_before[1])
-                        if next_direction == "R":
-                            current_knot = (knot_before[0] - 1, knot_before[1])
-                        if next_direction == "D":
-                            current_knot = (knot_before[0], knot_before[1] + 1)
-                        if next_direction == "U":
-                            current_knot = (knot_before[0], knot_before[1] - 1)
+                        x = 0
+                        y = 0
+                        if abs(delta_x) > 1 and abs(delta_y) > 1:  # diagonal in the direction of the knot in front
+                            x = (delta_x // abs(delta_x)) * -1
+                            y = (delta_y // abs(delta_y)) * -1
+                        elif abs(delta_x) > 1:  # to the left or right of the node in front
+                            x = -1 if delta_x > 0 else 1
+                        elif abs(delta_y) > 1:  # below or above of the node in front
+                            y = -1 if delta_y > 0 else 1
+                        current_knot = (knot_before[0] + x, knot_before[1] + y)
                         knots[i] = current_knot
                         if i == number_of_knots - 1:
                             tail_visited.append(f'{current_knot[0]},{current_knot[1]}')
