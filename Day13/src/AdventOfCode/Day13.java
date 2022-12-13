@@ -6,7 +6,7 @@ public class Day13 {
 
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./test.txt");
+		var lines = FileUtils.readFile("./input.txt");
 		
 		var iter = lines.stream().iterator();
 		var pairIndex = 1; 
@@ -21,8 +21,8 @@ public class Day13 {
 			var entry1 = Elements.parse(line1);
 			var entry2 = Elements.parse(line2);
 			
-			System.out.println(String.format("Line1: %s", entry1.toString()));
-			System.out.println(String.format("Line2: %s", entry2.toString()));
+			//System.out.println(String.format("Line1: %s", entry1.toString()));
+			//System.out.println(String.format("Line2: %s", entry2.toString()));
 			System.out.println();
 			
 			if (entry1.compareTo(entry2) < 0)
