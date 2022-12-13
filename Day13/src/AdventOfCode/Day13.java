@@ -30,12 +30,7 @@ public class Day13 {
 			
 			if (entry1.compareTo(entry2) < 0)
 			{
-				System.out.println(String.format("Packets with index %d are in correct order", pairIndex));
 				correctIndexSum += pairIndex;
-			}
-			else
-			{
-				System.out.println(String.format("Packets with index %d are in INCORRECT order", pairIndex));
 			}
 			
 			++pairIndex;
