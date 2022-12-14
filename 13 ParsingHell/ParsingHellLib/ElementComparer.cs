@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ParsingHellLib
 {
-    internal class CompareElements : Comparer<Element>
+    internal class ElementComparer : IComparer<Element>
     {
-        public override int Compare(Element left, Element right)
+        public int Compare(Element left, Element right)
         {
             if (left is NumberElement leftNum)
             {

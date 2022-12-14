@@ -8,13 +8,13 @@ namespace ParsingHellLib
 {
     internal class Package
     {
-        private string _line;
+        public string Line { get; set; }
 
         public ListElement Contents { get; private set; } = new ListElement();
 
         public Package(string line)
         {
-            _line = line;
+            Line = line;
             Parse(line);
         }
 

@@ -1,4 +1,7 @@
-﻿namespace ParsingHellLib
+﻿using System.Collections;
+using System.Collections.Immutable;
+
+namespace ParsingHellLib
 {
     public class Analyzer
     {
@@ -6,7 +9,7 @@
 
         private List<Package> _packageCollection = new List<Package>();
 
-        private CompareElements _compareElements = new CompareElements();
+        private ElementComparer _compareElements = new ElementComparer();
 
 
         public void Parse(List<string> input)
@@ -16,7 +19,7 @@
             currentPair.Index = index;
             _pairCollection.Add(currentPair);
 
-            foreach(var line in input)
+            foreach (var line in input)
             {
                 if (string.IsNullOrEmpty(line))
                 {
@@ -55,6 +58,22 @@
         }
 
 
+        public int SortPackages()
+        {
+            _packageCollection.Add(new Package("[[2]]"));
+            _packageCollection.Add(new Package("[[6]]"));
+
+            ElementComparer compareElements = new ElementComparer();
+            _packageCollection.Sort(new PackageComparer());
+            _packageCollection.Reverse();
+
+            foreach (var package in _packageCollection)
+            {
+                Console.WriteLine(package.Line);
+            }
+            return (_packageCollection.FindIndex(p => p.Line == "[[2]]") + 1) *
+                     (_packageCollection.FindIndex(p => p.Line == "[[6]]") + 1);
+        }
 
     }
 }

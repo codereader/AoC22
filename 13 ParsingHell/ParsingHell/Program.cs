@@ -9,6 +9,9 @@ analyzer.Parse(input);
 
 int sum = analyzer.ComparePairs();
 Console.WriteLine(sum);
+
+int part2= analyzer.SortPackages();
+Console.WriteLine(part2);
 Console.ReadLine();
 
 
