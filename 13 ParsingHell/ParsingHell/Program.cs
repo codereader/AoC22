@@ -7,7 +7,7 @@ var analyzer = new Analyzer();
 var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), $"ParsingHell.input.txt");
 analyzer.Parse(input);
 
-int sum = analyzer.Compare();
+int sum = analyzer.ComparePairs();
 Console.WriteLine(sum);
 Console.ReadLine();
 

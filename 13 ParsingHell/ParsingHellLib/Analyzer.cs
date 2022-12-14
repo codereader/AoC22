@@ -2,7 +2,11 @@
 {
     public class Analyzer
     {
-        private List<Pair> _collection = new List<Pair>();
+        private List<Pair> _pairCollection = new List<Pair>();
+
+        private List<Package> _packageCollection = new List<Package>();
+
+        private CompareElements _compareElements = new CompareElements();
 
 
         public void Parse(List<string> input)
@@ -10,7 +14,7 @@
             var index = 1;
             var currentPair = new Pair();
             currentPair.Index = index;
-            _collection.Add(currentPair);
+            _pairCollection.Add(currentPair);
 
             foreach(var line in input)
             {
@@ -18,24 +22,26 @@
                 {
                     currentPair = new Pair();
                     currentPair.Index = ++index;
-                    _collection.Add(currentPair);
+                    _pairCollection.Add(currentPair);
                 }
                 else if (currentPair.Left == null)
                 {
                     currentPair.Left = new Package(line);
+                    _packageCollection.Add(currentPair.Left);
                 }
                 else
                 {
                     currentPair.Right = new Package(line);
+                    _packageCollection.Add(currentPair.Right);
                 }
             }
         }
 
-        public int Compare()
+        public int ComparePairs()
         {
-            foreach (var pair in _collection)
+            foreach (var pair in _pairCollection)
             {
-                if (pair.Compare())
+                if (_compareElements.Compare(pair.Left.Contents, pair.Right.Contents) > 0)
                 {
                     pair.RightOrder = true;
                 }
@@ -45,8 +51,10 @@
                 }
             }
 
-            return _collection.Where(p => p.RightOrder).Sum(p => p.Index);
+            return _pairCollection.Where(p => p.RightOrder).Sum(p => p.Index);
         }
+
+
 
     }
 }
