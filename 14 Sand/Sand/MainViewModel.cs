@@ -19,8 +19,29 @@ namespace Sand
             var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @"Sand.input.txt");
             Cavinator.Parse(input);
 
+            FillToAbyss = new RelayCommand(CanFillToAbyss, DoFillToAbyss);
+            FillToFloor = new RelayCommand(CanFillToFloor, DoFillToFloor);
+        }
+
+        public RelayCommand FillToAbyss { get; }
+        public bool CanFillToAbyss()
+        {
+            return true;
+        }
+        public void DoFillToAbyss()
+        {
             Cavinator.FillWithSandToAbyss();
+        }
+
+        public RelayCommand FillToFloor { get; }
+        public bool CanFillToFloor()
+        {
+            return true;
+        }
+        public void DoFillToFloor()
+        {
             Cavinator.FillWithSandToFloor();
         }
+
     }
 }

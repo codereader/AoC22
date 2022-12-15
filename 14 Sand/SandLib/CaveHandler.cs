@@ -71,8 +71,8 @@ namespace SandLib
             }
 
             // Boundaries
-            MinX = _caveMap.Min(p => (int)p.Key.X) - 1;
-            MaxX = _caveMap.Max(p => (int)p.Key.X) + 1;
+            MinX = _caveMap.Min(p => (int)p.Key.X) - 50;
+            MaxX = _caveMap.Max(p => (int)p.Key.X) + 50;
             MaxY = _caveMap.Max(p => (int)p.Key.Y) + 1;
 
             // Fill Visual Map
@@ -96,6 +96,8 @@ namespace SandLib
         public void FillWithSandToAbyss()
         {
             SandCountAbyss = 0;
+            RemoveSand();
+
             var sandFallingIntoAbyss = false;
 
             var down = new Vector2(0, 1);
@@ -128,7 +130,7 @@ namespace SandLib
                         var newSandLocation = new Location();
                         newSandLocation.Position = currentSandPosition;
                         newSandLocation.Filling = Filling.Sand;
-                        _caveMap.Add(currentSandPosition, newSandLocation);
+                        _caveMap[currentSandPosition] = newSandLocation;
                         SandCountAbyss++;
                     }
 
@@ -140,12 +142,15 @@ namespace SandLib
                     }
                 }
             }
+
+            UpdateVisualMap();
         }
 
         public void FillWithSandToFloor()
         {
             SandCountFloor = 0;
             RemoveSand();
+            UpdateVisualMap();
 
             var down = new Vector2(0, 1);
             var downLeft = new Vector2(-1, 1);
@@ -203,6 +208,8 @@ namespace SandLib
                 }
 
             }
+
+            UpdateVisualMap();
         }
 
         private void RemoveSand()
@@ -231,7 +238,32 @@ namespace SandLib
         {
             foreach (var location in _caveMap)
             {
-                var vLocation = VisualCaveMap.Single(l => l.X == location.Key.X - MinX && l.Y == location.Key.Y);
+                UpdateVisualLocation(location);
+            }
+        }
+
+        private void UpdateVisualLocation(KeyValuePair<Vector2, Location> location)
+        {
+            var vLocation = VisualCaveMap.FirstOrDefault(l => l.X == location.Key.X - MinX && l.Y == location.Key.Y);
+            if (vLocation == null)
+            {
+                if (location.Key.X < MinX)
+                {
+                    // shift everything + 10 to the right
+                    foreach (var vloc in VisualCaveMap)
+                    {
+                        vloc.X += 10;
+                    }
+                    MinX -= 10;
+                    UpdateVisualLocation(location);
+                }
+                else if (location.Key.X > MaxX)
+                {
+
+                }
+            }
+            else
+            {
                 vLocation.Filling = (int)location.Value.Filling;
             }
         }

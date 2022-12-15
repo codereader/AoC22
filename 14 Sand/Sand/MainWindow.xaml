@@ -43,7 +43,9 @@
         </ItemsControl>
 
         <StackPanel Grid.Column="1" >
+            <Button Width="300" Command="{Binding FillToAbyss}">Fill with sand to the abyss</Button>
             <TextBlock Text="{Binding Cavinator.SandCountAbyss}" />
+            <Button Width="300" Command="{Binding FillToFloor}">Fill with sand to the floor</Button>
             <TextBlock Text="{Binding Cavinator.SandCountFloor}" />
         </StackPanel>
 
