@@ -24,5 +24,14 @@ public class Day14 {
 	
 		System.out.println(String.format("[Part1] Number of produced sand blocks: %d", field.getNumberOfProducedSandBlocks() - 1));
 		System.out.println(field.toString());
+		
+		// Part 2: continue running until no more sand blocks can be produced
+		while (field.getCanProduceSandBlocks())
+		{
+			field.runFrame();
+		}
+	
+		System.out.println(String.format("[Part2] Number of produced sand blocks: %d", field.getNumberOfProducedSandBlocks()));
+		System.out.println(field.toString());
 	}
 }

@@ -13,10 +13,12 @@ public class Cave
 	private Vector2 _sandEntryPoint;
 	private Vector2 _activeSandBlock;
 	boolean _sandBlockReachedBottom;
+	boolean _canProduceSandBlocks;
 	int _numberOfProducedSandBlocks = 0;
 			
 	public Cave(List<Trace> traces, int originX)
 	{
+		_canProduceSandBlocks = true;
 		_sandBlockReachedBottom = false;
 		_fields = new HashMap<Vector2, Character>();
 		
@@ -31,6 +33,7 @@ public class Cave
 		);
 		
 		_minPoint = new Vector2(_minPoint.getX(), Math.min(_minPoint.getY(), 0));
+		_maxPoint = new Vector2(_maxPoint.getX(), _maxPoint.getY() + 2);
 		
 		// Sand will start pouring in at the top, at originX
 		_sandEntryPoint = new Vector2(originX, _minPoint.getY());
@@ -74,13 +77,28 @@ public class Cave
 	
 	public void runFrame()
 	{
-		if (_sandBlockReachedBottom) return;
+		if (!_canProduceSandBlocks) return;
 		
 		if (_activeSandBlock == null)
 		{
+			// Can we produce any more blocks?
+			if (_fields.get(_sandEntryPoint) != '.')
+			{
+				_canProduceSandBlocks = false;
+				return;
+			}
+			
 			_activeSandBlock = new Vector2(_sandEntryPoint.getX(), _sandEntryPoint.getY());
 			_fields.put(_activeSandBlock, 'x');
 			_numberOfProducedSandBlocks++;
+			return;
+		}
+		
+		// Hit the bottom?
+		if (_activeSandBlock.getY() >= _maxPoint.getY() - 1)
+		{
+			_sandBlockReachedBottom = true;
+			_activeSandBlock = null; // come to rest
 			return;
 		}
 		
@@ -119,6 +137,11 @@ public class Cave
 		return _sandBlockReachedBottom;
 	}
 	
+	public boolean getCanProduceSandBlocks()
+	{
+		return _canProduceSandBlocks;
+	}
+	
 	public int getNumberOfProducedSandBlocks()
 	{
 		return _numberOfProducedSandBlocks;
@@ -133,7 +156,14 @@ public class Cave
 		{
 			for (int x = _minPoint.getX(); x <= _maxPoint.getX(); x++)
 			{
-				output.append(_fields.get(new Vector2(x, y)));
+				if (y == _maxPoint.getY())
+				{
+					output.append('#');
+				}
+				else
+				{
+					output.append(_fields.get(new Vector2(x, y)));
+				}
 			}
 			
 			output.append('\n');
