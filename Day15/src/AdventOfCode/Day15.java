@@ -1,7 +1,6 @@
 package AdventOfCode;
 
 import java.util.stream.Collectors;
-
 import AdventOfCode.Common.FileUtils;
 import AdventOfCode.Common.Vector2;
 
@@ -46,5 +45,47 @@ public class Day15 {
 		}
 		
 		System.out.println(String.format("[Part1] Number of positions that cannot contain any beacon: %d", numPositionsThatCannotContainBeacon));
+		
+		final var maxCoordinate = 4000000;
+		
+		for (var y = 0; y <= maxCoordinate; ++y)
+		{
+			for (var x = 0; x <= maxCoordinate;)
+			{
+				int i = 0;
+				
+				for (i = 0; i < sensors.size(); i++)
+				{
+					var sensor = sensors.get(i);
+					var distX = x - sensor.getPosition().getX();
+					var distY = Math.abs(sensor.getPosition().getY() - y);
+					
+					var beaconDistance = sensor.getBeaconDistance();
+					
+					// Are we within sensor range?
+					if (Math.abs(distX) + distY <= beaconDistance)
+					{
+						// Yes, skip ahead, out of the sensor area
+						if (distX < 0)
+						{
+							x += -distX; // Forward to vertical sensor axis
+							distX = 0;
+						}
+
+						// Move out of the sensor area
+						x += (beaconDistance - distY - distX) + 1;
+						break;
+					}
+				}
+				
+				if (i >= sensors.size())
+				{
+					System.out.println(String.format("[Part2] Frequency: %d", (long)x * 4000000 + y));
+					return;
+				}
+			}
+		}
+		
+		System.out.println(String.format("[Part2] Nothing found"));
 	}
 }

@@ -1,7 +1,6 @@
 package AdventOfCode;
 
 import java.util.regex.Pattern;
-
 import AdventOfCode.Common.Vector2;
 
 public class Sensor
@@ -46,9 +45,19 @@ public class Sensor
 		return _beacon;
 	}
 	
+	public int getBeaconDistance()
+	{
+		return _beaconDistance;
+	}
+	
 	public boolean pointCanHaveBeacon(Vector2 point)
 	{
 		return getDistance(point,  _position) > _beaconDistance;
+	}
+	
+	public Vector2 getPosition()
+	{
+		return _position;
 	}
 	
 	private static int getDistance(Vector2 a, Vector2 b)
