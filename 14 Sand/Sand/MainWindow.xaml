@@ -5,8 +5,47 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sand"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" WindowState="Maximized" Height="1000" Width="1800">
+
+    <Window.Resources>
+        <local:FillingConverter x:Key="FillingConverter" />
+        <local:PositionConverter x:Key="PositionConverter" />
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1000" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <ItemsControl Grid.Column="0" ItemsSource="{Binding Cavinator.VisualCaveMap}" HorizontalAlignment="Left" VerticalAlignment="Top">
+            
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas Height="1000" Width="1000" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Canvas.Left" Value="{Binding X, Converter={StaticResource PositionConverter}}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Y, Converter={StaticResource PositionConverter}}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Rectangle Height="5" Width="5" Fill="{Binding Filling, Converter={StaticResource FillingConverter}}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+
+        </ItemsControl>
+
+        <StackPanel Grid.Column="1" >
+            <TextBlock Text="{Binding Cavinator.SandCountAbyss}" />
+            <TextBlock Text="{Binding Cavinator.SandCountFloor}" />
+        </StackPanel>
 
     </Grid>
 </Window>

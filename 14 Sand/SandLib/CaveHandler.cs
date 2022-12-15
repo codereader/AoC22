@@ -17,6 +17,18 @@ namespace SandLib
         public int MaxX { get; set; }
         public int MaxY { get; set; }
 
+        public int SandCountAbyss
+        {
+            get => GetValue<int>();
+            set => SetValue(value);
+        }
+        public int SandCountFloor
+        {
+            get => GetValue<int>();
+            set => SetValue(value);
+        }
+
+
         public void Parse(List<string> input)
         {
             foreach (var line in input)
@@ -69,7 +81,7 @@ namespace SandLib
                 for (int x = MinX; x <= MaxX; x++)
                 {
                     var currentVLocation = new VisualLocation();
-                    currentVLocation.X = x;
+                    currentVLocation.X = x - MinX;
                     currentVLocation.Y = y;
                     // fill everything with air
                     currentVLocation.Filling = (int)Filling.Air;
@@ -81,11 +93,145 @@ namespace SandLib
             UpdateVisualMap();
         }
 
+        public void FillWithSandToAbyss()
+        {
+            SandCountAbyss = 0;
+            var sandFallingIntoAbyss = false;
+
+            var down = new Vector2(0, 1);
+            var downLeft = new Vector2(-1, 1);
+            var downRight = new Vector2(1, 1);
+
+            while (!sandFallingIntoAbyss)
+            {
+                // start new sand unit
+                var currentSandPosition = new Vector2(500, 0);
+                var sandAtRest = false;
+
+                while (!sandAtRest)
+                {
+                    if (PositionIsAvailable(currentSandPosition + down))
+                    {
+                        currentSandPosition = currentSandPosition + down;
+                    }
+                    else if (PositionIsAvailable(currentSandPosition + downLeft))
+                    {
+                        currentSandPosition = currentSandPosition + downLeft;
+                    }
+                    else if (PositionIsAvailable(currentSandPosition + downRight))
+                    {
+                        currentSandPosition = currentSandPosition + downRight;
+                    }
+                    else
+                    {
+                        sandAtRest = true;
+                        var newSandLocation = new Location();
+                        newSandLocation.Position = currentSandPosition;
+                        newSandLocation.Filling = Filling.Sand;
+                        _caveMap.Add(currentSandPosition, newSandLocation);
+                        SandCountAbyss++;
+                    }
+
+                    if (currentSandPosition.Y >= MaxY)
+                    {
+                        // reached the bottom
+                        sandFallingIntoAbyss = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void FillWithSandToFloor()
+        {
+            SandCountFloor = 0;
+            RemoveSand();
+
+            var down = new Vector2(0, 1);
+            var downLeft = new Vector2(-1, 1);
+            var downRight = new Vector2(1, 1);
+
+            var topPositionFilled = false;
+
+            while (!topPositionFilled)
+            {
+                var currentSandPosition = new Vector2(500, 0);
+
+                if (!PositionIsAvailable(currentSandPosition))
+                {
+                    // top is filled with sand
+                    topPositionFilled = true;
+                    break;
+                }
+
+                var sandAtRest = false;
+
+                while (!sandAtRest)
+                {
+                    if (currentSandPosition.Y == MaxY)
+                    {
+                        // reached floor, put to rest here
+                        sandAtRest = true;
+                        var newSandLocation = new Location();
+                        newSandLocation.Position = currentSandPosition;
+                        newSandLocation.Filling = Filling.Sand;
+                        _caveMap[currentSandPosition] = newSandLocation;
+                        SandCountFloor++;
+                    }
+                    if (PositionIsAvailable(currentSandPosition + down))
+                    {
+                        currentSandPosition = currentSandPosition + down;
+                    }
+                    else if (PositionIsAvailable(currentSandPosition + downLeft))
+                    {
+                        currentSandPosition = currentSandPosition + downLeft;
+                    }
+                    else if (PositionIsAvailable(currentSandPosition + downRight))
+                    {
+                        currentSandPosition = currentSandPosition + downRight;
+                    }
+                    else
+                    {
+                        sandAtRest = true;
+                        var newSandLocation = new Location();
+                        newSandLocation.Position = currentSandPosition;
+                        newSandLocation.Filling = Filling.Sand;
+                        _caveMap[currentSandPosition] = newSandLocation;
+                        SandCountFloor++;
+                    }
+
+                }
+
+            }
+        }
+
+        private void RemoveSand()
+        {
+            foreach (var location in _caveMap.Where(l => l.Value.Filling == Filling.Sand))
+            {
+                location.Value.Filling = Filling.Air;
+            }
+        }
+
+        private bool PositionIsAvailable(Vector2 testPosition)
+        {
+            if (_caveMap.TryGetValue(testPosition, out var location))
+            {
+                // filled with air, is available
+                return location.Filling == Filling.Air;
+            }
+            else
+            {
+                // not in dict, is filled with air
+                return true;
+            }
+        }
+
         private void UpdateVisualMap()
         {
             foreach (var location in _caveMap)
             {
-                var vLocation = VisualCaveMap.Single(l => l.X == location.Key.X && l.Y == location.Key.Y);
+                var vLocation = VisualCaveMap.Single(l => l.X == location.Key.X - MinX && l.Y == location.Key.Y);
                 vLocation.Filling = (int)location.Value.Filling;
             }
         }

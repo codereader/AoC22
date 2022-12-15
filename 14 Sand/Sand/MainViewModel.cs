@@ -18,6 +18,9 @@ namespace Sand
         {
             var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @"Sand.input.txt");
             Cavinator.Parse(input);
+
+            Cavinator.FillWithSandToAbyss();
+            Cavinator.FillWithSandToFloor();
         }
     }
 }
