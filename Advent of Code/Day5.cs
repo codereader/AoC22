@@ -3,6 +3,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
+	using System.Linq;
 	using AdventOfCode_2;
 
 	internal class Day5
@@ -34,70 +35,98 @@
 
 			for (int i = 0; i < amounts.Count; i++)
 			{
+				var tempStr = "";
 				for (int j = 0; j < amounts[i]; j++)
 				{
-					var tempChar = 'g';
+					
 					switch (from[i])
 					{
 						case 1:
-							tempChar = one.Pop();
+							tempStr += one.Pop();
 							break;
 						case 2:
-							tempChar = two.Pop();
+							tempStr += two.Pop();
 							break;
 						case 3:
-							tempChar = three.Pop();
+							tempStr += three.Pop();
 							break;
 						case 4:
-							tempChar = four.Pop();
+							tempStr += four.Pop();
 							break;
 						case 5:
-							tempChar = five.Pop();
+							tempStr += five.Pop();
 							break;
 						case 6:
-							tempChar = six.Pop();
+							tempStr += six.Pop();
 							break;
 						case 7:
-							tempChar = seven.Pop();
+							tempStr += seven.Pop();
 							break;
 						case 8:
-							tempChar = eight.Pop();
+							tempStr += eight.Pop();
 							break;
 						case 9:
-							tempChar = nine.Pop();
+							tempStr += nine.Pop();
 							break;
 					}
 
-					switch (to[i])
-					{
-						case 1:
-							one.Push(tempChar);
-							break;
-						case 2:
-							two.Push(tempChar);
-							break;
-						case 3:
-							three.Push(tempChar);
-							break;
-						case 4:
-							four.Push(tempChar);
-							break;
-						case 5:
-							five.Push(tempChar);
-							break;
-						case 6:
-							six.Push(tempChar);
-							break;
-						case 7:
-							seven.Push(tempChar);
-							break;
-						case 8:
-							eight.Push(tempChar);
-							break;
-						case 9:
-							nine.Push(tempChar);
-							break;
-					}
+				}
+				switch (to[i])
+				{
+					case 1:
+						foreach (var c in tempStr.Reverse())
+						{
+							one.Push(c);
+						}
+						break;
+					case 2:
+						foreach (var c in tempStr.Reverse())
+						{
+							two.Push(c);
+						}
+						break;
+					case 3:
+						foreach (var c in tempStr.Reverse())
+						{
+							three.Push(c);
+						}
+						break;
+					case 4:
+						foreach (var c in tempStr.Reverse())
+						{
+							four.Push(c);
+						}
+						break;
+					case 5:
+						foreach (var c in tempStr.Reverse())
+						{
+							five.Push(c);
+						}
+						break;
+					case 6:
+						foreach (var c in tempStr.Reverse())
+						{
+							six.Push(c);
+						}
+						break;
+					case 7:
+						foreach (var c in tempStr.Reverse())
+						{
+							seven.Push(c);
+						}
+						break;
+					case 8:
+						foreach (var c in tempStr.Reverse())
+						{
+							eight.Push(c);
+						}
+						break;
+					case 9:
+						foreach (var c in tempStr.Reverse())
+						{
+							nine.Push(c);
+						}
+						break;
 				}
 			}
 
