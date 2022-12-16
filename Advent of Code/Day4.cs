@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using AdventOfCode_2;
 
 	internal class Day4
@@ -18,6 +19,7 @@
 				var elf2 = elfs[1];
 				var range1 = GetRange(elf1);
 				var range2 = GetRange(elf2);
+				
 				if (Compare(range1, range2))
 				{
 					counter++;

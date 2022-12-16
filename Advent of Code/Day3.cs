@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 
 	internal class Day3
@@ -19,7 +18,7 @@
 			
 			Console.WriteLine(sum1);
 			Console.WriteLine(sum2);
-			Console.ReadLine();
+			//Console.ReadLine();
 		}
 
 		private static Dictionary<string, int> MakeDictionary(List<string> list)
@@ -38,18 +37,23 @@
 			int sum = 0;
 			foreach (var rucksack in content)
 			{
-				var part1 = rucksack.Substring(0, rucksack.Length / 2);
-				var part2 = rucksack.Substring(rucksack.Length / 2, rucksack.Length / 2);
+				var part1 = rucksack.Substring(0, rucksack.Length / 2).ToHashSet();
+				var part2 = rucksack.Substring(rucksack.Length / 2, rucksack.Length / 2).ToHashSet();
 
-				foreach (var letter1 in part1.ToCharArray().Distinct())
-				{
-					if (part2.ToCharArray().Contains(letter1))
-					{
-						int value = letterToNumber[letter1.ToString()];
-						sum += value;
-						break;
-					}
-				}
+				var letter = part1.Intersect(part2).Single();
+				var score = char.IsLower(letter) ? (int)letter - 96 : letter - 38;
+				sum += score;
+
+
+				//foreach (var letter1 in part1)
+				//{
+				//	if (part2.Contains(letter1))
+				//	{
+				//		int value = letterToNumber[letter1.ToString()];
+				//		sum += value;
+				//		break;
+				//	}
+				//}
 			}
 
 			return sum;
