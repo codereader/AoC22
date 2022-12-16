@@ -40,7 +40,7 @@ public class Valve {
 	
 	public void registerTunnel(String source, String target)
 	{
-		System.out.println(String.format("Call %s with info %s => %s", getName(), source, target));
+		//System.out.println(String.format("Call %s with info %s => %s", getName(), source, target));
 		
 		if (source.equals(getName()))
 		{
@@ -81,5 +81,13 @@ public class Valve {
 	public String toString()
 	{
 		return _valveName;
+	}
+
+	public void printConnectivity()
+	{
+		for (var key : _travelCost.keySet())
+		{
+			System.out.println(String.format("Valve %s => %s costs %d steps", getName(), key, _travelCost.get(key)));
+		}
 	}
 }
