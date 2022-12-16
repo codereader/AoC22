@@ -11,6 +11,7 @@
 		{
 			string stream = File.ReadAllText("datastream.txt");
 			Console.WriteLine(FindMarker(stream));
+			Console.WriteLine(FindMessage(stream));
 		}
 
 		private static int FindMarker(string stream)
@@ -33,6 +34,20 @@
 				return l + 1;
 			}
 
+			return -1;
+		}
+
+		private static int FindMessage(string stream)
+		{
+			for (int i = 0; i < stream.Length; i++)
+			{
+				var range = stream.Substring(i, 14);
+				var unique = range.Distinct();
+				if (unique.Count() == range.Length)
+				{
+					return i + 14;
+				}
+			}
 			return -1;
 		}
 	}
