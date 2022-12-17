@@ -11,7 +11,7 @@ public class Day16
 {
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./input.txt");
+		var lines = FileUtils.readFile("./test.txt");
 		var valves = lines.stream().map(l -> new Valve(l)).collect(Collectors.toMap(v -> v.getName(), v -> v));
 		var startValve = valves.get("AA");
 		
@@ -19,7 +19,8 @@ public class Day16
 		
 		var openedValves = new ArrayList<Valve>();
 		
-		var minutesLeft = 30;
+		final var TotalMinutes = 26;
+		var minutesLeft = TotalMinutes;
 		var releasedPressure = 0;
 		var currentFlowRate = 0;
 		
@@ -35,7 +36,8 @@ public class Day16
 		
 		var players = new ArrayList<Player>();
 		
-		players.add(new Player(startValve));
+		players.add(new Player("Player", startValve));
+		players.add(new Player("Elephant", startValve));
 		
 		for (var player : players)
 		{
@@ -44,7 +46,7 @@ public class Day16
 		
 		while (minutesLeft > 0)
 		{
-			System.out.println(String.format("--- Minute %d ----", 30 - minutesLeft + 1));
+			System.out.println(String.format("--- Minute %d ----", TotalMinutes - minutesLeft + 1));
 			
 			for (var player : players)
 			{
@@ -60,7 +62,7 @@ public class Day16
 						// Player is done moving and opening
 						player.CurrentValve = player.TargetValve;
 						player.CurrentState = Player.State.Idle;
-						System.out.println(String.format("Opening valve %s", player.TargetValve.getName()));
+						System.out.println(String.format("%s opens valve %s", player.Name, player.TargetValve.getName()));
 						
 						openedValves.add(player.TargetValve);
 						currentFlowRate += player.TargetValve.getFlowRate();
@@ -71,11 +73,11 @@ public class Day16
 					{
 						if (minutesLeft - 1 == player.FinishTime)
 						{
-							System.out.println(String.format("Player is opening %s", player.TargetValve.getName()));
+							System.out.println(String.format("%s is opening %s", player.Name, player.TargetValve.getName()));
 						}
 						else
 						{
-							System.out.println(String.format("Player is moving to %s", player.TargetValve.getName()));
+							System.out.println(String.format("%s is moving to %s", player.Name, player.TargetValve.getName()));
 						}
 					}
 					break;
@@ -103,6 +105,8 @@ public class Day16
 	
 	private static void pickNewValveToOpen(Player player, List<Valve> valvePool, int minutesLeft)
 	{
+		System.out.println(String.format("%s is looking for something to do", player.Name));
+		
 		// Pick a new valve to open and start moving
 		var bestValveToOpen = determineBestValveToOpen(player.CurrentValve, valvePool, minutesLeft);
 		
@@ -113,10 +117,11 @@ public class Day16
 			
 			player.AssignValve(bestValveToOpen, minutesLeft - player.CurrentValve.getCostToOpen(bestValveToOpen));
 			
-			System.out.println(String.format("Player will handle %s, cost is %d, will arrive at %d", 
-					player.TargetValve.getName(),
-					player.CurrentValve.getCostToOpen(bestValveToOpen),
-					player.FinishTime));
+			System.out.println(String.format("%s will handle %s, cost is %d, will arrive at %d", 
+				player.Name,
+				player.TargetValve.getName(),
+				player.CurrentValve.getCostToOpen(bestValveToOpen),
+				player.FinishTime));
 		}
 	}
 	
@@ -210,6 +215,11 @@ public class Day16
 		{
 			return Double.compare(pair2.GainedPressureVolume, pair1.GainedPressureVolume);
 		}).collect(Collectors.toList());
+		
+		for (var combo : bestCombos)
+		{
+			System.out.println(combo.toString());
+		}
 		
 		return bestCombos.get(0).FirstValve;
 	}

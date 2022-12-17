@@ -9,13 +9,15 @@ public class Player
 		ProcessingValve,
 	}
 	
+	public final String Name;
 	public State CurrentState;
 	public Valve CurrentValve;
 	public int FinishTime; // calculated in minutes left
 	public Valve TargetValve;
 	
-	public Player(Valve currentValve)
+	public Player(String name, Valve currentValve)
 	{
+		Name = name;
 		CurrentState = State.Idle;
 		CurrentValve = currentValve;
 		FinishTime = 0;
