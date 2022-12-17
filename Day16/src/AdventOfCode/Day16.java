@@ -19,7 +19,6 @@ public class Day16
 		
 		var openedValves = new ArrayList<Valve>();
 		
-		var currentValve = startValve;
 		var minutesLeft = 30;
 		var releasedPressure = 0;
 		var currentFlowRate = 0;
@@ -34,30 +33,63 @@ public class Day16
 			})
 			.collect(Collectors.toList());
 		
-		while (!valvePool.isEmpty() && minutesLeft > 0)
+		var players = new ArrayList<Player>();
+		
+		players.add(new Player(startValve));
+		
+		for (var player : players)
 		{
-			System.out.println("--- Step ----");
-
-			var bestValveToOpen = determineBestValveToOpen(currentValve, valvePool, minutesLeft);
+			pickNewValveToOpen(player, valvePool, minutesLeft);
+		}
+		
+		while (minutesLeft > 0)
+		{
+			System.out.println(String.format("--- Minute %d ----", 30 - minutesLeft + 1));
 			
-			if (bestValveToOpen == null) break;
-				
-			var costToOpen = currentValve.getCostToOpen(bestValveToOpen);
+			for (var player : players)
+			{
+				switch (player.CurrentState)
+				{
+				case Idle:
+					pickNewValveToOpen(player, valvePool, minutesLeft);
+					break;
+					
+				case ProcessingValve:
+					if (player.FinishTime == minutesLeft)
+					{
+						// Player is done moving and opening
+						player.CurrentValve = player.TargetValve;
+						player.CurrentState = Player.State.Idle;
+						System.out.println(String.format("Opening valve %s", player.TargetValve.getName()));
+						
+						openedValves.add(player.TargetValve);
+						currentFlowRate += player.TargetValve.getFlowRate();
+						
+						pickNewValveToOpen(player, valvePool, minutesLeft);
+					}
+					else
+					{
+						if (minutesLeft - 1 == player.FinishTime)
+						{
+							System.out.println(String.format("Player is opening %s", player.TargetValve.getName()));
+						}
+						else
+						{
+							System.out.println(String.format("Player is moving to %s", player.TargetValve.getName()));
+						}
+					}
+					break;
+				}
+			}
 			
-			System.out.println(String.format("Opening valve %s, this costs %d", bestValveToOpen.getName(), costToOpen));
-			
-			currentValve = bestValveToOpen;
-			minutesLeft -= costToOpen;
-			openedValves.add(bestValveToOpen);
-			valvePool.remove(currentValve);
-			
-			// Accumulate pressure released in the meantime before updating the flow rate
+			// Accumulate the released pressure so far
 			System.out.println(String.format("Current Flow Rate = %d", currentFlowRate));
-			releasedPressure += currentFlowRate * costToOpen;
-			
-			currentFlowRate += bestValveToOpen.getFlowRate();
+			releasedPressure += currentFlowRate;
 			
 			System.out.println(String.format("Released Pressure: %d", releasedPressure));
+			
+			// Advance the time
+			--minutesLeft;
 		}
 		
 		System.out.println(String.format("Final Flow Rate = %d", currentFlowRate));
@@ -67,6 +99,25 @@ public class Day16
 		releasedPressure += (long)finalFlowRate * minutesLeft;
 		
 		System.out.println(String.format("Released Pressure: %d", releasedPressure));
+	}
+	
+	private static void pickNewValveToOpen(Player player, List<Valve> valvePool, int minutesLeft)
+	{
+		// Pick a new valve to open and start moving
+		var bestValveToOpen = determineBestValveToOpen(player.CurrentValve, valvePool, minutesLeft);
+		
+		if (bestValveToOpen != null)
+		{
+			// Remove this valve from the pool
+			valvePool.remove(bestValveToOpen);
+			
+			player.AssignValve(bestValveToOpen, minutesLeft - player.CurrentValve.getCostToOpen(bestValveToOpen));
+			
+			System.out.println(String.format("Player will handle %s, cost is %d, will arrive at %d", 
+					player.TargetValve.getName(),
+					player.CurrentValve.getCostToOpen(bestValveToOpen),
+					player.FinishTime));
+		}
 	}
 	
 	private static Valve determineBestValveToOpen(Valve currentValve, List<Valve> valvesByFlowRate, int minutesLeft)
