@@ -7,8 +7,10 @@ var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @
 var signalHandler = new SignalHandler();
 signalHandler.Parse(input);
 
-Console.WriteLine("method 1");
-Console.WriteLine(signalHandler.CountNonBeacons(2000000));
-Console.WriteLine("method 2");
-Console.WriteLine(signalHandler.CountNonBeacons2(2000000));
+//Console.WriteLine("method 1");
+//Console.WriteLine(signalHandler.CountNonBeacons(10));
+//Console.WriteLine("method 2");
+//Console.WriteLine(signalHandler.CountNonBeacons2(2000000));
+
+Console.WriteLine(signalHandler.FindPossibleBeacons());
 

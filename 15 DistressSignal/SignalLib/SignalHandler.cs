@@ -14,8 +14,8 @@ namespace SignalLib
             {
                 var line = input[i];
 
-                //Sensor at x=1638847, y=3775370: closest beacon is at x=2498385, y=3565515
-                var expression = @"Sensor at x=(\d+), y=(\d+): closest beacon is at x=(\d+), y=(\d+)";
+                //Sensor at x=2, y=18: closest beacon is at x=-2, y=15
+                var expression = @"Sensor at x=([\+-]?\d+), y=([\+-]?\d+): closest beacon is at x=([\+-]?\d+), y=([\+-]?\d+)";
                 var match = Regex.Match(line, expression);
                 if (match.Success)
                 {
@@ -30,36 +30,44 @@ namespace SignalLib
                     _pairs.Add(currentPair);
                 }
             }
-
         }
 
         public int CountNonBeacons(int rowNum)
         {
-            var newPositions = new List<List<int>>();
-            foreach (var pair in _pairs) 
-            {
-                var ydist = (int)(Math.Abs(pair.SignalPosition.Y - rowNum));
+            List<List<int>> newPositions = CreatePositions(rowNum);
 
-                // signal is close enough 
-                if (ydist <= pair.Distance) 
-                {
-                    var xMin = pair.SignalPosition.X - (pair.Distance - ydist);
-                    var xMax = pair.SignalPosition.X + (pair.Distance - ydist);
-                    var borders = new List<int>()
-                    {
-                        (int)xMin, 
-                        (int)xMax
-                    };
-                    newPositions.Add(borders);
-                }
-            }
+            CombineRanges(newPositions);
+
+            var numpos = newPositions.Select(p => p[1] - p[0] + 1).Sum();
+
+            var beacons = _pairs.Count(p => p.BeaconPosition.Y == rowNum);
+
+            var pairswithbeacon = _pairs.Where(p => p.BeaconPosition.Y == rowNum);
+            var beaconxpositions = pairswithbeacon.Select(p => p.BeaconPosition.X);
+            var distinctxpositions = beaconxpositions.Distinct();
+            var beaconscount = distinctxpositions.Count();
+
+            //Console.WriteLine(beaconscount);
+            //Console.WriteLine();
 
 
+            return numpos - beaconscount;
+        }
+
+        private static void CombineRanges(List<List<int>> newPositions)
+        {
             var oldPositions = new List<List<int>>();
+            /*
+            foreach (var pos in newPositions)
+            {
+                Console.WriteLine(string.Join(", ", pos));
+                Console.WriteLine();
+            }
+            */
 
             while (newPositions.Count != 1 && oldPositions.Count != newPositions.Count)
             {
-                oldPositions = new List<List<int>> (newPositions);
+                oldPositions = new List<List<int>>(newPositions);
                 newPositions.Clear();
                 newPositions.Add(oldPositions[0]);
 
@@ -71,7 +79,7 @@ namespace SignalLib
                     for (int j = 0; j < newPositions.Count; j++)
                     {
                         var newPos = newPositions[j];
-                        if (testPos[0] < newPos[0] && testPos[1] >= newPos[0] )
+                        if (testPos[0] < newPos[0] && testPos[1] >= newPos[0])
                         {
                             newPos[0] = testPos[0];
                             // combine ranges
@@ -82,7 +90,7 @@ namespace SignalLib
                             combined = true;
                             break;
                         }
-                        else if (newPos[0] <= testPos[1] && newPos[1] < testPos[1])
+                        else if (testPos[1] > newPos[1] && testPos[0] <= newPos[1])
                         {
                             newPos[1] = testPos[1];
                             // combine ranges
@@ -98,34 +106,56 @@ namespace SignalLib
                             // completely inside
                             combined = true;
                             break;
-
                         }
+                        else if (newPos[1] + 1 == testPos[0])
+                        {
+                            // adjacent
+                            newPos[1] = testPos[1];
+                        }
+                        else if (testPos[1] + 1 == newPos[0])
+                        {
+                            // adjacent
+                            newPos[0] = testPos[0];
+                        }
+
                     }
                     if (!combined)
                     {
                         newPositions.Add(testPos);
                     }
                 }
-                
+                /*
+                foreach (var pos in newPositions)
+                {
+                    Console.WriteLine(string.Join(", ", pos));
+                    Console.WriteLine();
+                }
+                */
+            }
+        }
 
+        private List<List<int>> CreatePositions(int rowNum)
+        {
+            var newPositions = new List<List<int>>();
+            foreach (var pair in _pairs)
+            {
+                var ydist = (int)(Math.Abs(pair.SignalPosition.Y - rowNum));
 
+                // signal is close enough 
+                if (ydist <= pair.Distance)
+                {
+                    var xMin = pair.SignalPosition.X - (pair.Distance - ydist);
+                    var xMax = pair.SignalPosition.X + (pair.Distance - ydist);
+                    var borders = new List<int>()
+                    {
+                        (int)xMin,
+                        (int)xMax
+                    };
+                    newPositions.Add(borders);
+                }
             }
 
-
-            var numpos =  newPositions.Select(p => p[1] - p[0] + 1).Sum();
-
-            var beacons = _pairs.Count(p => p.BeaconPosition.Y == rowNum);
-
-            var pairswithbeacon = _pairs.Where(p => p.BeaconPosition.Y == rowNum);
-            var beaconxpositions = pairswithbeacon.Select(p => p.BeaconPosition.X);
-            var distinctxpositions = beaconxpositions.Distinct();
-            var beaconscount = distinctxpositions.Count();
-
-            //Console.WriteLine(beaconscount);
-            //Console.WriteLine();
-
-
-            return numpos - beaconscount;
+            return newPositions;
         }
 
         public int CountNonBeacons2(int rowNum)
@@ -163,12 +193,36 @@ namespace SignalLib
 
         }
 
-        public void FindPossibleBeacons()
+        public long FindPossibleBeacons()
         {
-            for (var y = 0; y <= 4000000; y++) 
-            {
+            var beaconpositions = new List<Vector2>();
 
+            for (var y = 0; y <= 4000000; y++)
+            {
+                //Console.WriteLine($"Row " + y);
+                List<List<int>> newPositions = CreatePositions(y);
+
+                CombineRanges(newPositions);
+
+                if (newPositions.Count > 1)
+                {
+                    Console.WriteLine($"Found position Row " + y);
+                    foreach (var pos in newPositions)
+                    {
+                        Console.Write(string.Join(", ", pos));
+                        Console.WriteLine();
+                    }
+                    Console.WriteLine();
+
+                    if (newPositions.Count == 2)
+                    {
+                        var x = newPositions.Min(p => p[1]) + 1;
+                        beaconpositions.Add(new Vector2(x, y));
+                    }
+                }
             }
+            return 4000000 * (long)beaconpositions[0].X + (long)beaconpositions[0].Y;
+
         }
 
 
