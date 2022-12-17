@@ -21,62 +21,52 @@ public class Day16
 		
 		var currentValve = startValve;
 		var minutesLeft = 30;
-		var releasedPressure = 0L;
+		var releasedPressure = 0;
+		var currentFlowRate = 0;
 		
 		// Only consider valves with a non-zero flow rate
-		var valvesByFlowRate = valves.values().stream()
+		// Sort the valves by flow rate to pick the heavy ones first
+		var valvePool = valves.values().stream()
 			.filter(v -> v.getFlowRate() > 0)
+			.sorted((v1,v2) -> 
+			{
+				return Integer.compare(v2.getFlowRate(), v1.getFlowRate()); // descending;	
+			})
 			.collect(Collectors.toList());
 		
-		while (!valvesByFlowRate.isEmpty() && minutesLeft > 0)
+		while (!valvePool.isEmpty() && minutesLeft > 0)
 		{
 			System.out.println("--- Step ----");
+
+			var bestValveToOpen = determineBestValveToOpen(currentValve, valvePool, minutesLeft);
 			
-			var finalCurrentValve = currentValve;
-			var finalMinutesLeft = minutesLeft;
-			valvesByFlowRate = valvesByFlowRate.stream()
-				.filter(v -> finalCurrentValve.getCostToOpen(v) <= finalMinutesLeft)
-				.sorted((v1,v2) -> 
-				{
-					var cost1 = finalCurrentValve.getCostToOpen(v1);
-					var cost2 = finalCurrentValve.getCostToOpen(v2);
-					return Double.compare(v2.getFlowRate() / (double)cost2, v1.getFlowRate() / (double)cost1); // descending;	
-				})
-				.collect(Collectors.toList());
-			
-			var bestValveToOpen = determineBestValveToOpen(currentValve, valvesByFlowRate, minutesLeft);
-			
-			if (bestValveToOpen == null)
-			{
-				break;
-			}
+			if (bestValveToOpen == null) break;
 				
-			final var costToOpen = currentValve.getTravelCost(bestValveToOpen) + 1;
+			var costToOpen = currentValve.getCostToOpen(bestValveToOpen);
 			
 			System.out.println(String.format("Opening valve %s, this costs %d", bestValveToOpen.getName(), costToOpen));
 			
 			currentValve = bestValveToOpen;
 			minutesLeft -= costToOpen;
-			
-			// Accumulate released pressure
-			if (!openedValves.isEmpty())
-			{
-				var currentFlowRate = openedValves.stream().map(v -> v.getFlowRate()).reduce(Integer::sum).get();
-				System.out.println(String.format("Flow Rate = %d", currentFlowRate));
-				releasedPressure += (long)currentFlowRate * costToOpen;
-			}
-			
-			System.out.println(String.format("Released pressure: %d", releasedPressure));
-			
 			openedValves.add(bestValveToOpen);
-			valvesByFlowRate.remove(currentValve);
+			valvePool.remove(currentValve);
+			
+			// Accumulate pressure released in the meantime before updating the flow rate
+			System.out.println(String.format("Current Flow Rate = %d", currentFlowRate));
+			releasedPressure += currentFlowRate * costToOpen;
+			
+			currentFlowRate += bestValveToOpen.getFlowRate();
+			
+			System.out.println(String.format("Released Pressure: %d", releasedPressure));
 		}
+		
+		System.out.println(String.format("Final Flow Rate = %d", currentFlowRate));
 		
 		// Remaining time
 		var finalFlowRate = openedValves.stream().map(v -> v.getFlowRate()).reduce(Integer::sum).get();
 		releasedPressure += (long)finalFlowRate * minutesLeft;
 		
-		System.out.println(String.format("Released pressure: %d", releasedPressure));
+		System.out.println(String.format("Released Pressure: %d", releasedPressure));
 	}
 	
 	private static Valve determineBestValveToOpen(Valve currentValve, List<Valve> valvesByFlowRate, int minutesLeft)
