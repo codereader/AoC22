@@ -13,9 +13,9 @@ public class Day16 {
 
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./test.txt");
+		var lines = FileUtils.readFile("./input.txt");
 		var valves = lines.stream().map(l -> new Valve(l)).collect(Collectors.toMap(v -> v.getName(), v -> v));
-		var firstValve = new Valve(lines.get(0)).getName();
+		var firstValve = "AA";
 		
 		var startValve = valves.get(firstValve);
 		
@@ -27,30 +27,34 @@ public class Day16 {
 			//valve.printConnectivity();
 		}
 		
-		// Get all valves with a non-zero flow rate
-		var valvesByFlowRate = valves.values().stream()
-			.filter(v -> v.getFlowRate() > 0)
-			//.sorted((v1,v2) -> Integer.compare(v2.getFlowRate(), v1.getFlowRate())) // descending
-			.collect(Collectors.toList());
-		
 		var openedValves = new ArrayList<Valve>();
 		
 		var currentValve = startValve;
 		var minutesLeft = 30;
 		var releasedPressure = 0L;
 		
+		// Get all valves with a non-zero flow rate
+		var valvesByFlowRate = valves.values().stream().collect(Collectors.toList());
+		
 		while (!valvesByFlowRate.isEmpty() && minutesLeft > 0)
 		{
-			System.out.println("--- Step ---- ");
+			System.out.println("--- Step ----");
 			
-			/*for (var infoValve : valvesByFlowRate)
-			{
-				System.out.println(String.format("Opening valve %s would produce a slope of %f", 
-					infoValve.getName(), infoValve.getFlowRate() / (double)currentValve.getCostToOpen(infoValve)));
-			}*/
+			var finalCurrentValve = currentValve;
+			var finalMinutesLeft = minutesLeft;
+			valvesByFlowRate = valvesByFlowRate.stream()
+					.filter(v -> finalCurrentValve.getCostToOpen(v) <= finalMinutesLeft)
+					.filter(v -> v.getFlowRate() > 0)
+					.sorted((v1,v2) -> Integer.compare(v2.getFlowRate(), v1.getFlowRate())) // descending
+					.collect(Collectors.toList());
 			
 			var bestValveToOpen = determineBestValveToOpen(currentValve, valvesByFlowRate, minutesLeft);
 			
+			if (bestValveToOpen == null)
+			{
+				break;
+			}
+				
 			final var costToOpen = currentValve.getTravelCost(bestValveToOpen) + 1;
 			
 			System.out.println(String.format("Opening valve %s, this costs %d", bestValveToOpen.getName(), costToOpen));
@@ -89,6 +93,9 @@ public class Day16 {
 		var possibleValves = valvesByFlowRate.stream()
 				.filter(v -> currentValve.getCostToOpen(v) <= minutesLeft)
 				.collect(Collectors.toList());
+		
+		if (possibleValves.isEmpty()) return null;
+		if (possibleValves.size() == 1) return possibleValves.get(0);
 		
 		var combinations = new ArrayList<ValveCombination>();
 		
@@ -169,7 +176,12 @@ public class Day16 {
 		
 		for (var combo : bestCombos)
 		{
-			System.out.println(combo.toString());
+			//System.out.println(combo.toString());
+		}
+		
+		if (bestCombos.isEmpty())
+		{
+			int i = 6;
 		}
 		
 		return bestCombos.get(0).FirstValve;

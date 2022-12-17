@@ -21,16 +21,24 @@ public class ValveCombination
 		{
 			name.append(valve.getName());
 			name.append('|');
-			
+		}
+		Name = name.toString();
+		
+		for (var valve : valves)
+		{
 			var cost = currentValve.getCostToOpen(valve);
 
+			if (timeLeft < cost)
+			{
+				break;
+			}
+			
 			timeLeft -= cost;
 			CombinedCostToOpen += cost;
 			CombinedFlowRateIncrease += valve.getFlowRate();
 			GainedPressureVolume += timeLeft * valve.getFlowRate();
 			currentValve = valve;
 		}
-		Name = name.toString();
 		
 		FlowRatePerCost = CombinedFlowRateIncrease / (double) + CombinedCostToOpen;
 	}
