@@ -43,45 +43,6 @@ public class Valve {
 		return _tunnels;
 	}
 	
-	public void registerTunnel(String source, String target)
-	{
-		//System.out.println(String.format("Call %s with info %s => %s", getName(), source, target));
-		
-		if (source.equals(getName()))
-		{
-			_travelCost.put(target, 1);
-			return;
-		}
-		
-		// Do we know the way to the source valve?
-		var knownCostToSource = _travelCost.get(source);
-		
-		// The cost we're getting reported is the cost to reach <from> + 1
-		if (knownCostToSource != null)
-		{
-			var reportedCost = knownCostToSource.intValue() + 1;
-			
-			// Is this a new valve we haven't got in our map yet?
-			var knownCostToTarget = _travelCost.get(target);
-			
-			if (knownCostToTarget != null)
-			{
-				if (knownCostToTarget.intValue() > reportedCost)
-				{
-					_travelCost.put(target, reportedCost); // this one is better
-				}
-			}
-			else
-			{
-				_travelCost.put(target, reportedCost);
-			}
-		}
-		else
-		{
-			throw new IllegalArgumentException(String.format("No mapping for source valve %s", source));
-		}
-	}
-	
 	@Override
 	public String toString()
 	{

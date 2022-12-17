@@ -1,38 +1,25 @@
 package AdventOfCode;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import AdventOfCode.Common.FileUtils;
 
-public class Day16 {
-
+public class Day16
+{
 	public static void main(String[] args)
 	{
 		var lines = FileUtils.readFile("./input.txt");
 		var valves = lines.stream().map(l -> new Valve(l)).collect(Collectors.toMap(v -> v.getName(), v -> v));
 		
-		/*var otherDay = new ExampleDay();
-		try
-		{
-			otherDay.dayN(lines);
-		}
-		catch (IOException e)
-		{}*/
-		
 		var firstValve = "AA";
-		
 		var startValve = valves.get(firstValve);
 		
-		System.out.println(String.format("-- Distances --"));
+		System.out.println(String.format("-- Calculating Distances --"));
 		buildConnectivityFW(valves);
+		System.out.println(String.format("-- Distances calculated --"));
 		
 		var openedValves = new ArrayList<Valve>();
 		
@@ -44,11 +31,6 @@ public class Day16 {
 		var valvesByFlowRate = valves.values().stream()
 			.filter(v -> v.getFlowRate() > 0)
 			.collect(Collectors.toList());
-		
-		var result = calculatePaths(valvesByFlowRate, Collections.emptySet(), startValve, 30, 0, new HashMap<>());
-		
-		var maxFlow = result.values().stream().mapToInt(x -> x).max().orElse(-1);
-		System.out.println(String.format("[Part1]: Max Flow achieved: %d", maxFlow));
 		
 		while (!valvesByFlowRate.isEmpty() && minutesLeft > 0)
 		{
@@ -100,30 +82,6 @@ public class Day16 {
 		releasedPressure += (long)finalFlowRate * minutesLeft;
 		
 		System.out.println(String.format("Released pressure: %d", releasedPressure));
-	}
-	
-	private static Map<Set<Valve>, Integer> calculatePaths(List<Valve> allValves, Set<Valve> openValves, Valve currentValve, 
-			int timeLeft, int currentFlowRate, Map<Set<Valve>, Integer> flowByPath)
-	{
-		// Store the path in the map, overwriting any existing flow if the current one is greater
-		flowByPath.merge(openValves, currentFlowRate, Math::max);
-
-		for (var valve : allValves)
-		{
-			var timeAfter = timeLeft - currentValve.getCostToOpen(valve);
-			if (openValves.contains(valve) || timeAfter <= 0) 
-			{
-				continue;
-			}
-			
-			var newOpenValves = new HashSet<>(openValves);
-			newOpenValves.add(valve);
-			
-			calculatePaths(allValves, newOpenValves, valve, timeAfter, 
-				timeAfter * valve.getFlowRate() + currentFlowRate, flowByPath);
-		}
-
-		return flowByPath;
 	}
 	
 	private static Valve determineBestValveToOpen(Valve currentValve, List<Valve> valvesByFlowRate, int minutesLeft)
@@ -217,36 +175,12 @@ public class Day16 {
 			return Double.compare(pair2.GainedPressureVolume, pair1.GainedPressureVolume);
 		}).collect(Collectors.toList());
 		
-		for (var combo : bestCombos)
-		{
-			//System.out.println(combo.toString());
-		}
-		
-		if (bestCombos.isEmpty())
-		{
-			int i = 6;
-		}
-		
 		return bestCombos.get(0).FirstValve;
 	}
 	
 	// Floyd-Warshall algorithm to compute the shortest distances of every node to another node
 	private static void buildConnectivityFW(Map<String, Valve> valves)
 	{
-		/*
- let dist be a |V| × |V| array of minimum distances initialized to ∞ (infinity)
-for each edge (u, v) do
-    dist[u][v] ← w(u, v)  // The weight of the edge (u, v)
-for each vertex v do
-    dist[v][v] ← 0
-for k from 1 to |V|
-    for i from 1 to |V|
-        for j from 1 to |V|
-            if dist[i][j] > dist[i][k] + dist[k][j] 
-                dist[i][j] ← dist[i][k] + dist[k][j]
-            end if
-		 */
-		
 		// Initialise direct edges
 		for (var valve : valves.values())
 		{
@@ -278,37 +212,6 @@ for k from 1 to |V|
 					}
 				}
 			}
-		}
-	}
-
-	private static void buildConnectivity(Valve startValve, Map<String, Valve> valves, Valve toProcess, Set<Valve> visitedValves)
-	{
-		if (visitedValves.contains(toProcess))
-		{
-			return;
-		}
-		
-		//System.out.println(String.format("Processing valve %s", toProcess.getName()));
-		
-		visitedValves.add(toProcess);
-		
-		for (var target : toProcess.getReachableValves())
-		{
-			// Source => Target
-			toProcess.registerTunnel(toProcess.getName(), target);
-		}
-		
-		// Let the start node know about the new connectivities
-		for (var target : toProcess.getReachableValves())
-		{
-			// Start Valve => Target
-			startValve.registerTunnel(toProcess.getName(), target);
-		}
-		
-		// Enter recursion
-		for (var target : toProcess.getReachableValves())
-		{
-			buildConnectivity(startValve, valves, valves.get(target), visitedValves);
 		}
 	}
 }
