@@ -13,13 +13,9 @@ public class Day16
 	{
 		var lines = FileUtils.readFile("./input.txt");
 		var valves = lines.stream().map(l -> new Valve(l)).collect(Collectors.toMap(v -> v.getName(), v -> v));
+		var startValve = valves.get("AA");
 		
-		var firstValve = "AA";
-		var startValve = valves.get(firstValve);
-		
-		System.out.println(String.format("-- Calculating Distances --"));
 		buildConnectivityFW(valves);
-		System.out.println(String.format("-- Distances calculated --"));
 		
 		var openedValves = new ArrayList<Valve>();
 		
@@ -27,7 +23,7 @@ public class Day16
 		var minutesLeft = 30;
 		var releasedPressure = 0L;
 		
-		// Get all valves with a non-zero flow rate
+		// Only consider valves with a non-zero flow rate
 		var valvesByFlowRate = valves.values().stream()
 			.filter(v -> v.getFlowRate() > 0)
 			.collect(Collectors.toList());
@@ -39,15 +35,14 @@ public class Day16
 			var finalCurrentValve = currentValve;
 			var finalMinutesLeft = minutesLeft;
 			valvesByFlowRate = valvesByFlowRate.stream()
-					.filter(v -> finalCurrentValve.getCostToOpen(v) <= finalMinutesLeft)
-					.filter(v -> v.getFlowRate() > 0)
-					.sorted((v1,v2) -> 
-					{
-						var cost1 = finalCurrentValve.getCostToOpen(v1);
-						var cost2 = finalCurrentValve.getCostToOpen(v2);
-						return Double.compare(v2.getFlowRate() / (double)cost2, v1.getFlowRate() / (double)cost1); // descending;	
-					})
-					.collect(Collectors.toList());
+				.filter(v -> finalCurrentValve.getCostToOpen(v) <= finalMinutesLeft)
+				.sorted((v1,v2) -> 
+				{
+					var cost1 = finalCurrentValve.getCostToOpen(v1);
+					var cost2 = finalCurrentValve.getCostToOpen(v2);
+					return Double.compare(v2.getFlowRate() / (double)cost2, v1.getFlowRate() / (double)cost1); // descending;	
+				})
+				.collect(Collectors.toList());
 			
 			var bestValveToOpen = determineBestValveToOpen(currentValve, valvesByFlowRate, minutesLeft);
 			
@@ -181,6 +176,8 @@ public class Day16
 	// Floyd-Warshall algorithm to compute the shortest distances of every node to another node
 	private static void buildConnectivityFW(Map<String, Valve> valves)
 	{
+		System.out.println(String.format("-- Calculating Distances --"));
+		
 		// Initialise direct edges
 		for (var valve : valves.values())
 		{
@@ -213,5 +210,7 @@ public class Day16
 				}
 			}
 		}
+		
+		System.out.println(String.format("-- Distances calculated --"));
 	}
 }
