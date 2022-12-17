@@ -104,9 +104,14 @@ public class Valve {
 		return remainingTimeAfterOpen * valve.getFlowRate();
 	}
 	
-	public int getTravelCost(Valve valve)
+	public Integer getTravelCost(Valve valve)
 	{
 		return _travelCost.get(valve.getName());
+	}
+	
+	public void setTravelCost(Valve valve, int cost)
+	{
+		_travelCost.put(valve.getName(), cost);
 	}
 	
 	public int getCostToOpen(Valve valve)
