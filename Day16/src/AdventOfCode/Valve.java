@@ -33,6 +33,11 @@ public class Valve {
 		return _valveName;
 	}
 	
+	public int getFlowRate()
+	{
+		return _flowRate;
+	}
+	
 	public String[] getReachableValves()
 	{
 		return _tunnels;
@@ -89,5 +94,23 @@ public class Valve {
 		{
 			System.out.println(String.format("Valve %s => %s costs %d steps", getName(), key, _travelCost.get(key)));
 		}
+	}
+	
+	public int getPressureReduction(int remainingMinutes, Valve valve)
+	{
+		// Get the cost to open this valve
+		var remainingTimeAfterOpen = remainingMinutes - getCostToOpen(valve);
+		
+		return remainingTimeAfterOpen * valve.getFlowRate();
+	}
+	
+	public int getTravelCost(Valve valve)
+	{
+		return _travelCost.get(valve.getName());
+	}
+	
+	public int getCostToOpen(Valve valve)
+	{
+		return getTravelCost(valve) + 1;
 	}
 }
