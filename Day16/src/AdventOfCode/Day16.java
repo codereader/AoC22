@@ -43,13 +43,14 @@ public class Day16 {
 		{
 			System.out.println("--- Step ---- ");
 			
-			for (var infoValve : valvesByFlowRate)
+			/*for (var infoValve : valvesByFlowRate)
 			{
 				System.out.println(String.format("Opening valve %s would produce a slope of %f", 
 					infoValve.getName(), infoValve.getFlowRate() / (double)currentValve.getCostToOpen(infoValve)));
-			}
+			}*/
 			
 			var bestValveToOpen = determineBestValveToOpen(currentValve, valvesByFlowRate, minutesLeft);
+			
 			final var costToOpen = currentValve.getTravelCost(bestValveToOpen) + 1;
 			
 			System.out.println(String.format("Opening valve %s, this costs %d", bestValveToOpen.getName(), costToOpen));
@@ -60,33 +61,118 @@ public class Day16 {
 			// Accumulate released pressure
 			if (!openedValves.isEmpty())
 			{
-				releasedPressure += openedValves.stream().map(v -> v.getFlowRate() * (long)costToOpen).reduce(Long::sum).get();
+				var currentFlowRate = openedValves.stream().map(v -> v.getFlowRate()).reduce(Integer::sum).get();
+				System.out.println(String.format("Flow Rate = %d", currentFlowRate));
+				releasedPressure += (long)currentFlowRate * costToOpen;
 			}
+			
+			System.out.println(String.format("Released pressure: %d", releasedPressure));
 			
 			openedValves.add(bestValveToOpen);
 			valvesByFlowRate.remove(currentValve);
 		}
 		
+		// Remaining time
+		var finalFlowRate = openedValves.stream().map(v -> v.getFlowRate()).reduce(Integer::sum).get();
+		releasedPressure += (long)finalFlowRate * minutesLeft;
+		
 		System.out.println(String.format("Released pressure: %d", releasedPressure));
 	}
-
+	
 	private static Valve determineBestValveToOpen(Valve currentValve, List<Valve> valvesByFlowRate, int minutesLeft)
 	{
-		// Pick the valve with the best bang for buck
-		var bestValvesToOpen = valvesByFlowRate.stream()
-			.filter(v -> currentValve.getCostToOpen(v) <= minutesLeft)
-			.sorted((v1, v2) -> 
-				Double.compare(v2.getFlowRate() / (double)currentValve.getCostToOpen(v2), 
-							   v1.getFlowRate() / (double)currentValve.getCostToOpen(v1)))
-			.collect(Collectors.toList());
-		
-		for (var infoValve : bestValvesToOpen)
+		if (valvesByFlowRate.size() == 1)
 		{
-			System.out.println(String.format("Sorted Valve %s it will release %d pressure (open cost %d)", 
-				infoValve.getName(), currentValve.getPressureReduction(minutesLeft, infoValve), currentValve.getCostToOpen(infoValve)));
+			return valvesByFlowRate.get(0);
 		}
 		
-		return bestValvesToOpen.get(0);
+		var possibleValves = valvesByFlowRate.stream()
+				.filter(v -> currentValve.getCostToOpen(v) <= minutesLeft)
+				.collect(Collectors.toList());
+		
+		var combinations = new ArrayList<ValveCombination>();
+		
+		var valvesToPick = Math.min(possibleValves.size(), 6);
+			
+		// Check all possible combinations
+		for (var n = 0; n < possibleValves.size(); ++n)
+		{			
+			for (var m = 0; m < possibleValves.size(); ++m)
+			{
+				if (n == m) continue;
+				
+				if (valvesToPick > 2)
+				{
+					for (var p = 0; p < possibleValves.size(); ++p)
+					{
+						if (p == n || p == m) continue;
+						
+						if (valvesToPick > 3)
+						{
+							for (var q = 0; q < possibleValves.size(); ++q)
+							{
+								if (q == n || q == m || q == p) continue;
+								
+								if (valvesToPick > 4)
+								{
+									for (var r = 0; r < possibleValves.size(); ++r)
+									{
+										if (r == n || r == m || r == p || r == q) continue;
+										
+										if (valvesToPick > 5)
+										{
+											for (var s = 0; s < possibleValves.size(); ++s)
+											{
+												if (s == n || s == m || s == p || s == q || s == r) continue;
+												
+											combinations.add(new ValveCombination(currentValve, minutesLeft,
+												possibleValves.get(n), possibleValves.get(m), 
+												possibleValves.get(p), possibleValves.get(q),
+												possibleValves.get(r), possibleValves.get(s)));
+											}
+										}
+										else
+										{
+											combinations.add(new ValveCombination(currentValve, minutesLeft,
+												possibleValves.get(n), possibleValves.get(m), 
+												possibleValves.get(p), possibleValves.get(q),
+												possibleValves.get(r)));
+										}
+									}
+								}
+								else
+								{
+									combinations.add(new ValveCombination(currentValve, minutesLeft,
+										possibleValves.get(n), possibleValves.get(m), possibleValves.get(p), possibleValves.get(q)));
+								}
+							}
+						}
+						else
+						{
+							combinations.add(new ValveCombination(currentValve, minutesLeft,
+								possibleValves.get(n), possibleValves.get(m), possibleValves.get(p)));
+						}
+					}
+				}
+				else
+				{
+					combinations.add(new ValveCombination(currentValve, minutesLeft,
+						possibleValves.get(n), possibleValves.get(m)));
+				}
+			}
+		}
+		
+		var bestCombos = combinations.stream().sorted((pair1, pair2) ->
+		{
+			return Double.compare(pair2.GainedPressureVolume, pair1.GainedPressureVolume);
+		}).collect(Collectors.toList());
+		
+		for (var combo : bestCombos)
+		{
+			System.out.println(combo.toString());
+		}
+		
+		return bestCombos.get(0).FirstValve;
 	}
 
 	private static void buildConnectivity(Valve startValve, Map<String, Valve> valves, Valve toProcess, Set<Valve> visitedValves)
