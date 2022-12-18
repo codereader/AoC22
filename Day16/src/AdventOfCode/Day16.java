@@ -1,8 +1,12 @@
 package AdventOfCode;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import AdventOfCode.Common.FileUtils;
@@ -11,7 +15,7 @@ public class Day16
 {
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./test.txt");
+		var lines = FileUtils.readFile("./input.txt");
 		var valves = lines.stream().map(l -> new Valve(l)).collect(Collectors.toMap(v -> v.getName(), v -> v));
 		var startValve = valves.get("AA");
 		
@@ -19,7 +23,7 @@ public class Day16
 		
 		var openedValves = new ArrayList<Valve>();
 		
-		final var TotalMinutes = 26;
+		final var TotalMinutes = 30;
 		var minutesLeft = TotalMinutes;
 		var releasedPressure = 0;
 		var currentFlowRate = 0;
@@ -34,10 +38,35 @@ public class Day16
 			})
 			.collect(Collectors.toList());
 		
+		var result = calculatePaths(valvePool, Collections.emptySet(), 
+				startValve, minutesLeft, 0, new HashMap<Set<Valve>, Integer>());
+		
+		// The result contains the maximum release for each valve set
+		// For two valve sets containing the same valves only the better one is stored
+		var maxFlowRate = result.values().stream().mapToInt(x -> x).max().orElse(-1);
+		System.out.println(String.format("[Part1]: Maximum Flow Rate: %d", maxFlowRate));
+		
+		// Run the simulation again with 26 minutes available
+		// Try to find two distinct sets that yield the maximum release in combination
+		var part2Result = calculatePaths(valvePool, Collections.emptySet(), 
+				startValve, 26, 0, new HashMap<Set<Valve>, Integer>());
+		
+		var maxFlowRatePart2 = part2Result.entrySet().stream().flatMapToInt(entry1 -> 
+		{
+			return part2Result.entrySet().stream().filter(entry2 ->
+			{
+				return !entry1.getKey().stream().anyMatch(entry2.getKey()::contains);
+			})
+			.mapToInt(entry2 -> entry2.getValue() + entry1.getValue());
+		}).max().orElse(-1);
+		
+		System.out.println(String.format("[Part2]: Maximum Flow Rate of two disjunct path sets: %d", maxFlowRatePart2));
+		
+		// Old code
 		var players = new ArrayList<Player>();
 		
 		players.add(new Player("Player", startValve));
-		players.add(new Player("Elephant", startValve));
+		//players.add(new Player("Elephant", startValve));
 		
 		for (var player : players)
 		{
@@ -73,11 +102,11 @@ public class Day16
 					{
 						if (minutesLeft - 1 == player.FinishTime)
 						{
-							System.out.println(String.format("%s is opening %s", player.Name, player.TargetValve.getName()));
+							//System.out.println(String.format("%s is opening %s", player.Name, player.TargetValve.getName()));
 						}
 						else
 						{
-							System.out.println(String.format("%s is moving to %s", player.Name, player.TargetValve.getName()));
+							//System.out.println(String.format("%s is moving to %s", player.Name, player.TargetValve.getName()));
 						}
 					}
 					break;
@@ -94,7 +123,7 @@ public class Day16
 			--minutesLeft;
 		}
 		
-		System.out.println(String.format("Final Flow Rate = %d", currentFlowRate));
+		System.out.println(String.format("-- Final Flow Rate = %d", currentFlowRate));
 		
 		// Remaining time
 		var finalFlowRate = openedValves.stream().map(v -> v.getFlowRate()).reduce(Integer::sum).get();
@@ -105,7 +134,7 @@ public class Day16
 	
 	private static void pickNewValveToOpen(Player player, List<Valve> valvePool, int minutesLeft)
 	{
-		System.out.println(String.format("%s is looking for something to do", player.Name));
+		//System.out.println(String.format("%s is looking for something to do", player.Name));
 		
 		// Pick a new valve to open and start moving
 		var bestValveToOpen = determineBestValveToOpen(player.CurrentValve, valvePool, minutesLeft);
@@ -117,12 +146,37 @@ public class Day16
 			
 			player.AssignValve(bestValveToOpen, minutesLeft - player.CurrentValve.getCostToOpen(bestValveToOpen));
 			
-			System.out.println(String.format("%s will handle %s, cost is %d, will arrive at %d", 
+			/*System.out.println(String.format("%s will handle %s, cost is %d, will arrive at %d", 
 				player.Name,
 				player.TargetValve.getName(),
 				player.CurrentValve.getCostToOpen(bestValveToOpen),
-				player.FinishTime));
+				player.FinishTime));*/
 		}
+	}
+	
+	private static Map<Set<Valve>, Integer> calculatePaths(List<Valve> allValves, Set<Valve> openValves, 
+			Valve currentValve, int timeLeft, int currentFlowRate, Map<Set<Valve>, Integer> flowByPath)
+	{
+		// Store the path in the map, overwriting any existing flow if the current one is greater
+		flowByPath.merge(openValves, currentFlowRate, Math::max);
+
+		for (var valve : allValves)
+		{
+			var timeUntilEnd = timeLeft - currentValve.getCostToOpen(valve);
+			
+			if (openValves.contains(valve) || timeUntilEnd <= 0) 
+			{
+				continue; // Valve already open or not openable in time
+			}
+			
+			var newOpenValves = new HashSet<>(openValves);
+			newOpenValves.add(valve);
+			
+			calculatePaths(allValves, newOpenValves, valve, timeUntilEnd, 
+				timeUntilEnd * valve.getFlowRate() + currentFlowRate, flowByPath);
+		}
+
+		return flowByPath;
 	}
 	
 	private static Valve determineBestValveToOpen(Valve currentValve, List<Valve> valvesByFlowRate, int minutesLeft)
@@ -218,7 +272,7 @@ public class Day16
 		
 		for (var combo : bestCombos)
 		{
-			System.out.println(combo.toString());
+			//System.out.println(combo.toString());
 		}
 		
 		return bestCombos.get(0).FirstValve;
