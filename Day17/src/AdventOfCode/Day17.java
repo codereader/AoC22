@@ -3,6 +3,8 @@ package AdventOfCode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import AdventOfCode.Common.FileUtils;
 import AdventOfCode.Common.LongVector2;
 
@@ -41,7 +43,7 @@ public class Day17
 		);
 		
 		runSimulation(1, 2022, rocks, jetDirections);
-		runSimulation(2, 10000000, rocks, jetDirections);
+		runSimulation(2, 1000000000000L, rocks, jetDirections);
 	}
 	
 	private static void runSimulation(int part, long numberOfRocks, ArrayList<Rock> rocks, String jetDirections)
@@ -54,6 +56,8 @@ public class Day17
 		var nextRock = 0;
 		var nextJetIndex = 0;
 		var round = 0L;
+		var situations = new HashMap<Integer, Situation>();
+		var cycleFound = false;
 		
 		while (true)
 		{
@@ -66,7 +70,68 @@ public class Day17
 			//System.out.println(String.format("Round %d: %d", round, chamber.getMaximumRockHeight()));
 			
 			if (chamber.FallingRock == null)
-			{
+			{				
+				if (!cycleFound && round > 150000)
+				{
+					// Check the current configuration against known states
+					var situation = new Situation();
+					
+					situation.Checksum = chamber.getChecksum();
+					situation.StoppedRocks = stoppedRocks;
+					situation.HeadOfGrid = chamber.getHeadOfGrid();
+					situation.NextRock = nextRock % rocks.size();
+					situation.NextJetDirection = nextJetIndex % jetDirections.length();
+					situation.StackHeight = chamber.getMaximumRockHeight();
+					situation.FirstNonSolidRow = chamber.getFirstNonSolidRow();
+					
+					var hash = situation.hashCode();
+					
+					if (situations.containsKey(hash))
+					{
+						var storedSituation = situations.get(hash);
+						
+						if (storedSituation.equals(situation))
+						{
+							if (++storedSituation.HitCount > 2)
+							{
+								System.out.println(String.format("Found the same situation %d, first non-solid row = %d", hash, storedSituation.FirstNonSolidRow));
+								
+								var heightGrowth = chamber.getFirstNonSolidRow() - storedSituation.FirstNonSolidRow;
+								
+								if (heightGrowth > 0)
+								{
+									System.out.println(String.format("Growth: %d", heightGrowth));
+									
+									var rockGrowth = stoppedRocks - storedSituation.StoppedRocks;
+									System.out.println(String.format("Additional stopped Rocks: %d", rockGrowth));
+									
+									// Fast-forward as far as we can
+									var numberOfCycles = Math.floorDiv(numberOfRocks - stoppedRocks, rockGrowth);
+
+									// Set new height and forward the rock count
+									chamber.setFirstNonSolidRow(chamber.getFirstNonSolidRow() + heightGrowth * numberOfCycles);
+									stoppedRocks += rockGrowth * numberOfCycles;
+									
+									System.out.println(String.format("Resuming at rock count: %d", stoppedRocks));
+									System.out.println(String.format("Height is now at: %d", chamber.getMaximumRockHeight()));
+									
+									cycleFound = true;
+								}
+							}
+							else
+							{
+								storedSituation.StackHeight = chamber.getMaximumRockHeight();
+								storedSituation.FirstNonSolidRow = chamber.getFirstNonSolidRow();
+								storedSituation.StoppedRocks = stoppedRocks;
+							}
+						}
+					}
+					else
+					{
+						situations.put(hash, situation);
+					}
+				}
+				
 				var rock = (Rock)rocks.get((nextRock++) % rocks.size()).clone();
 				chamber.spawnRock(rock);
 				continue;

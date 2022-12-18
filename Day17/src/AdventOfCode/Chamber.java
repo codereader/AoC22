@@ -2,6 +2,7 @@ package AdventOfCode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 import AdventOfCode.Common.LongVector2;
 
@@ -237,5 +238,41 @@ public class Chamber
 	{
 		rock.Position = getSpawnPosition(rock);
 		FallingRock = rock;
+	}
+	
+	public long getFirstNonSolidRow()
+	{
+		return _firstNonSolidRow;
+	}
+	
+	public void setFirstNonSolidRow(long height)
+	{
+		_firstNonSolidRow = height;
+	}
+	
+	public int getChecksum()
+	{
+		var numRows = Math.min(_grid.size(), 20);
+		var list = new ArrayList<char[]>();
+		
+		for (int i = 0; i < numRows; ++i)
+		{
+			list.add(_grid.get(_grid.size() - i - 1));
+		}
+		
+		return list.hashCode();
+	}
+	
+	public String getHeadOfGrid()
+	{
+		var numRows = Math.min(_grid.size(), 20);
+		var list = new ArrayList<String>();
+		
+		for (int i = 0; i < numRows; ++i)
+		{
+			list.add(new String(_grid.get(_grid.size() - i - 1)));
+		}
+		
+		return String.join("\n", list);
 	}
 }
