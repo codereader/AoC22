@@ -3,17 +3,20 @@ package AdventOfCode;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import AdventOfCode.Common.Vector2;
+import AdventOfCode.Common.LongVector2;
 
 // Chamber Y positions are measured from the bottom (0 == floor, 1 == the first row above it)
 public class Chamber
 {
-	public final int Width = 7;
-	public final int WallWidth = 1;
-	public final int FloorThickness = 1;
-	public final int PaddingToWall = 2;
-	public final int VerticalSpawnPadding = 3;
-	public final int WidthIncludingWalls = Width + 2;
+	public static final int Width = 7;
+	public static final int WallWidth = 1;
+	public static final int FloorThickness = 1;
+	public static final int PaddingToWall = 2;
+	public static final int VerticalSpawnPadding = 3;
+	public static final int WidthIncludingWalls = Width + 2;
+	
+	// Distance from floor to the first grid row
+	private long _firstNonSolidRow = 1L;
 	
 	public Rock FallingRock;
 	
@@ -22,33 +25,27 @@ public class Chamber
 	public Chamber()
 	{
 		_grid = new ArrayList<>();
-		
-		for (int i = 0; i < FloorThickness; i++)
-		{
-			_grid.add("+-------+".toCharArray());
-		}
-		
 		FallingRock = null;
 	}
 	
-	public boolean rockCanMoveTo(Rock rock, Vector2 direction)
+	public boolean rockCanMoveTo(Rock rock, LongVector2 direction)
 	{
 		// Hypothetically move the rock to the given direction
 		// Check if any rock substance is colliding with existing matter
 		return !isCollidingAtPosition(rock, rock.Position.plus(direction));
 	}
 	
-	private boolean isCollidingAtPosition(Rock rock, Vector2 testPosition)
+	private boolean isCollidingAtPosition(Rock rock, LongVector2 testPosition)
 	{
 		for (var y = 0; y < rock.Height; ++y)
 		{
 			for (var x = 0; x < rock.Width; ++x)
 			{
-				var localRockPos = new Vector2(x, y);
+				var localRockPos = new LongVector2(x, y);
 				
 				// Apply inverted Y rock position since higher chamber rows have higher Y coordinates
 				if (rock.isSolidAt(localRockPos) && 
-					isSolid(testPosition.plus(new Vector2(localRockPos.getX(), -localRockPos.getY()))))
+					isSolid(testPosition.plus(new LongVector2(localRockPos.getX(), -localRockPos.getY()))))
 				{
 					return true;
 				}
@@ -58,40 +55,41 @@ public class Chamber
 		return false;
 	}
 	
-	public boolean isSolid(Vector2 position)
+	public boolean isSolid(LongVector2 position)
 	{
+		var physicalRowIndex = (int)(position.getY() - _firstNonSolidRow); 
+		
 		// Out of vertical bounds?
-		if (position.getY() >= _grid.size())
+		if (physicalRowIndex >= _grid.size())
 		{
 			// Check X coordinates only
 			return position.getX() <= 0 || position.getX() >= WallWidth + Width;
 		}
 	
 		// Clipping into floor?
-		if (position.getY() < 1) return true;
+		if (physicalRowIndex < 0) return true;
 		
 		// Position is within or beyond walls?
 		if (position.getX() < 1 || position.getX() >= WallWidth + Width) return true;
 		
 		// Check the actual row, everything other than spaces is considered solid
-		return _grid.get(position.getY())[position.getX()] != ' ';
+		return _grid.get(physicalRowIndex)[(int)position.getX()] != ' ';
 	}
 	
-	public Vector2 getSpawnPosition(Rock rock)
+	public LongVector2 getSpawnPosition(Rock rock)
 	{
-		return new Vector2(
+		return new LongVector2(
 			WallWidth + PaddingToWall, 
 			FloorThickness + getMaximumRockHeight() + VerticalSpawnPadding + rock.Height - 1
 		);
 	}
 	
 	// Get amount of rocky lines (excluding the floor)
-	public int getMaximumRockHeight()
+	public long getMaximumRockHeight()
 	{
-		return (int)_grid.stream()
-			.skip(1)
+		return _grid.stream()
 			.filter(Chamber::containsRock)
-			.count();
+			.count() + _firstNonSolidRow - FloorThickness; // deduct the floor height
 	}
 	
 	public static boolean containsRock(char[] row)
@@ -122,11 +120,11 @@ public class Chamber
 				// Superimpose the rock shape with @ signs
 				for (var x = 0; x < FallingRock.Width; ++x)
 				{
-					var rockPosition = new Vector2(x, FallingRock.Position.getY() - y);
+					var rockPosition = new LongVector2(x, FallingRock.Position.getY() - y);
 					
 					if (FallingRock.isSolidAt(rockPosition))
 					{
-						row[FallingRock.Position.getX() + x] = '@';
+						row[(int)FallingRock.Position.getX() + x] = '@';
 					}
 				}
 			}
@@ -139,7 +137,7 @@ public class Chamber
 		return text.toString();
 	}
 	
-	private char[] createEmptyRow()
+	private static char[] createEmptyRow()
 	{
 		var row = new char[WallWidth*2 + Width];
 		
@@ -153,15 +151,22 @@ public class Chamber
 		return row;
 	}
 	
-	private char[] getRowAsChars(int y)
+	private char[] getRowAsChars(long y)
 	{
-		return y >= _grid.size() ? createEmptyRow() : _grid.get(y).clone();
+		if (y < _firstNonSolidRow)
+		{
+			return "+++++++++".toCharArray();
+		}
+		
+		var actualIndex = (int)(y - _firstNonSolidRow);
+		return actualIndex >= _grid.size() ? createEmptyRow() : _grid.get(actualIndex).clone();
 	}
 
 	public void embedRock(Rock rock)
 	{
-		// Ensure grid is large enough
-		while (_grid.size() < rock.Position.getY() + 1)
+		// Ensure the physical grid is large enough
+		var requiredGridSize = (int)(rock.Position.getY() - _firstNonSolidRow) + 1;
+		while (_grid.size() < requiredGridSize)
 		{
 			_grid.add(createEmptyRow());
 		}
@@ -173,15 +178,16 @@ public class Chamber
 			// Superimpose the rock shape with solid signs
 			for (var x = 0; x < FallingRock.Width; ++x)
 			{
-				var rockPosition = new Vector2(x, FallingRock.Position.getY() - y);
+				var rockPosition = new LongVector2(x, FallingRock.Position.getY() - y);
 				
 				if (FallingRock.isSolidAt(rockPosition))
 				{
-					row[FallingRock.Position.getX() + x] = Rock.Solid;
+					row[(int)FallingRock.Position.getX() + x] = Rock.Solid;
 				}
 			}
 			
-			_grid.set(y, row);
+			var physicalRowIndex = (int)(y - _firstNonSolidRow);
+			_grid.set(physicalRowIndex, row);
 		}
 	}
 

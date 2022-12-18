@@ -2,13 +2,13 @@ package AdventOfCode;
 
 import java.util.ArrayList;
 import AdventOfCode.Common.FileUtils;
-import AdventOfCode.Common.Vector2;
+import AdventOfCode.Common.LongVector2;
 
 public class Day17
 {
-	final static Vector2 _left = new Vector2(-1, 0);
-	final static Vector2 _right = new Vector2(1, 0);
-	final static Vector2 _down = new Vector2(0, -1);
+	final static LongVector2 _left = new LongVector2(-1, 0);
+	final static LongVector2 _right = new LongVector2(1, 0);
+	final static LongVector2 _down = new LongVector2(0, -1);
 	 
 	public static void main(String[] args)
 	{
@@ -41,11 +41,11 @@ public class Day17
 		runSimulation(1, 2022, rocks, jetDirections);
 	}
 	
-	private static void runSimulation(int part, int numberOfRocks, ArrayList<Rock> rocks, String jetDirections)
+	private static void runSimulation(int part, long numberOfRocks, ArrayList<Rock> rocks, String jetDirections)
 	{
 		final var chamber = new Chamber();
 		
-		var stoppedRocks = 0;
+		var stoppedRocks = 0L;
 		var nextRock = 0;
 		var nextJetIndex = 0;
 		
