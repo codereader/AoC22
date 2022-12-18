@@ -18,6 +18,8 @@ public class Chamber
 	// Distance from floor to the first grid row
 	private long _firstNonSolidRow = 1L;
 	
+	private long[] _firstNonSolidBlockPerColumn;
+	
 	public Rock FallingRock;
 	
 	private ArrayList<char[]> _grid;
@@ -25,6 +27,8 @@ public class Chamber
 	public Chamber()
 	{
 		_grid = new ArrayList<>();
+		_firstNonSolidBlockPerColumn = new long[Width];
+		Arrays.fill(_firstNonSolidBlockPerColumn, _firstNonSolidRow);
 		FallingRock = null;
 	}
 	
@@ -107,20 +111,21 @@ public class Chamber
 	{
 		var text = new StringBuilder();
 		
-		var maxHeight = FallingRock != null ? Math.max(_grid.size(), FallingRock.Position.getY() + 1) : _grid.size();
+		var fallingRockYPosition = FallingRock != null ? FallingRock.Position.getY() - _firstNonSolidRow : 0;
+		var maxHeight = (int)Math.max(_grid.size(), fallingRockYPosition + 1);
 		
 		for (var y = maxHeight - 1; y >= 0; --y)
 		{
-			var row = getRowAsChars(y);
+			var row = y < _grid.size() ? _grid.get(y).clone() : createEmptyRow();
 			
 			if (FallingRock != null &&
-				y <= FallingRock.Position.getY() && 
-				y > FallingRock.Position.getY() - FallingRock.Height)
+				y <= fallingRockYPosition && 
+				y > fallingRockYPosition - FallingRock.Height)
 			{
 				// Superimpose the rock shape with @ signs
 				for (var x = 0; x < FallingRock.Width; ++x)
 				{
-					var rockPosition = new LongVector2(x, FallingRock.Position.getY() - y);
+					var rockPosition = new LongVector2(x, fallingRockYPosition - y);
 					
 					if (FallingRock.isSolidAt(rockPosition))
 					{
@@ -130,8 +135,10 @@ public class Chamber
 			}
 			
 			// No falling rock, just output the line
+			text.append(String.format("%4d", y + _firstNonSolidRow));
+			text.append(' ');
 			text.append(row);
-			text.append("\n");
+			text.append('\n');
 		}
 		
 		return text.toString();
@@ -153,11 +160,6 @@ public class Chamber
 	
 	private char[] getRowAsChars(long y)
 	{
-		if (y < _firstNonSolidRow)
-		{
-			return "+++++++++".toCharArray();
-		}
-		
 		var actualIndex = (int)(y - _firstNonSolidRow);
 		return actualIndex >= _grid.size() ? createEmptyRow() : _grid.get(actualIndex).clone();
 	}
@@ -189,6 +191,43 @@ public class Chamber
 			var physicalRowIndex = (int)(y - _firstNonSolidRow);
 			_grid.set(physicalRowIndex, row);
 		}
+		
+		// Update the solid heights and reduce the grid if necessary
+		// Check the first solid block in that column
+		for (var y = 0; y < _grid.size(); ++y)
+		{
+			for (var x = WallWidth; x < Width + WallWidth; ++x)
+			{
+				var index = x - WallWidth;
+				
+				if (_grid.get(y)[x] == Rock.Solid)
+				{
+					_firstNonSolidBlockPerColumn[index] = Math.max(_firstNonSolidBlockPerColumn[index], y + _firstNonSolidRow + 1);
+				}
+			}
+		}
+		
+		//System.out.println("Before:");
+		//System.out.println(this.toString());
+		
+		long minimumFirstNonSolidRow = Long.MAX_VALUE;
+		
+		for (int x = 0; x < _firstNonSolidBlockPerColumn.length; x++)
+		{
+			minimumFirstNonSolidRow = Math.min(_firstNonSolidBlockPerColumn[x], minimumFirstNonSolidRow);
+		}
+		
+		// Check the minimum row, below of which everything is solid
+		// Cut off a certain amount of rows to get rid of the solids
+		for (int i = 0; i < minimumFirstNonSolidRow - _firstNonSolidRow; i++)
+		{
+			_grid.remove(0);
+		}
+		
+		_firstNonSolidRow = Math.max(_firstNonSolidRow, minimumFirstNonSolidRow);
+		
+		//System.out.println("After:");
+		//System.out.println(this.toString());
 	}
 
 	public void spawnRock(Rock rock)
