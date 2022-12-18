@@ -38,6 +38,11 @@ public class Day17
 			"##")
 		);
 		
+		runSimulation(1, 2022, rocks, jetDirections);
+	}
+	
+	private static void runSimulation(int part, int numberOfRocks, ArrayList<Rock> rocks, String jetDirections)
+	{
 		final var chamber = new Chamber();
 		
 		var stoppedRocks = 0;
@@ -70,7 +75,7 @@ public class Day17
 				chamber.embedRock(chamber.FallingRock);
 				chamber.FallingRock = null;
 				
-				if (++stoppedRocks == 2022)
+				if (++stoppedRocks == numberOfRocks)
 				{
 					break;
 				}
@@ -81,6 +86,7 @@ public class Day17
 			}
 		}
 		
-		System.out.println(String.format("[Part1]: Rock Height: %d", chamber.getMaximumRockHeight()));
+		System.out.println(String.format("[Part%d]: Rock Height: %d", part, chamber.getMaximumRockHeight()));
 	}
+	
 }
