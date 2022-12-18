@@ -1,5 +1,7 @@
 package AdventOfCode;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import AdventOfCode.Common.FileUtils;
 import AdventOfCode.Common.LongVector2;
@@ -39,10 +41,13 @@ public class Day17
 		);
 		
 		runSimulation(1, 2022, rocks, jetDirections);
+		runSimulation(2, 10000000, rocks, jetDirections);
 	}
 	
 	private static void runSimulation(int part, long numberOfRocks, ArrayList<Rock> rocks, String jetDirections)
 	{
+		var starts = Instant.now();
+		
 		final var chamber = new Chamber();
 		
 		var stoppedRocks = 0L;
@@ -53,7 +58,10 @@ public class Day17
 		while (true)
 		{
 			//System.out.println(String.format("Round %d\n%s", round, chamber.toString()));
-			++round;
+			if (++round % 500000 == 0)
+			{
+				System.out.println(String.format("Round %d, Dropped rocks = %d", round, stoppedRocks));
+			}
 			
 			//System.out.println(String.format("Round %d: %d", round, chamber.getMaximumRockHeight()));
 			
@@ -91,6 +99,9 @@ public class Day17
 		}
 		
 		System.out.println(String.format("[Part%d]: Rock Height: %d", part, chamber.getMaximumRockHeight()));
+		
+		var ends = Instant.now();
+		System.out.println(String.format("Duration: %s", Duration.between(starts, ends)));
 	}
 	
 }
