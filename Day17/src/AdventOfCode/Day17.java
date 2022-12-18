@@ -48,10 +48,14 @@ public class Day17
 		var stoppedRocks = 0L;
 		var nextRock = 0;
 		var nextJetIndex = 0;
+		var round = 0L;
 		
 		while (true)
 		{
 			//System.out.println(String.format("Round %d\n%s", round, chamber.toString()));
+			++round;
+			
+			//System.out.println(String.format("Round %d: %d", round, chamber.getMaximumRockHeight()));
 			
 			if (chamber.FallingRock == null)
 			{

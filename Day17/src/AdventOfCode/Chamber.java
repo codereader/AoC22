@@ -217,6 +217,9 @@ public class Chamber
 			minimumFirstNonSolidRow = Math.min(_firstNonSolidBlockPerColumn[x], minimumFirstNonSolidRow);
 		}
 		
+		// Keep a few lines to workaround the problem of stones stopping too early
+		minimumFirstNonSolidRow -= 200;
+		
 		// Check the minimum row, below of which everything is solid
 		// Cut off a certain amount of rows to get rid of the solids
 		for (int i = 0; i < minimumFirstNonSolidRow - _firstNonSolidRow; i++)
