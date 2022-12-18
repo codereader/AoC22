@@ -67,8 +67,6 @@ public class Day17
 				System.out.println(String.format("Round %d, Dropped rocks = %d", round, stoppedRocks));
 			}
 			
-			//System.out.println(String.format("Round %d: %d", round, chamber.getMaximumRockHeight()));
-			
 			if (chamber.FallingRock == null)
 			{				
 				if (!cycleFound && round > 150000)
@@ -76,23 +74,21 @@ public class Day17
 					// Check the current configuration against known states
 					var situation = new Situation();
 					
-					situation.Checksum = chamber.getChecksum();
 					situation.StoppedRocks = stoppedRocks;
 					situation.HeadOfGrid = chamber.getHeadOfGrid();
 					situation.NextRock = nextRock % rocks.size();
 					situation.NextJetDirection = nextJetIndex % jetDirections.length();
-					situation.StackHeight = chamber.getMaximumRockHeight();
 					situation.FirstNonSolidRow = chamber.getFirstNonSolidRow();
 					
 					var hash = situation.hashCode();
 					
-					if (situations.containsKey(hash))
+					var storedSituation = situations.putIfAbsent(hash, situation);
+					
+					if (storedSituation != null)
 					{
-						var storedSituation = situations.get(hash);
-						
 						if (storedSituation.equals(situation))
 						{
-							if (++storedSituation.HitCount > 2)
+							if (++storedSituation.HitCount > 2) // ignore the first recurrence
 							{
 								System.out.println(String.format("Found the same situation %d, first non-solid row = %d", hash, storedSituation.FirstNonSolidRow));
 								
@@ -120,7 +116,6 @@ public class Day17
 							}
 							else
 							{
-								storedSituation.StackHeight = chamber.getMaximumRockHeight();
 								storedSituation.FirstNonSolidRow = chamber.getFirstNonSolidRow();
 								storedSituation.StoppedRocks = stoppedRocks;
 							}

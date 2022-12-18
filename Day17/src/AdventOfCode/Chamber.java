@@ -2,7 +2,6 @@ package AdventOfCode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 
 import AdventOfCode.Common.LongVector2;
 
@@ -208,9 +207,6 @@ public class Chamber
 			}
 		}
 		
-		//System.out.println("Before:");
-		//System.out.println(this.toString());
-		
 		long minimumFirstNonSolidRow = Long.MAX_VALUE;
 		
 		for (int x = 0; x < _firstNonSolidBlockPerColumn.length; x++)
@@ -229,9 +225,6 @@ public class Chamber
 		}
 		
 		_firstNonSolidRow = Math.max(_firstNonSolidRow, minimumFirstNonSolidRow);
-		
-		//System.out.println("After:");
-		//System.out.println(this.toString());
 	}
 
 	public void spawnRock(Rock rock)
@@ -248,19 +241,6 @@ public class Chamber
 	public void setFirstNonSolidRow(long height)
 	{
 		_firstNonSolidRow = height;
-	}
-	
-	public int getChecksum()
-	{
-		var numRows = Math.min(_grid.size(), 20);
-		var list = new ArrayList<char[]>();
-		
-		for (int i = 0; i < numRows; ++i)
-		{
-			list.add(_grid.get(_grid.size() - i - 1));
-		}
-		
-		return list.hashCode();
 	}
 	
 	public String getHeadOfGrid()

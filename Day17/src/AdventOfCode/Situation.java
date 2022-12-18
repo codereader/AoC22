@@ -1,11 +1,9 @@
 package AdventOfCode;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class Situation
 {
-	public long StackHeight; 
 	public String HeadOfGrid;
 	public long FirstNonSolidRow;
 	public long StoppedRocks;
