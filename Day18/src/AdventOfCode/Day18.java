@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import AdventOfCode.Common.FileUtils;
@@ -14,7 +15,7 @@ public class Day18
 {
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./input.txt");
+		var lines = FileUtils.readFile("./test.txt");
 		
 		var numbers = lines.stream().map(Day18::parseTriple).collect(Collectors.toList());
 		
@@ -33,7 +34,8 @@ public class Day18
 		
 		for (var number : numbers)
 		{
-			openSides += getNumSidesWithNeighbourType(volume, number, BlockType.Air);
+			openSides += 6 - getNumSidesWithNeighbourType(volume, number, 
+					type -> type == BlockType.Lava);
 		}
 		
 		System.out.println(String.format("[Part1]: Surface Area = %d", openSides));
@@ -43,11 +45,17 @@ public class Day18
 		var blocksToFill = new Stack<NumberTriple>();
 		blocksToFill.add(new NumberTriple(0,0,0));
 		
+		if (volume.get(blocksToFill.peek()) != BlockType.Air && 
+			volume.get(blocksToFill.peek()) != BlockType.Void)
+		{
+			throw new IllegalArgumentException("No Air at start block");
+		}
+		
 		while (!blocksToFill.isEmpty())
 		{
 			var n = blocksToFill.pop();
 			
-			// Fill this field
+			// Fill this field with water
 			volume.set(n, BlockType.Water);
 			
 			checkNeighbour(volume, new NumberTriple(n.X+1,n.Y,n.Z), blocksToFill, reachableLavaBlocks);
@@ -58,11 +66,18 @@ public class Day18
 			checkNeighbour(volume, new NumberTriple(n.X,n.Y,n.Z-1), blocksToFill, reachableLavaBlocks);
 		}
 		
+		/*for (var z = 0; z < volume.Max.Z; ++z)
+		{
+			System.out.println(String.format("Layer %d", z));
+			System.out.println(volume.getLayer(z));
+		}*/
+		
 		var externalSurfaceArea = 0;
 		
 		for (var number : reachableLavaBlocks)
 		{
-			externalSurfaceArea += getNumSidesWithNeighbourType(volume, number, BlockType.Water);
+			externalSurfaceArea += getNumSidesWithNeighbourType(volume, number, 
+				type -> type == BlockType.Water || type == BlockType.Void);
 		}
 		
 		System.out.println(String.format("[Part2]: External Surface Area = %d", externalSurfaceArea));
@@ -87,16 +102,16 @@ public class Day18
 		}
 	}
 
-	private static int getNumSidesWithNeighbourType(Volume volume, NumberTriple n, BlockType type)
+	private static int getNumSidesWithNeighbourType(Volume volume, NumberTriple n, Function<BlockType, Boolean> predicate)
 	{
 		var count = 0;
 		
-		if (volume.get(new NumberTriple(n.X-1, n.Y, n.Z)) == type) ++count;
-		if (volume.get(new NumberTriple(n.X+1, n.Y, n.Z)) == type) ++count;
-		if (volume.get(new NumberTriple(n.X, n.Y-1, n.Z)) == type) ++count;
-		if (volume.get(new NumberTriple(n.X, n.Y+1, n.Z)) == type) ++count;
-		if (volume.get(new NumberTriple(n.X, n.Y, n.Z-1)) == type) ++count;
-		if (volume.get(new NumberTriple(n.X, n.Y, n.Z+1)) == type) ++count;
+		if (predicate.apply(volume.get(new NumberTriple(n.X-1, n.Y, n.Z)))) ++count;
+		if (predicate.apply(volume.get(new NumberTriple(n.X+1, n.Y, n.Z)))) ++count;
+		if (predicate.apply(volume.get(new NumberTriple(n.X, n.Y-1, n.Z)))) ++count;
+		if (predicate.apply(volume.get(new NumberTriple(n.X, n.Y+1, n.Z)))) ++count;
+		if (predicate.apply(volume.get(new NumberTriple(n.X, n.Y, n.Z-1)))) ++count;
+		if (predicate.apply(volume.get(new NumberTriple(n.X, n.Y, n.Z+1)))) ++count;
 		
 		return count;
 	}
