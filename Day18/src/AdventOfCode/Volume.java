@@ -1,6 +1,7 @@
 package AdventOfCode;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class Volume
 {
@@ -27,7 +28,7 @@ public class Volume
 		_field.put(coords, type);
 	}
 	
-	public String getLayer(int z)
+	public String getLayer(int z, Set<NumberTriple> reachable)
 	{
 		var output = new StringBuilder();
 		
@@ -35,12 +36,22 @@ public class Volume
 		{
 			for (var x = 0; x < Max.X; ++x)
 			{
-				switch (get(new NumberTriple(x,y,z)))
+				var n = new NumberTriple(x,y,z);
+				switch (get(n))
 				{
 				case Void: output.append('#'); break;
 				case Water: output.append('~'); break;
 				case Air: output.append(' '); break;
-				case Lava: output.append('X'); break;
+				case Lava:
+					if (reachable.contains(n))
+					{
+						output.append('O');
+					}
+					else
+					{
+						output.append('X');
+					}
+					break;
 				}
 			}
 			

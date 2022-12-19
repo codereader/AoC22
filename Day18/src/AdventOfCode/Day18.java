@@ -1,9 +1,6 @@
 package AdventOfCode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
@@ -15,13 +12,13 @@ public class Day18
 {
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./test.txt");
+		var lines = FileUtils.readFile("./input.txt");
 		
 		var numbers = lines.stream().map(Day18::parseTriple).collect(Collectors.toList());
 		
-		var maxX = numbers.stream().mapToInt(n -> n.X).max().getAsInt();
-		var maxY = numbers.stream().mapToInt(n -> n.Y).max().getAsInt();
-		var maxZ = numbers.stream().mapToInt(n -> n.Z).max().getAsInt();
+		var maxX = numbers.stream().mapToInt(n -> n.X).max().getAsInt() + 1;
+		var maxY = numbers.stream().mapToInt(n -> n.Y).max().getAsInt() + 1;
+		var maxZ = numbers.stream().mapToInt(n -> n.Z).max().getAsInt() + 1;
 		
 		var volume = new Volume(new NumberTriple(maxX, maxY, maxZ));
 		
@@ -43,7 +40,7 @@ public class Day18
 		var reachableLavaBlocks = new HashSet<NumberTriple>();
 		
 		var blocksToFill = new Stack<NumberTriple>();
-		blocksToFill.add(new NumberTriple(0,0,0));
+		blocksToFill.push(new NumberTriple(0,0,0));
 		
 		if (volume.get(blocksToFill.peek()) != BlockType.Air && 
 			volume.get(blocksToFill.peek()) != BlockType.Void)
@@ -65,17 +62,19 @@ public class Day18
 			checkNeighbour(volume, new NumberTriple(n.X,n.Y,n.Z+1), blocksToFill, reachableLavaBlocks);
 			checkNeighbour(volume, new NumberTriple(n.X,n.Y,n.Z-1), blocksToFill, reachableLavaBlocks);
 		}
-		
-		/*for (var z = 0; z < volume.Max.Z; ++z)
+		/*
+		for (var z = 0; z < volume.Max.Z; ++z)
 		{
 			System.out.println(String.format("Layer %d", z));
-			System.out.println(volume.getLayer(z));
-		}*/
-		
+			System.out.println(volume.getLayer(z, reachableLavaBlocks));
+		}
+		*/
 		var externalSurfaceArea = 0;
 		
-		for (var number : reachableLavaBlocks)
+		for (var number : numbers)
 		{
+			if (!reachableLavaBlocks.contains(number)) continue;
+			
 			externalSurfaceArea += getNumSidesWithNeighbourType(volume, number, 
 				type -> type == BlockType.Water || type == BlockType.Void);
 		}
@@ -86,9 +85,6 @@ public class Day18
 	private static void checkNeighbour(Volume volume, NumberTriple n, 
 			Stack<NumberTriple> blocksToFill, Set<NumberTriple> reachableLavaBlocks)
 	{
-		if (n.X < 0 || n.Y < 0 || n.Z < 0) return;
-		if (n.X > volume.Max.X || n.Y > volume.Max.Y || n.Z > volume.Max.Z) return;
-		
 		switch (volume.get(n))
 		{
 		case Lava:
@@ -97,7 +93,7 @@ public class Day18
 		case Air:
 			blocksToFill.push(n);
 			break;
-		case Water:
+		default:
 			break;
 		}
 	}
@@ -121,9 +117,9 @@ public class Day18
 		var parts = line.split(",");
 		
 		return new NumberTriple(
-			Integer.parseInt(parts[0]),
-			Integer.parseInt(parts[1]),
-			Integer.parseInt(parts[2])
+			Integer.parseInt(parts[0]) + 1,
+			Integer.parseInt(parts[1]) + 1,
+			Integer.parseInt(parts[2]) + 1
 		);
 	}
 }
