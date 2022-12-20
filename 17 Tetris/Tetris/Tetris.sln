@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tetris", "Tetris.csproj", "{B91A9139-50B0-4A27-A278-E1541BDAD18C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonWPF", "..\..\CommonWPF\CommonWPF\CommonWPF.csproj", "{84AA9018-D4AB-4B2A-8259-B796E1F5D83B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "..\..\Common\Common\Common.csproj", "{9889EC1D-731E-4DE4-A9CA-08F3DEE2435D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TetrisLib", "..\TetrisLib\TetrisLib.csproj", "{571E5399-E315-4D71-8FEC-A47CB18F4CE2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B91A9139-50B0-4A27-A278-E1541BDAD18C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B91A9139-50B0-4A27-A278-E1541BDAD18C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B91A9139-50B0-4A27-A278-E1541BDAD18C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B91A9139-50B0-4A27-A278-E1541BDAD18C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84AA9018-D4AB-4B2A-8259-B796E1F5D83B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84AA9018-D4AB-4B2A-8259-B796E1F5D83B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84AA9018-D4AB-4B2A-8259-B796E1F5D83B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84AA9018-D4AB-4B2A-8259-B796E1F5D83B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9889EC1D-731E-4DE4-A9CA-08F3DEE2435D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9889EC1D-731E-4DE4-A9CA-08F3DEE2435D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9889EC1D-731E-4DE4-A9CA-08F3DEE2435D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9889EC1D-731E-4DE4-A9CA-08F3DEE2435D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{571E5399-E315-4D71-8FEC-A47CB18F4CE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{571E5399-E315-4D71-8FEC-A47CB18F4CE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{571E5399-E315-4D71-8FEC-A47CB18F4CE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{571E5399-E315-4D71-8FEC-A47CB18F4CE2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CDE6A15F-38D2-4949-A82E-8036768F6099}
+	EndGlobalSection
+EndGlobal
