@@ -5,6 +5,10 @@ VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Valves", "Valves.csproj", "{86072207-6356-4CC6-82C3-0866B108E2AF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "..\..\Common\Common\Common.csproj", "{F7F5C771-5E9F-4B35-8156-A35DCA88F2B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValveLib", "..\ValveLib\ValveLib.csproj", "{2C8AA4A0-45F8-45A7-82F9-D65FE2FA94FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{86072207-6356-4CC6-82C3-0866B108E2AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86072207-6356-4CC6-82C3-0866B108E2AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86072207-6356-4CC6-82C3-0866B108E2AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7F5C771-5E9F-4B35-8156-A35DCA88F2B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7F5C771-5E9F-4B35-8156-A35DCA88F2B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7F5C771-5E9F-4B35-8156-A35DCA88F2B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7F5C771-5E9F-4B35-8156-A35DCA88F2B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C8AA4A0-45F8-45A7-82F9-D65FE2FA94FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C8AA4A0-45F8-45A7-82F9-D65FE2FA94FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C8AA4A0-45F8-45A7-82F9-D65FE2FA94FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C8AA4A0-45F8-45A7-82F9-D65FE2FA94FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
