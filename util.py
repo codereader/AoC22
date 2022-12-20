@@ -23,3 +23,17 @@ def print_matrix(m):
         for val in row:
             print(val, end="")
         print()
+
+
+# Could and should be a regex probably, but this was faster for the moment
+# Only works with positive integers
+def get_integers_in_string(s):
+    ints = list()
+    ints.append("")
+    for c in s:
+        if c.isdigit():
+            ints[-1] += c
+        else:
+            if len(ints[-1]) > 0:
+                ints.append("")
+    return list(int(i) for i in ints if len(i) > 0)
