@@ -9,10 +9,15 @@
 
             foreach ( var line in input)
             {
-                var parts = line.Split(' ');
-
-                var currentBlueprint = new BluePrint();
+                var currentBluePrint = new BluePrint(line);
+                _bluePrints.Add(currentBluePrint);
             }
+        }
+
+        public void RunSimulation()
+        {
+            var production = new Production(_bluePrints[1]);
+            production.StartProduction();
         }
     }
 }

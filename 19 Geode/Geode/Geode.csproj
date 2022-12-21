@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="example.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="example.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Common\Common\Common.csproj" />
     <ProjectReference Include="..\GeodeLib\GeodeLib.csproj" />
   </ItemGroup>
