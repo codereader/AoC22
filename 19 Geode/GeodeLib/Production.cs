@@ -37,9 +37,9 @@ namespace GeodeLib
         public void StartProduction()
         {
             RunProduction();
+            _bluePrint.BestResult = _bestValue.Resources[(int)Resource.Geode];
 
             Console.WriteLine($"Blueprint " + _bluePrint.Id + ": Geodes: " + _bestValue.Resources[(int)Resource.Geode]);
-
         }
 
 
@@ -105,12 +105,18 @@ namespace GeodeLib
                 {
                     BuildNextBot(Resource.Geode, currentState);
                 }
-                if (currentState.Production[(int)Resource.Clay] > 0)
+                if (currentState.Production[(int)Resource.Clay] > 0 && currentState.Production[(int)Resource.Obsidian] < _bluePrint.MaxProduction[(int)Resource.Obsidian])
                 {
                     BuildNextBot(Resource.Obsidian, currentState);
                 }
-                BuildNextBot(Resource.Clay, currentState);
-                BuildNextBot(Resource.Ore, currentState);
+                if (currentState.Production[(int)Resource.Clay] < _bluePrint.MaxProduction[(int)Resource.Clay])
+                {
+                    BuildNextBot(Resource.Clay, currentState);
+                }
+                if (currentState.Production[(int)Resource.Ore] < _bluePrint.MaxProduction[(int)Resource.Ore])
+                {
+                    BuildNextBot(Resource.Ore, currentState);
+                }
 
             }
 

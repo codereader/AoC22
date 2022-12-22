@@ -40,7 +40,11 @@ namespace GeodeLib
             Cost[Resource.Geode][(int)Resource.Ore] = int.Parse(parts[27]);
             Cost[Resource.Geode][(int)Resource.Obsidian] = int.Parse(parts[30]);
 
-
+            // don't make more robots than needed to make a new one every minute
+            for (int i = 0; i < 4; i++)
+            {
+                MaxProduction[i] = Cost.Values.Max(r => r[i]);
+            }
         }
 
         public void CalculateQualityLevel()
