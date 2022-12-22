@@ -14,10 +14,17 @@
             }
         }
 
-        public void RunSimulation()
+        public int RunSimulation()
         {
-            var production = new Production(_bluePrints[1]);
-            production.StartProduction();
+
+            foreach ( var bluePrint in _bluePrints)
+            {
+                var production = new Production(bluePrint);
+                production.StartProduction();
+                bluePrint.CalculateQualityLevel();
+            }
+
+            return _bluePrints.Sum(b => b.QualityLevel);
         }
     }
 }

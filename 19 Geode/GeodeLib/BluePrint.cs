@@ -19,8 +19,8 @@ namespace GeodeLib
         public int GeodeRobotCostOre { get; set; }
         public int GeodeRobotCostObsidian { get; set; }
 
-
         public int BestResult { get; set; }
+        public int QualityLevel { get; set; }
 
         public BluePrint(string line)
         {
@@ -37,6 +37,12 @@ namespace GeodeLib
             GeodeRobotCostOre = int.Parse(parts[27]);
             GeodeRobotCostObsidian = int.Parse(parts[30]);
         }
+
+        public void CalculateQualityLevel()
+        {
+            QualityLevel = Id * BestResult;
+        }
+
 
     }
 }

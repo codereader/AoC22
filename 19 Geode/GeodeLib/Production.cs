@@ -33,18 +33,26 @@ namespace GeodeLib
 
             while (!bestFound)
             {
-                targetOreProduction++;
-                SetStartValues();
-                RunProduction(targetOreProduction);
-                var currentResult = _resources[Resource.Geode];
-                results.Add(currentResult);
-                //Console.WriteLine($"Target ore production: " + targetOreProduction + ", result: " + currentResult);
-
-                if (currentResult < results.Max()) 
+                if (targetOreProduction < 10)
                 {
-                    // this is worse than a previous result, we have found the best option before
-                    bestFound = true;
+                    targetOreProduction++;
+                    SetStartValues();
+                    RunProduction(targetOreProduction);
+                    var currentResult = _resources[Resource.Geode];
+                    results.Add(currentResult);
+                    //Console.WriteLine($"Target ore production: " + targetOreProduction + ", result: " + currentResult);
+
+                    if (currentResult < results.Max())
+                    {
+                        // this is worse than a previous result, we have found the best option before
+                        bestFound = true;
+                        _bluePrint.BestResult = results.Max();
+                    }
+                }
+                else
+                {
                     _bluePrint.BestResult = results.Max();
+                    break;
                 }
             }
 
@@ -54,7 +62,8 @@ namespace GeodeLib
         {
             for (int minute = 1; minute <= 24; minute++)
             {
-                //Console.WriteLine($"Minute " + minute);
+               
+               //Console.WriteLine($"Minute " + minute);
 
                 // check if we can create a new robot
                 _buildNewRobot = Resource.None;
@@ -125,13 +134,13 @@ namespace GeodeLib
 
 
                 // robots produce new resources
-                Console.WriteLine("Resources after production:");
+                //Console.WriteLine("Resources after production:");
                 foreach (var resource in _resources.Keys)
                 {
                     if (resource != Resource.None)
                     {
                         _resources[resource] += _production[resource];
-                        //Console.WriteLine($"" + resource + ": " + _resources[resource]);
+                       //Console.WriteLine($"" + resource + ": " + _resources[resource]);
                     }
                 }
 
@@ -141,7 +150,7 @@ namespace GeodeLib
                     _production[_buildNewRobot] += 1;
                 }
 
-                /*
+               /*
                 Console.WriteLine("Production after building new robot:");
                 foreach (var resource in _production.Keys)
                 {
@@ -150,9 +159,9 @@ namespace GeodeLib
                         Console.WriteLine($"" + resource + ": " + _production[resource]);
                     }
                 }
-                */
+                
                 Console.WriteLine();
-
+               */
             }
         }
 
