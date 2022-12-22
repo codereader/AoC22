@@ -8,7 +8,11 @@ public class Monkey
 	public Long _value = null;
 	public String _operandLeft;
 	public String _operandRight;
+	public String _operator;
 	public BiFunction<Long, Long, Long> _evaluation;
+	
+	Monkey _leftMonkey;
+	Monkey _rightMonkey;
 	
 	public Monkey(String line)
 	{
@@ -24,6 +28,7 @@ public class Monkey
 		{
 			_operandLeft = rest[0];
 			_operandRight = rest[2];
+			_operator = rest[1];
 			
 			switch (rest[1].charAt(0))
 			{
@@ -41,6 +46,26 @@ public class Monkey
 		return _name;
 	}
 	
+	public Monkey getLeft()
+	{
+		return _leftMonkey;
+	}
+	
+	public Monkey getRight()
+	{
+		return _rightMonkey;
+	}
+	
+	public void setLeft(Monkey left)
+	{
+		_leftMonkey = left;
+	}
+	
+	public void setRight(Monkey right)
+	{
+		_rightMonkey = right;
+	}
+	
 	public String getOperandLeft()
 	{
 		return _operandLeft;
@@ -51,14 +76,29 @@ public class Monkey
 		return _operandRight;
 	}
 	
+	public String getOperator()
+	{
+		return _operator;
+	}
+	
 	public boolean hasValue()
 	{
 		return _value != null;
 	}
 	
+	public boolean isHuman()
+	{
+		return getName().equals("humn");
+	}
+	
 	public long getValue()
 	{
 		return _value;
+	}
+	
+	public void clearValue()
+	{
+		_value = null;
 	}
 	
 	public void calculateValue(Long value1, Long value2)
