@@ -53,7 +53,7 @@ public class NumberSet
 	{
 		var slot = _index.get(originalIndex);
 	
-		System.out.println(String.format("Move %d", slot.Value));
+		//System.out.println(String.format("Move %d", slot.Value));
 		
 		if (slot.Value == 0) return; // 0 does not move
 		
@@ -70,7 +70,7 @@ public class NumberSet
 			for (var i = 0; i < Math.abs(slot.Value); ++i)
 			{
 				// slot.Next is going to be reassigned in swapPositions
-				swapPositions(slot, slot.Previous);
+				swapPositions(slot.Previous, slot);
 			}
 		}
 	}

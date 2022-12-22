@@ -8,20 +8,21 @@ public class Day20 {
 
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./test.txt");
+		var lines = FileUtils.readFile("./input.txt");
 		
 		var originalOrder = lines.stream().map(Integer::parseInt).collect(Collectors.toList());
 		
 		var workingSet = new NumberSet(originalOrder);
 
-		System.out.println(String.format("Initial Situation: %s", workingSet)); 
-		System.out.println(); 
+		//System.out.println(String.format("Initial Situation: %s\n", workingSet)); 
 		
 		for (int i = 0; i < workingSet.getNumberCount(); i++)
 		{
+			//System.out.println(String.format("Before: %s", workingSet)); 
+			
 			workingSet.moveNthNumber(i);
 			
-			System.out.println(workingSet.toString()); 
+			//System.out.println(String.format("After : %s\n---", workingSet)); 
 		}
 		
 		var zeroIndex = workingSet.getPosition(0);
