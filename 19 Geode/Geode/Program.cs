@@ -8,5 +8,9 @@ var robotinator = new RobotHandler();
 
 robotinator.Parse(input);
 
-Console.WriteLine(robotinator.RunSimulation());
+// part 1
+//Console.WriteLine(robotinator.RunSimulation1());
+
+// part 2
+Console.WriteLine(robotinator.RunSimulation2());
 

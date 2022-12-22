@@ -9,6 +9,10 @@ namespace GeodeLib
     internal class Production
     {
         private BluePrint _bluePrint;
+        private int _workMinutes;
+
+        public int Minute { get; set; }
+
 
         private State _startingState = new State();
 
@@ -20,9 +24,10 @@ namespace GeodeLib
 
         private State _bestValue = new State();
 
-        public Production(BluePrint bluePrint)
+        public Production(BluePrint bluePrint, int workMinutes)
         {
             _bluePrint = bluePrint;
+            _workMinutes = workMinutes;
 
             _startingState.Minute = 0;
             foreach (var resource in (Resource[])Enum.GetValues(typeof(Resource)))
@@ -78,12 +83,12 @@ namespace GeodeLib
 
             // let the current setup run for minMinutes + 1 (the last minute where we will create the new robot)
             // unless the 24 minutes are over before the new robot is finished
-            if (currentState.Minute + maxMinutes + 1 >= 24)
+            if (currentState.Minute + maxMinutes + 1 >= _workMinutes)
             {
                 // finish this test run
-                var minutesLeft = 24 - currentState.Minute;
+                var minutesLeft = _workMinutes - currentState.Minute;
                 currentState.UpdateResources(minutesLeft);
-                currentState.Minute = 24;
+                currentState.Minute = _workMinutes;
 
                 if (currentState.Resources[(int)Resource.Geode] > _bestValue.Resources[(int)Resource.Geode])
                 {
