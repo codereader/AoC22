@@ -8,12 +8,12 @@ public class NumberSet
 {
 	private class Slot
 	{
-		public Slot(int value)
+		public Slot(long value)
 		{
 			Value = value;
 		}
 		
-		public final Integer Value;
+		public final Long Value;
 		
 		public Slot Previous;
 		public Slot Next;
@@ -25,7 +25,7 @@ public class NumberSet
 	private final List<Slot> _index;
 	private final TreeMap<Integer, Slot> _slotPositions;
 	
-	public NumberSet(List<Integer> numbers)
+	public NumberSet(List<Long> numbers)
 	{
 		// Create a slot for each original number, retaining the order
 		_index = numbers.stream().map(i -> new Slot(i)).collect(Collectors.toList());
@@ -56,10 +56,13 @@ public class NumberSet
 		//System.out.println(String.format("Move %d", slot.Value));
 		
 		if (slot.Value == 0) return; // 0 does not move
-		
+
 		if (slot.Value > 0)
 		{
-			for (var i = 0; i < slot.Value; ++i)
+			// Subtract the full cycles before doing the rest of the steps
+			var numMoves = slot.Value % (getNumberCount() - 1);  
+			
+			for (var i = 0; i < numMoves; ++i)
 			{
 				// slot.Next is going to be reassigned in swapPositions
 				swapPositions(slot, slot.Next);
@@ -67,7 +70,9 @@ public class NumberSet
 		}
 		else // slot.Value < 0
 		{
-			for (var i = 0; i < Math.abs(slot.Value); ++i)
+			var numMoves = Math.abs(slot.Value) % (getNumberCount() - 1);
+			
+			for (var i = 0; i < numMoves; ++i)
 			{
 				// slot.Next is going to be reassigned in swapPositions
 				swapPositions(slot.Previous, slot);
@@ -98,14 +103,27 @@ public class NumberSet
 	}
 	
 	// Position will be wrapping around
-	public int getNumberAt(int position)
+	public long getNumberAt(int position)
 	{
 		return _slotPositions.get(position % _index.size()).Value;
 	}
 	
-	public int getPosition(int value)
+	public int getPosition(long value)
 	{
 		return _index.stream().filter(slot -> slot.Value == value).findFirst().get().Position;
+	}
+	
+	public long getGroveCoordinates()
+	{
+		var zeroIndex = getPosition(0);
+		
+		var first = getNumberAt(zeroIndex + 1000);
+		var second = getNumberAt(zeroIndex + 2000);
+		var third = getNumberAt(zeroIndex + 3000);
+		
+		System.out.println(String.format("1000th: %d, 2000th: %d, 3000th: %d", first, second, third));
+		
+		return first + second + third;
 	}
 	
 	@Override
