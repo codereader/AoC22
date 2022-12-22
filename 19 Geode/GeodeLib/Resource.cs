@@ -8,7 +8,6 @@ namespace GeodeLib
 {
     internal enum Resource
     {
-        None,
         Ore,
         Clay,
         Obsidian,

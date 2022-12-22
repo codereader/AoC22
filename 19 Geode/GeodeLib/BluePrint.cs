@@ -12,12 +12,10 @@ namespace GeodeLib
 
         public int Id { get; set; }
 
-        public int OreRobotCostOre { get; set; }
-        public int ClayRobotCostOre { get; set; }
-        public int ObsidianRobotCostOre { get; set; }
-        public int ObsidianRobotCostClay { get; set; }
-        public int GeodeRobotCostOre { get; set; }
-        public int GeodeRobotCostObsidian { get; set; }
+        public Dictionary<Resource, int[]> Cost { get; set; } = new Dictionary<Resource, int[]>();
+
+        public int[] MaxProduction = new int[4];
+
 
         public int BestResult { get; set; }
         public int QualityLevel { get; set; }
@@ -30,12 +28,19 @@ namespace GeodeLib
             var idStr = parts[1].Split(':');
             Id = int.Parse(idStr[0]);
 
-            OreRobotCostOre = int.Parse(parts[6]);
-            ClayRobotCostOre = int.Parse(parts[12]);
-            ObsidianRobotCostOre = int.Parse(parts[18]);
-            ObsidianRobotCostClay = int.Parse(parts[21]);
-            GeodeRobotCostOre = int.Parse(parts[27]);
-            GeodeRobotCostObsidian = int.Parse(parts[30]);
+            foreach (var resource in (Resource[])Enum.GetValues(typeof(Resource)))
+            {
+                Cost.Add(resource, new int[] { 0, 0, 0, 0 });
+            }
+
+            Cost[Resource.Ore][(int)Resource.Ore] = int.Parse(parts[6]);
+            Cost[Resource.Clay][(int)Resource.Ore] = int.Parse(parts[12]);
+            Cost[Resource.Obsidian][(int)Resource.Ore] = int.Parse(parts[18]);
+            Cost[Resource.Obsidian][(int)Resource.Clay] = int.Parse(parts[21]);
+            Cost[Resource.Geode][(int)Resource.Ore] = int.Parse(parts[27]);
+            Cost[Resource.Geode][(int)Resource.Obsidian] = int.Parse(parts[30]);
+
+
         }
 
         public void CalculateQualityLevel()
