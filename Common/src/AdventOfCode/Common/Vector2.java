@@ -58,4 +58,9 @@ public class Vector2 {
     	return Objects.hash(_x, _y);
     }
 	
+    @Override
+    public String toString()
+    {
+    	return String.format("%d,%d", _x, _y);
+    }
 }
