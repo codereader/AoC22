@@ -2,6 +2,7 @@ package AdventOfCode;
 
 import java.util.ArrayList;
 
+import AdventOfCode.Common.Matrix3;
 import AdventOfCode.Common.Vector2;
 
 public class Area
@@ -9,8 +10,8 @@ public class Area
 	public class Connection
 	{
 		public Area TargetArea;
-		public Vector2 OriginalDirection;
-		public Vector2 NewDirection;
+		public Matrix3 Transform;
+		public Vector2 Direction;
 	}
 	
 	public Vector2 UpperLeft;
@@ -33,23 +34,26 @@ public class Area
 			position.getY() <= LowerRight.getY();
 	}
 	
-	public void addConnection(Area toArea, Vector2 originalDirection, Vector2 newDirection)
-	{
-		addConnection(toArea, originalDirection, newDirection, true);
-	}
-	
-	private void addConnection(Area toArea, Vector2 originalDirection, Vector2 newDirection, boolean registerOpposite)
+	public void addConnection(Vector2 direction, Area toArea, Matrix3 transform)
 	{
 		var conn = new Connection();
 		conn.TargetArea = toArea;
-		conn.OriginalDirection = originalDirection;
-		conn.NewDirection = newDirection;
-		Connections.add(conn);
+		conn.Transform = transform;
+		conn.Direction = direction;
 		
-		if (registerOpposite)
+		Connections.add(conn);
+	}
+
+	public Connection getTargetAreaForDirection(Vector2 forward)
+	{
+		for (var conn : Connections)
 		{
-			// Connect the area back to this one
-			toArea.addConnection(this, newDirection.times(-1), originalDirection.times(-1), false);
+			if (conn.Direction.equals(forward))
+			{
+				return conn;
+			}
 		}
+		
+		return null;
 	}
 }

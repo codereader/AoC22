@@ -74,4 +74,24 @@ public class State
 	{
 		return String.format("At %d,%d facing %s", Position.getX(), Position.getY(), getDirectionString());
 	}
+
+	public void setDirectionFromVector(Vector2 forward)
+	{
+		if (forward.equals(new Vector2(1, 0)))
+		{
+			Direction = FaceRight;
+		}
+		else if (forward.equals(new Vector2(0, 1)))
+		{
+			Direction = FaceDown;
+		}
+		else if (forward.equals(new Vector2(-1, 0)))
+		{
+			Direction = FaceLeft;
+		}
+		else
+		{
+			Direction = FaceUp;
+		}
+	}
 }

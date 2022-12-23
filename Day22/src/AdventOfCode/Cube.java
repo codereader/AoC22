@@ -8,10 +8,12 @@ import AdventOfCode.Common.Vector2;
 public class Cube extends Field
 {
 	private List<Area> _areas;
+	private final int _sideLength;
 	
-	public Cube(List<String> lines)
+	public Cube(List<String> lines, int sideLength)
 	{
 		super(lines);
+		_sideLength = sideLength;
 		_areas = new ArrayList<Area>();
 	}
 	
@@ -43,7 +45,49 @@ public class Cube extends Field
 	@Override
 	public Vector2 getForwardPosition(State state)
 	{
-		return super.getForwardPosition(state); // TODO
+		var forward = state.getForwardDirection();
+		
+		var currentArea = getArea(state.Position);
+		
+		var newPos = state.Position.plus(forward);
+		
+		// Leaving the area?
+		if (getArea(newPos) != currentArea)
+		{
+			// Get the target area and transform position and direction
+			var connection = currentArea.getTargetAreaForDirection(forward);
+			var localCoords = getLocalAreaCoords(currentArea, state.Position);
+			
+			forward = connection.Transform.transformDirection(forward);
+			localCoords = connection.Transform.transformPoint(localCoords);
+			
+			return getGlobalCoords(connection.TargetArea, localCoords);
+		}
+		
+		return newPos;
+	}
+	
+	// Coordinates measured from the upper left area corner
+	private static Vector2 getLocalAreaCoords(Area area, Vector2 position)
+	{
+		return new Vector2(
+			position.getX() - area.UpperLeft.getX(),
+			position.getY() - area.UpperLeft.getY()
+		);
+	}
+	
+	// Coordinates measured in global coords
+	private static Vector2 getGlobalCoords(Area area, Vector2 local)
+	{
+		return new Vector2(
+			local.getX() + area.UpperLeft.getX(),
+			local.getY() + area.UpperLeft.getY()
+		);
+	}
+	
+	private Area getArea(Vector2 position)
+	{
+		return _areas.stream().filter(a -> a.contains(position)).findFirst().orElse(null);
 	}
 	
 	public void printState(State state)
@@ -68,8 +112,27 @@ public class Cube extends Field
 		System.out.println("-------------------------");
 	}
 
-	public void addConnectivity(int fromArea, Vector2 originalDirection, int toArea, Vector2 newDirection)
+	public void moveForward(State state)
 	{
+		var forward = state.getForwardDirection();
+		var currentArea = getArea(state.Position);
+		var newPos = state.Position.plus(forward);
 		
+		if (getArea(newPos) != currentArea)
+		{
+			// Get the target area and transform position and direction
+			var connection = currentArea.getTargetAreaForDirection(forward);
+			var localCoords = getLocalAreaCoords(currentArea, state.Position);
+			
+			forward = connection.Transform.transformDirection(forward);
+			localCoords = connection.Transform.transformPoint(localCoords);
+			
+			state.Position = getGlobalCoords(connection.TargetArea, localCoords);
+			state.setDirectionFromVector(forward);
+		}
+		else
+		{
+			state.Position = newPos;
+		}
 	}
 }
