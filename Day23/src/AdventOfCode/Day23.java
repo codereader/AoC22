@@ -17,11 +17,20 @@ public class Day23
 		while (++round <= 10 && field.runRound())
 		{
 			System.out.println(String.format("Round %d", round));
-			System.out.println(String.format("%s", field));
 		}
 		
 		System.out.println(String.format("Final Situation:", round));
 		System.out.println(String.format("%s", field));
-		System.out.println(String.format("We now have %d empty ground spaces:\n%s", field.getNumEmptySpacesInBounds(), field));
+		System.out.println(String.format("[Part1]: %d empty ground spaces", field.getNumEmptySpacesInBounds()));
+		
+		field = new Field(lines);
+		round = 1;
+		
+		while (field.runRound())
+		{
+			round++;
+		}
+		
+		System.out.println(String.format("[Part2]: First round where no elf moved: %d", round));
 	}
 }
