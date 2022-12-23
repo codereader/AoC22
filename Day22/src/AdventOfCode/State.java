@@ -1,7 +1,5 @@
 package AdventOfCode;
 
-import java.util.List;
-
 import AdventOfCode.Common.Vector2;
 
 public class State
@@ -18,33 +16,6 @@ public class State
 	{
 		Position = new Vector2(0,0);
 		Direction = FaceRight;
-	}
-	
-	public Vector2 getForwardPosition(Field field)
-	{
-		var forward = getForwardDirection();
-		
-		var x = Position.getX();
-		
-		// Move y first
-		var y = (Position.getY() + forward.getY() + field.getHeight()) % field.getHeight();
-		
-		while (field.getBlock(x, y) == ' ')
-		{
-			y = (y + forward.getY() + field.getHeight()) % field.getHeight();
-		}
-		
-		// Move x
-		var lineWidth = field.getWidth(y);
-		
-		x = (x + forward.getX() + lineWidth) % lineWidth; 
-		
-		while (field.getBlock(x, y) == ' ')
-		{
-			x = (x + forward.getX() + lineWidth) % lineWidth;
-		}
-		
-		return new Vector2(x, y);
 	}
 	
 	public Vector2 getForwardDirection()

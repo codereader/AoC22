@@ -1,31 +1,24 @@
 package AdventOfCode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import AdventOfCode.Common.Vector2;
 
-public class Field
+public class Cube extends Field
 {
-	protected final List<String> _lines;
+	private List<Area> _areas;
 	
-	public Field(List<String> lines)
+	public Cube(List<String> lines)
 	{
-		_lines = lines;
+		super(lines);
+		_areas = new ArrayList<Area>();
 	}
 	
-	public Vector2 getStartPosition()
+	public Area addArea(Area area)
 	{
-		return new Vector2(_lines.get(0).indexOf('.'), 0);
-	}
-	
-	public int getWidth(int y)
-	{
-		return _lines.get(y).length();
-	}
-	
-	public int getHeight()
-	{
-		return _lines.size(); 
+		_areas.add(area);
+		return area;
 	}
 	
 	public char getBlock(Vector2 position)
@@ -47,31 +40,10 @@ public class Field
 		return getBlock(position) == '#';
 	}
 	
+	@Override
 	public Vector2 getForwardPosition(State state)
 	{
-		var forward = state.getForwardDirection();
-		
-		var x = state.Position.getX();
-		
-		// Move y first, wrapping around to a valid field
-		var y = (state.Position.getY() + forward.getY() + getHeight()) % getHeight();
-		
-		while (getBlock(x, y) == ' ')
-		{
-			y = (y + forward.getY() + getHeight()) % getHeight();
-		}
-		
-		// Move x, wrapping to a valid field
-		var lineWidth = getWidth(y);
-		
-		x = (x + forward.getX() + lineWidth) % lineWidth; 
-		
-		while (getBlock(x, y) == ' ')
-		{
-			x = (x + forward.getX() + lineWidth) % lineWidth;
-		}
-		
-		return new Vector2(x, y);
+		return super.getForwardPosition(state); // TODO
 	}
 	
 	public void printState(State state)
@@ -94,5 +66,10 @@ public class Field
 		
 		System.out.println(text);
 		System.out.println("-------------------------");
+	}
+
+	public void addConnectivity(int fromArea, Vector2 originalDirection, int toArea, Vector2 newDirection)
+	{
+		
 	}
 }
