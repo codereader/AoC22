@@ -8,12 +8,10 @@ import AdventOfCode.Common.Vector2;
 public class Cube extends Field
 {
 	private List<Area> _areas;
-	private final int _sideLength;
 	
-	public Cube(List<String> lines, int sideLength)
+	public Cube(List<String> lines)
 	{
 		super(lines);
-		_sideLength = sideLength;
 		_areas = new ArrayList<Area>();
 	}
 	
@@ -112,6 +110,7 @@ public class Cube extends Field
 		System.out.println("-------------------------");
 	}
 
+	@Override
 	public void moveForward(State state)
 	{
 		var forward = state.getForwardDirection();

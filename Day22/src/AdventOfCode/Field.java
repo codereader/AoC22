@@ -74,6 +74,11 @@ public class Field
 		return new Vector2(x, y);
 	}
 	
+	public void moveForward(State state)
+	{
+		state.Position = getForwardPosition(state);
+	}
+	
 	public void printState(State state)
 	{
 		var text = new StringBuilder();

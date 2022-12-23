@@ -12,9 +12,12 @@ public class Day22
 	public static void main(String[] args)
 	{
 		var lines = FileUtils.readFile("./input.txt");
+		var commands = lines.get(lines.size() - 1);
 		
-		runPart1(lines); // 75254
-		runPart2(lines); 
+		var partField = new Field(lines.stream().limit(lines.size() - 2).collect(Collectors.toList()));
+		
+		runPart(1, partField, commands, lines); // 75254
+		runPart(2, createLiveCube(lines), commands, lines); // 108311
 	}
 	
 	private final static Vector2 Down = new Vector2(0, 1);
@@ -22,19 +25,14 @@ public class Day22
 	private final static Vector2 Right= new Vector2(1, 0);
 	private final static Vector2 Left = new Vector2(-1, 0);
 	
-	private static void runPart2(List<String> lines)
+	private static void runPart(int part, Field field, String commands, List<String> lines)
 	{
-		var commands = lines.get(lines.size() - 1);
-		var cube = createLiveCube(lines);
-		
 		var state = new State();
-		state.Position = cube.getStartPosition();
+		state.Position = field.getStartPosition();
 		
 		var next = 0;
 		while (next < commands.length())
 		{
-			//cube.printState(state);
-			
 			var ch = commands.charAt(next);
 			
 			if (ch == 'R')
@@ -57,31 +55,30 @@ public class Day22
 				numberChars += commands.charAt(next++);
 			}
 			
-			var nextPosition = cube.getForwardPosition(state);
+			var nextPosition = field.getForwardPosition(state);
 			var moves = Integer.parseInt(numberChars);
 			
-			while (moves-- > 0 && !cube.blockIsSolid(nextPosition))
+			while (moves-- > 0 && !field.blockIsSolid(nextPosition))
 			{
-				cube.moveForward(state);
-				//cube.printState(state);
-				nextPosition = cube.getForwardPosition(state);
+				field.moveForward(state);
+				nextPosition = field.getForwardPosition(state);
 			}
 		}
 		
 		System.out.println(String.format("Final State: %s", state));
-		System.out.println(String.format("[Part2]: Password: %d", state.getPassword()));
+		System.out.println(String.format("[Part%d]: Password: %d", part, state.getPassword()));
 	}
 	
 	private static Cube createLiveCube(List<String> lines)
 	{
 		var edgeLength = 50;
-		var cube = new Cube(lines.stream().limit(lines.size() - 2).collect(Collectors.toList()), edgeLength);
+		var cube = new Cube(lines.stream().limit(lines.size() - 2).collect(Collectors.toList()));
 		
 		var N = edgeLength - 1;
 		var area1 = cube.addArea(new Area(edgeLength, 0, edgeLength, edgeLength)); // 1 (index 0)
-		var area2 = cube.addArea(new Area(edgeLength*2, 0, edgeLength, edgeLength)); // 4 (index 1)
+		var area2 = cube.addArea(new Area(edgeLength*2, 0, edgeLength, edgeLength)); // 2 (index 1)
 		var area3 = cube.addArea(new Area(edgeLength, edgeLength, edgeLength, edgeLength)); // 3 (index 2)
-		var area4 = cube.addArea(new Area(0, edgeLength*2, edgeLength, edgeLength)); // 2 (index 3)
+		var area4 = cube.addArea(new Area(0, edgeLength*2, edgeLength, edgeLength)); // 4 (index 3)
 		var area5 = cube.addArea(new Area(edgeLength, edgeLength*2, edgeLength, edgeLength)); // 5 (index 4)
 		var area6 = cube.addArea(new Area(0, edgeLength*3, edgeLength, edgeLength)); // 6 (index 5)
 
@@ -148,7 +145,7 @@ public class Day22
 	private static Cube createTestCube(List<String> lines)
 	{
 		var edgeLength = 4;
-		var cube = new Cube(lines.stream().limit(lines.size() - 2).collect(Collectors.toList()), edgeLength);
+		var cube = new Cube(lines.stream().limit(lines.size() - 2).collect(Collectors.toList()));
 		
 		var N = edgeLength - 1;
 		var area1 = cube.addArea(new Area(8, 0, edgeLength, edgeLength)); // 1 (index 0)
@@ -225,54 +222,5 @@ public class Day22
 				.getMultipliedBy(Matrix3.Translation(new Vector2(-N, -N))));
 		
 		return cube;
-	}
-
-	private static void runPart1(List<String> lines)
-	{
-		var commands = lines.get(lines.size() - 1);
-		var field = new Field(lines.stream().limit(lines.size() - 2).collect(Collectors.toList()));
-		
-		var state = new State();
-		state.Position = field.getStartPosition();
-		
-		var next = 0;
-		while (next < commands.length())
-		{
-			//field.printState(state);
-			
-			var ch = commands.charAt(next);
-			
-			if (ch == 'R')
-			{
-				state.turnRight();
-				++next;
-				continue;
-			}
-			else if (ch == 'L')
-			{
-				state.turnLeft();
-				++next;
-				continue;
-			}
-			
-			var numberChars = "";
-					
-			while (next < commands.length() && Character.isDigit(commands.charAt(next)))
-			{
-				numberChars += commands.charAt(next++);
-			}
-			
-			var nextPosition = field.getForwardPosition(state);
-			var moves = Integer.parseInt(numberChars);
-			
-			while (moves-- > 0 && !field.blockIsSolid(nextPosition))
-			{
-				state.Position = nextPosition;
-				nextPosition = field.getForwardPosition(state);
-			}
-		}
-		
-		System.out.println(String.format("Final State: %s", state));
-		System.out.println(String.format("[Part1]: Password: %d", state.getPassword()));
 	}
 }
