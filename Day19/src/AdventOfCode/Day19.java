@@ -14,20 +14,20 @@ public class Day19
 {
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./test.txt");
+		var lines = FileUtils.readFile("./input.txt");
 		
 		var bluePrints = lines.stream().map(line -> new BluePrint(line)).collect(Collectors.toList());
 		
 		var totalQualityLevel = 0;
 		
-		for (var bluePrint : bluePrints)
+		/*for (var bluePrint : bluePrints)
 		{
 			var maxGeodes = runSimulation(bluePrint.Robots, 24);
 			
 			System.out.println(String.format("BluePrint %d can produce %d Geodes max, has Quality Level = %d", bluePrint.Index, maxGeodes, bluePrint.Index * maxGeodes));
 			
 			totalQualityLevel += bluePrint.Index * maxGeodes;
-		}
+		}*/
 		
 		System.out.println(String.format("[Part1]: Total Quality Level = %d", totalQualityLevel));
 		
