@@ -1,5 +1,7 @@
 package AdventOfCode;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +14,7 @@ public class Day19
 {
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./test.txt");
+		var lines = FileUtils.readFile("./input.txt");
 		
 		var bluePrints = lines.stream().map(line -> new BluePrint(line)).collect(Collectors.toList());
 		
@@ -39,6 +41,8 @@ public class Day19
 	
 	public static int runSimulation(List<Robot> robots, int minutes)
 	{
+		var startTime = Instant.now();
+		
 		// Starting situation
 		var startingInventory = new Inventory(1);
 		var oreRobot = robots.stream().filter(r -> r.getMaterial() == Material.Ore).findFirst().get();
@@ -112,9 +116,18 @@ public class Day19
 			}
 		}
 
-		System.out.println(String.format("Calculated %d possibilities", finishedInventories.size()));
+		//System.out.println(String.format("Calculated %d possibilities", finishedInventories.size()));
 		System.out.println(String.format("Best Geode Production: %d", bestGeodeProduction));
 		
-		return finishedInventories.stream().mapToInt(i -> i.Materials.get(Material.Geode).intValue()).max().getAsInt();
+		if (!finishedInventories.isEmpty())
+		{
+			System.out.println(String.format("Best Inventory: %s", finishedInventories.get(0)));
+		}
+		
+		
+		var endTime = Instant.now();
+		System.out.println(Duration.between(startTime, endTime));
+		
+		return bestGeodeProduction;
 	}
 }
