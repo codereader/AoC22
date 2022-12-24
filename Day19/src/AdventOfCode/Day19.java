@@ -14,7 +14,7 @@ public class Day19
 {
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./input.txt");
+		var lines = FileUtils.readFile("./test.txt");
 		
 		var bluePrints = lines.stream().map(line -> new BluePrint(line)).collect(Collectors.toList());
 		
@@ -22,14 +22,7 @@ public class Day19
 		
 		for (var bluePrint : bluePrints)
 		{
-			var robots = new ArrayList<Robot>();
-			
-			robots.add(new Robot(Material.Geode, bluePrint.GeodeRobotOreCost, 0, bluePrint.GeodeRobotObsidianCost));
-			robots.add(new Robot(Material.Obsidian, bluePrint.ObsidianRobotOreCost, bluePrint.ObsidianRobotClayCost, 0));
-			robots.add(new Robot(Material.Clay, bluePrint.ClayRobotOreCost, 0, 0));
-			robots.add(new Robot(Material.Ore, bluePrint.OreRobotOreCost, 0, 0));
-			
-			var maxGeodes = runSimulation(robots, 24);
+			var maxGeodes = runSimulation(bluePrint.Robots, 24);
 			
 			System.out.println(String.format("BluePrint %d can produce %d Geodes max, has Quality Level = %d", bluePrint.Index, maxGeodes, bluePrint.Index * maxGeodes));
 			
@@ -37,6 +30,21 @@ public class Day19
 		}
 		
 		System.out.println(String.format("[Part1]: Total Quality Level = %d", totalQualityLevel));
+		
+		var firstThreeBluePrints = bluePrints.stream().limit(3).collect(Collectors.toList());
+
+		var productOfTopThree = 1;
+		
+		for (var bluePrint : firstThreeBluePrints)
+		{
+			var maxGeodes = runSimulation(bluePrint.Robots, 32);
+			
+			System.out.println(String.format("BluePrint %d can produce %d Geodes max", bluePrint.Index, maxGeodes));
+			
+			productOfTopThree *= maxGeodes;
+		}
+		
+		System.out.println(String.format("[Part2]: Product of max geodes of first three blueprints = %d", productOfTopThree));
 	}
 	
 	public static int runSimulation(List<Robot> robots, int minutes)

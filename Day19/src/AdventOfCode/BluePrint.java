@@ -1,6 +1,7 @@
 package AdventOfCode;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BluePrint
 {
@@ -28,6 +29,8 @@ public class BluePrint
 		ObsidianRobotClayCost = numbers.get(4);
 		GeodeRobotOreCost = numbers.get(5);
 		GeodeRobotObsidianCost = numbers.get(6);
+		
+		createRobots();
 	}
 	
 	public final int Index;
@@ -38,4 +41,16 @@ public class BluePrint
 	public final int ObsidianRobotClayCost;
 	public final int GeodeRobotOreCost;
 	public final int GeodeRobotObsidianCost;
+	
+	public List<Robot> Robots;
+	
+	private void createRobots()
+	{
+		Robots = new ArrayList<Robot>();
+		
+		Robots.add(new Robot(Material.Geode, GeodeRobotOreCost, 0, GeodeRobotObsidianCost));
+		Robots.add(new Robot(Material.Obsidian, ObsidianRobotOreCost, ObsidianRobotClayCost, 0));
+		Robots.add(new Robot(Material.Clay, ClayRobotOreCost, 0, 0));
+		Robots.add(new Robot(Material.Ore, OreRobotOreCost, 0, 0));
+	}
 }
