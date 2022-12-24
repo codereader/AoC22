@@ -20,14 +20,33 @@ public class Day24
 		var startField = new Field(blizzardCache, 0);
 		
 		System.out.println(String.format("Initial field:\n%s", startField));
-		System.out.println(String.format("Target coords:\n%s", startField.getTargetCoords()));
+		System.out.println(String.format("Target coords:\n%s", startField.getTargetPosition()));
+		
+		var field = runSimulation(startField);
+		System.out.println(String.format("[Part1]: Best time: %d", field.Time));
+		
+		var firstRunToTarget = field.Time;
+		
+		// Part2: Go back to the start
+		field.setTargetPosition(field.getStartCoords());
+		
+		var fieldBackHome = runSimulation(field);
+		System.out.println(String.format("Back at the start at time: %d", fieldBackHome.Time));
+		
+		fieldBackHome.setTargetPosition(fieldBackHome.getDefaultTargetCoords());
+		var finalField = runSimulation(fieldBackHome);
+		System.out.println(String.format("[Part2]: At the target position again: %d", finalField.Time));
+	}
+	
+	private static Field runSimulation(Field startField)
+	{
+		int bestTime = Integer.MAX_VALUE;
+		Field finalField = null;
 		
 		var fieldsToInvestigate = new TreeMap<Integer, HashSet<Field>>();
 		var startStack = new HashSet<Field>();
 		startStack.add(startField);
 		fieldsToInvestigate.put(startField.Time, startStack);
-		
-		int bestTime = Integer.MAX_VALUE;
 		
 		while (!fieldsToInvestigate.isEmpty())
 		{
@@ -47,11 +66,9 @@ public class Day24
 			// Did we reach the goal?
 			if (field.targetReached())
 			{
-				if (field.Time < bestTime)
-				{
-					bestTime = field.Time;
-				}
-				continue;
+				bestTime = field.Time;
+				finalField = field;
+				break;
 			}
 			
 			// Discard this situation?
@@ -83,6 +100,6 @@ public class Day24
 			}
 		}
 		
-		System.out.println(String.format("[Part1]: Best time: %d", bestTime));
+		return finalField;
 	}
 }

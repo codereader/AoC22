@@ -14,6 +14,7 @@ public class Field
 	private final BlizzardCache _blizzardCache;
 	private BlizzardCollection _blizzards;
 	private Vector2 _elfPosition;
+	private Vector2 _targetPosition;
 	
 	private static final Vector2 Up = new Vector2(0, -1);
 	private static final Vector2 Right = new Vector2(1, 0);
@@ -30,6 +31,7 @@ public class Field
 		_height = _blizzardCache.getFieldHeight();
 		
 		_elfPosition = getStartCoords();
+		_targetPosition = getDefaultTargetCoords();
 	}
 	
 	public Field(Field other, int time, Vector2 elfDecision)
@@ -42,6 +44,7 @@ public class Field
 		_height = other._height;
 		
 		_elfPosition = elfDecision != null ? _elfPosition = other._elfPosition.plus(elfDecision) : other._elfPosition;
+		_targetPosition = other._targetPosition;
 	}
 	
 	public Vector2 getStartCoords()
@@ -49,7 +52,17 @@ public class Field
 		return new Vector2(0, -1);
 	}
 	
-	public Vector2 getTargetCoords()
+	public Vector2 getTargetPosition()
+	{
+		return _targetPosition;
+	}
+	
+	public void setTargetPosition(Vector2 target)
+	{
+		_targetPosition = target;
+	}
+	
+	public Vector2 getDefaultTargetCoords()
 	{
 		return new Vector2(_width - 1, _height);
 	}
@@ -60,7 +73,8 @@ public class Field
 
 		var position = _elfPosition.plus(Down);
 
-		if (position.equals(getTargetCoords()))
+		// We can reach the target by moving Up or Down
+		if (position.equals(getTargetPosition()))
 		{
 			possibilities.add(Down);
 			return possibilities; // out of here!
@@ -72,6 +86,13 @@ public class Field
 		}
 		
 		position = _elfPosition.plus(Up);
+		
+		// We can reach the target by moving Up or Down
+		if (position.equals(getTargetPosition()))
+		{
+			possibilities.add(Up);
+			return possibilities; // out of here!
+		}
 		
 		if (fieldIsValid(position) && !fieldIsHitByBlizzardNextMove(position))
 		{
@@ -155,7 +176,7 @@ public class Field
 				
 				if (y < 0 || y >= _height)
 				{
-					text.append(position.equals(getTargetCoords()) || position.equals(getStartCoords()) ? '.' : '#');
+					text.append(position.equals(getTargetPosition()) || position.equals(getStartCoords()) ? '.' : '#');
 					continue;
 				}
 				
@@ -171,6 +192,6 @@ public class Field
 
 	public boolean targetReached()
 	{
-		return _elfPosition.equals(getTargetCoords());
+		return _elfPosition.equals(getTargetPosition());
 	}
 }
