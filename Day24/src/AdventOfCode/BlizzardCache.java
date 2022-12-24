@@ -42,7 +42,7 @@ public class BlizzardCache
 	
 	private BlizzardCollection generateForTime(int time)
 	{
-		var collection = new BlizzardCollection(time, _fieldWidth, _fieldHeight);
+		var collection = new BlizzardCollection(_fieldWidth, _fieldHeight);
 		
 		for (var blizzard : _blizzards)
 		{

@@ -7,17 +7,29 @@ import AdventOfCode.Common.Vector2;
 
 public class BlizzardCollection
 {
-	public int Time;
-	private short[][] _field;
+	private final short[][] _field;
+	private final int _width;
+	private final int _height;
 	
-	public BlizzardCollection(int time, int width, int height)
+	public BlizzardCollection(int width, int height)
 	{
-		_field = new short[height][width];
+		_width = width;
+		_height = height;
+		_field = new short[_height][_width];
 	}
 	
 	public void addBlizzard(int x, int y, int blizzardDirection)
 	{
 		_field[y][x] |= blizzardDirection;
+	}
+	
+	// X and Y can exceed the field width safely
+	private int getBlizzardAt(int x, int y)
+	{
+		while (y < 0) y += _height;
+		while (x < 0) x += _width;
+		
+		return _field[y % _height][x % _width];
 	}
 	
 	public char getBlizzardCharacter(int x, int y)
@@ -56,5 +68,34 @@ public class BlizzardCollection
 		}
 		
 		return list;
+	}
+
+	public boolean blizzardIsMovingTo(Vector2 position)
+	{
+		// Blizzards cannot hit outside fields
+		if (position.getX() < 0 || position.getX() >= _width) return false;
+		if (position.getY() < 0 || position.getY() >= _height) return false;
+		
+		if ((getBlizzardAt(position.getX() - 1, position.getY()) & Blizzard.Right) != 0)
+		{
+			return true;
+		}
+		
+		if ((getBlizzardAt(position.getX() + 1, position.getY()) & Blizzard.Left) != 0)
+		{
+			return true;
+		}
+		
+		if ((getBlizzardAt(position.getX(), position.getY() - 1) & Blizzard.Down) != 0)
+		{
+			return true;
+		}
+		
+		if ((getBlizzardAt(position.getX(), position.getY() + 1) & Blizzard.Up) != 0)
+		{
+			return true;
+		}
+		
+		return false;
 	}
 }

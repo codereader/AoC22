@@ -1,9 +1,9 @@
 package AdventOfCode;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.TreeMap;
 
 import AdventOfCode.Common.FileUtils;
-import AdventOfCode.Common.Vector2;
 
 public class Day24
 {
@@ -22,47 +22,39 @@ public class Day24
 		System.out.println(String.format("Initial field:\n%s", startField));
 		System.out.println(String.format("Target coords:\n%s", startField.getTargetCoords()));
 		
-		for (int time = 1; time < 20; time++)
-		{
-			var field = new Field(blizzardCache, time);
-			
-			System.out.println(String.format("Time: %d\n%s\n-----", time, field));
-		}
+		var fieldsToInvestigate = new TreeMap<Integer, ArrayDeque<Field>>();
+		var startStack = new ArrayDeque<Field>();
+		startStack.push(startField);
+		fieldsToInvestigate.put(startField.Time, startStack);
 		
-		if (true) return;
-		
-		var fieldsToInvestigate = new Stack<Field>();
-		fieldsToInvestigate.push(startField);
-		
-		startField.Time = 1;
-		startField.ElfDecision = new Vector2(0, 1); // move down, it's safe
-		
-		Field bestField = null;
+		int bestTime = Integer.MAX_VALUE;
 		
 		while (!fieldsToInvestigate.isEmpty())
 		{
-			var field = fieldsToInvestigate.pop();
+			var lowestEntry = fieldsToInvestigate.firstEntry();
 			
-			// Execute the stored elf decision
-			if (field.ElfDecision != null)
+			if (lowestEntry.getValue().isEmpty())
 			{
-				field.moveElf();
-				
-				// Did we reach the goal?
-				if (field.targetReached())
-				{
-					if (bestField == null || field.Time < bestField.Time)
-					{
-						bestField = field;
-					}
-					continue;
-				}
+				fieldsToInvestigate.remove(lowestEntry.getKey());
+				continue;
 			}
 			
-			field.moveBlizzards();
+			var field = lowestEntry.getValue().pop();
+			
+			//System.out.println(String.format("Field at Time %d:\n%s\n-----", field.Time, field));
+			
+			// Did we reach the goal?
+			if (field.targetReached())
+			{
+				if (field.Time < bestTime)
+				{
+					bestTime = field.Time;
+				}
+				continue;
+			}
 			
 			// Discard this situation?
-			if (bestField != null && field.Time > bestField.Time)
+			if (field.Time > bestTime)
 			{
 				continue; // Taking too long already
 			}
@@ -71,9 +63,11 @@ public class Day24
 			// Are we hit by a blizzard next move?
 			if (!field.elfIsHitByBlizzardNextMove())
 			{
-				// We can safely stay here, branch off
+				// We can safely stay here, check the next time frame
 				var newField = new Field(field, field.Time + 1, null); // stay
-				fieldsToInvestigate.push(newField);
+				
+				var stack = fieldsToInvestigate.computeIfAbsent(newField.Time, t -> new ArrayDeque<Field>());
+				stack.push(newField);
 			}
 			
 			// Consider moving
@@ -82,10 +76,12 @@ public class Day24
 			for (var direction : possibleDirections)
 			{
 				var newField = new Field(field, field.Time + 1, direction); // move
-				fieldsToInvestigate.push(newField);
+				
+				var stack = fieldsToInvestigate.computeIfAbsent(newField.Time, t -> new ArrayDeque<Field>());
+				stack.push(newField);
 			}
 		}
 		
-		System.out.println(String.format("[Part1]: Best time: %d", bestField.Time));
+		System.out.println(String.format("[Part1]: Best time: %d", bestTime));
 	}
 }
