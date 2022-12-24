@@ -1,6 +1,6 @@
 package AdventOfCode;
 
-import java.util.ArrayDeque;
+import java.util.HashSet;
 import java.util.TreeMap;
 
 import AdventOfCode.Common.FileUtils;
@@ -9,7 +9,7 @@ public class Day24
 {
 	public static void main(String[] args)
 	{
-		var lines = FileUtils.readFile("./test.txt");
+		var lines = FileUtils.readFile("./input.txt");
 		
 		var blizzards = BlizzardCollection.ParseFromInput(lines);
 		
@@ -22,9 +22,9 @@ public class Day24
 		System.out.println(String.format("Initial field:\n%s", startField));
 		System.out.println(String.format("Target coords:\n%s", startField.getTargetCoords()));
 		
-		var fieldsToInvestigate = new TreeMap<Integer, ArrayDeque<Field>>();
-		var startStack = new ArrayDeque<Field>();
-		startStack.push(startField);
+		var fieldsToInvestigate = new TreeMap<Integer, HashSet<Field>>();
+		var startStack = new HashSet<Field>();
+		startStack.add(startField);
 		fieldsToInvestigate.put(startField.Time, startStack);
 		
 		int bestTime = Integer.MAX_VALUE;
@@ -39,7 +39,8 @@ public class Day24
 				continue;
 			}
 			
-			var field = lowestEntry.getValue().pop();
+			var field = lowestEntry.getValue().stream().findFirst().get();
+			lowestEntry.getValue().remove(field);
 			
 			//System.out.println(String.format("Field at Time %d:\n%s\n-----", field.Time, field));
 			
@@ -66,8 +67,8 @@ public class Day24
 				// We can safely stay here, check the next time frame
 				var newField = new Field(field, field.Time + 1, null); // stay
 				
-				var stack = fieldsToInvestigate.computeIfAbsent(newField.Time, t -> new ArrayDeque<Field>());
-				stack.push(newField);
+				var set = fieldsToInvestigate.computeIfAbsent(newField.Time, t -> new HashSet<Field>());
+				set.add(newField);
 			}
 			
 			// Consider moving
@@ -77,8 +78,8 @@ public class Day24
 			{
 				var newField = new Field(field, field.Time + 1, direction); // move
 				
-				var stack = fieldsToInvestigate.computeIfAbsent(newField.Time, t -> new ArrayDeque<Field>());
-				stack.push(newField);
+				var set = fieldsToInvestigate.computeIfAbsent(newField.Time, t -> new HashSet<Field>());
+				set.add(newField);
 			}
 		}
 		

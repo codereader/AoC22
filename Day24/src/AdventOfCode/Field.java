@@ -111,6 +111,29 @@ public class Field
 		return _blizzards.blizzardIsMovingTo(position);
 	}
 	
+	@Override
+	public int hashCode()
+	{
+		int hash = 7;
+	    hash = 31 * hash + Time;
+	    hash = 31 * hash + _elfPosition.hashCode();
+	    return hash;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o) return true;
+        
+        if (o == null || getClass() != o.getClass())
+        {
+        	return false;
+        }
+        
+        var other = (Field)o;
+        return Time == other.Time && _elfPosition.equals(other._elfPosition);
+	}
+	
 	@Override 
 	public String toString()
 	{
@@ -144,11 +167,6 @@ public class Field
 		}
 		
 		return text.toString();
-	}
-
-	public void moveBlizzards()
-	{
-		
 	}
 
 	public boolean targetReached()
