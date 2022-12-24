@@ -23,14 +23,4 @@ public class Blizzard
 		default: throw new IllegalArgumentException("Unknown direction");
 		}
 	}
-	
-	public Blizzard clone()
-	{
-		var clone = new Blizzard();
-		
-		clone.Position = Position;
-		clone.Direction = Direction;
-		
-		return clone;
-	}
 }

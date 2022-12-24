@@ -70,32 +70,15 @@ public class BlizzardCollection
 		return list;
 	}
 
-	public boolean blizzardIsMovingTo(Vector2 position)
+	public boolean blizzardIsMovingTo(int x, int y)
 	{
 		// Blizzards cannot hit outside fields
-		if (position.getX() < 0 || position.getX() >= _width) return false;
-		if (position.getY() < 0 || position.getY() >= _height) return false;
+		if (x < 0 || x >= _width) return false;
+		if (y < 0 || y >= _height) return false;
 		
-		if ((getBlizzardAt(position.getX() - 1, position.getY()) & Blizzard.Right) != 0)
-		{
-			return true;
-		}
-		
-		if ((getBlizzardAt(position.getX() + 1, position.getY()) & Blizzard.Left) != 0)
-		{
-			return true;
-		}
-		
-		if ((getBlizzardAt(position.getX(), position.getY() - 1) & Blizzard.Down) != 0)
-		{
-			return true;
-		}
-		
-		if ((getBlizzardAt(position.getX(), position.getY() + 1) & Blizzard.Up) != 0)
-		{
-			return true;
-		}
-		
-		return false;
+		return ((getBlizzardAt(x - 1, y) & Blizzard.Right) != 0 ||
+			    (getBlizzardAt(x + 1, y) & Blizzard.Left) != 0 ||
+			    (getBlizzardAt(x, y - 1) & Blizzard.Down) != 0 ||
+		        (getBlizzardAt(x, y + 1) & Blizzard.Up) != 0);
 	}
 }

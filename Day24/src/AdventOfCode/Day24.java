@@ -19,13 +19,11 @@ public class Day24
 		
 		var startField = new Field(blizzardCache, 0);
 		
-		System.out.println(String.format("Initial field:\n%s", startField));
-		System.out.println(String.format("Target coords:\n%s", startField.getTargetPosition()));
+		//System.out.println(String.format("Initial field:\n%s", startField));
+		//System.out.println(String.format("Target coords:\n%s", startField.getTargetPosition()));
 		
 		var field = runSimulation(startField);
 		System.out.println(String.format("[Part1]: Best time: %d", field.Time));
-		
-		var firstRunToTarget = field.Time;
 		
 		// Part2: Go back to the start
 		field.setTargetPosition(field.getStartCoords());
@@ -40,7 +38,6 @@ public class Day24
 	
 	private static Field runSimulation(Field startField)
 	{
-		int bestTime = Integer.MAX_VALUE;
 		Field finalField = null;
 		
 		var fieldsToInvestigate = new TreeMap<Integer, HashSet<Field>>();
@@ -61,20 +58,12 @@ public class Day24
 			var field = lowestEntry.getValue().stream().findFirst().get();
 			lowestEntry.getValue().remove(field);
 			
-			//System.out.println(String.format("Field at Time %d:\n%s\n-----", field.Time, field));
-			
-			// Did we reach the goal?
+			// Did we reach the goal? 
+			// We can stop here, since all other situations are going to be equal or worse
 			if (field.targetReached())
 			{
-				bestTime = field.Time;
 				finalField = field;
 				break;
-			}
-			
-			// Discard this situation?
-			if (field.Time > bestTime)
-			{
-				continue; // Taking too long already
 			}
 			
 			// Consider waiting

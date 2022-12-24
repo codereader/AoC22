@@ -3,8 +3,6 @@ package AdventOfCode;
 import java.util.HashMap;
 import java.util.List;
 
-import AdventOfCode.Common.Vector2;
-
 public class BlizzardCache
 {
 	private final HashMap<Integer, BlizzardCollection> _blizzardsByTime;
@@ -29,11 +27,6 @@ public class BlizzardCache
 	{
 		return _fieldHeight;
 	}
-	
-	private static final Vector2 Up = new Vector2(0, -1);
-	private static final Vector2 Right = new Vector2(1, 0);
-	private static final Vector2 Left = new Vector2(-1, 0);
-	private static final Vector2 Down = new Vector2(0, 1);
 	
 	public BlizzardCollection getForTime(int time)
 	{

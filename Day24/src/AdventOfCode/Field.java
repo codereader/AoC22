@@ -129,7 +129,7 @@ public class Field
 	
 	public boolean fieldIsHitByBlizzardNextMove(Vector2 position)
 	{
-		return _blizzards.blizzardIsMovingTo(position);
+		return _blizzards.blizzardIsMovingTo(position.getX(), position.getY());
 	}
 	
 	@Override
