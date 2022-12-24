@@ -1,7 +1,6 @@
 package AdventOfCode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import AdventOfCode.Common.Vector2;
@@ -10,39 +9,44 @@ public class Field
 {
 	private final int _width;
 	private final int _height;
+	public int Time;
 
-	private List<Blizzard> _blizzards;
-	private HashMap<Vector2, List<Blizzard>> _blizzardPositions;
+	private final BlizzardCache _blizzardCache;
+	private BlizzardCollection _blizzards;
 	private Vector2 _elfPosition;
 	
-	public Field(List<String> lines)
+	// Is null if the elves decides to stay
+	public Vector2 ElfDecision;
+	
+	private static final Vector2 Up = new Vector2(0, -1);
+	private static final Vector2 Right = new Vector2(1, 0);
+	private static final Vector2 Left = new Vector2(-1, 0);
+	private static final Vector2 Down = new Vector2(0, 1);
+	
+	public Field(BlizzardCache cache, int time)
 	{
-		_width = lines.get(0).length() - 2;
-		_height = lines.size() - 2;
-		_blizzardPositions = new HashMap<>();
-		_blizzards = new ArrayList<>();
+		Time = time;
+		ElfDecision = null;
+		_blizzardCache = cache;
+		_blizzards = cache.getForTime(Time);
 		
-		for (int y = 0; y < _height; y++)
-		{
-			for (int x = 0; x < _width; ++x)
-			{
-				var ch = lines.get(y + 1).charAt(1 + x);
-				
-				if (ch != '.')
-				{
-					var blizzard = new Blizzard();
-					blizzard.Position = new Vector2(x,y);
-					blizzard.Direction = getDirection(ch);
-					
-					var list = new ArrayList<Blizzard>();
-					list.add(blizzard);
-					_blizzardPositions.put(blizzard.Position, list);
-					_blizzards.add(blizzard);
-				}
-			}
-		}
+		_width = _blizzardCache.getFieldWidth();
+		_height = _blizzardCache.getFieldHeight();
 		
 		_elfPosition = getStartCoords();
+	}
+	
+	public Field(Field other, int time, Vector2 elfDecision)
+	{
+		Time = time;
+		ElfDecision = elfDecision;
+		
+		_blizzardCache = other._blizzardCache;
+		_width = other._width;
+		_height = other._height;
+		
+		_blizzards = _blizzardCache.getForTime(time);
+		_elfPosition = other._elfPosition;
 	}
 	
 	public Vector2 getStartCoords()
@@ -59,25 +63,25 @@ public class Field
 	{
 		switch (direction)
 		{
-		case '>': return new Vector2(1, 0);
-		case 'v': return new Vector2(0, 1);
-		case '<': return new Vector2(-1, 0);
-		case '^': return new Vector2(0, -1);
+		case '>': return Right;
+		case 'v': return Down;
+		case '<': return Left;
+		case '^': return Up;
 		default: throw new IllegalArgumentException("Unknown direction");
 		}
 	}
 	
 	public static char getDirectionChar(Vector2 direction)
 	{
-		if (direction.equals(new Vector2(1, 0)))
+		if (direction.equals(Right))
 		{
 			return '>';
 		}
-		else if (direction.equals(new Vector2(0, 1)))
+		else if (direction.equals(Down))
 		{
 			return 'v';
 		}
-		else if (direction.equals(new Vector2(-1, 0)))
+		else if (direction.equals(Left))
 		{
 			return '<';
 		}
@@ -85,6 +89,77 @@ public class Field
 		{
 			return '^';
 		}
+	}
+	
+	public List<Vector2> getPossibleNextDirections()
+	{
+		var possibilities = new ArrayList<Vector2>();
+
+		var position = _elfPosition.plus(Up);
+		if (fieldIsValid(position) && !fieldIsHitByBlizzardNextMove(position))
+		{
+			possibilities.add(Up);
+		}
+		
+		position = _elfPosition.plus(Down);
+		if (fieldIsValid(position) && !fieldIsHitByBlizzardNextMove(position))
+		{
+			possibilities.add(Down);
+		}
+		
+		position = _elfPosition.plus(Right);
+		if (fieldIsValid(position) && !fieldIsHitByBlizzardNextMove(position))
+		{
+			possibilities.add(Right);
+		}
+		
+		position = _elfPosition.plus(Left);
+		if (fieldIsValid(position) && !fieldIsHitByBlizzardNextMove(position))
+		{
+			possibilities.add(Left);
+		}
+		
+		return possibilities;
+	}
+	
+	private boolean fieldIsValid(Vector2 position)
+	{
+		if (position.getX() < 0 || position.getX() >= _width) return false;
+		if (position.getY() < 0 || position.getY() >= _height) return false;
+
+		return true;
+	}
+
+	public boolean elfIsHitByBlizzardNextMove()
+	{
+		return fieldIsHitByBlizzardNextMove(_elfPosition); 
+	}
+	
+	public boolean fieldIsHitByBlizzardNextMove(Vector2 position)
+	{
+		// Check the surrounding fields for blizzards
+		if (fieldContainsBlizzardThatMovesTo(position.plus(Up), position) ||
+			fieldContainsBlizzardThatMovesTo(position.plus(Down), position) ||
+			fieldContainsBlizzardThatMovesTo(position.plus(Left), position) ||
+			fieldContainsBlizzardThatMovesTo(position.plus(Right), position))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean fieldContainsBlizzardThatMovesTo(Vector2 blizzardPosition, Vector2 targetField)
+	{
+		return false;
+		/*
+		// Get all blizzards in that field
+		var blizzards = _blizzardPositions.get(blizzardPosition);
+		
+		// If any of them is moving towards the target field, return true
+		return blizzards != null && !blizzards.isEmpty() &&
+			blizzards.stream().anyMatch(b -> b.Position.plus(b.Direction).equals(targetField));
+		*/
 	}
 	
 	@Override 
@@ -112,27 +187,7 @@ public class Field
 					continue;
 				}
 				
-				var blizzards = _blizzardPositions.get(position);
-				
-				if (blizzards != null)
-				{
-					if (blizzards.size() == 0)
-					{
-						text.append('.');
-					}
-					else if (blizzards.size() == 1)
-					{
-						text.append(getDirectionChar(blizzards.get(0).Direction));
-					}
-					else
-					{
-						text.append(blizzards.size());
-					}
-				}
-				else
-				{
-					text.append('.');
-				}
+				text.append(_blizzards.getBlizzardCharacter(position.getX(), position.getY()));
 			}
 			
 			text.append('#'); // right wall
@@ -140,5 +195,24 @@ public class Field
 		}
 		
 		return text.toString();
+	}
+
+	public void moveElf()
+	{
+		if (ElfDecision != null)
+		{
+			_elfPosition = _elfPosition.plus(ElfDecision);
+			ElfDecision = null;
+		}
+	}
+
+	public void moveBlizzards()
+	{
+		
+	}
+
+	public boolean targetReached()
+	{
+		return _elfPosition.equals(getTargetCoords());
 	}
 }
