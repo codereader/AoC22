@@ -12,9 +12,9 @@
         <local:FillingConverter x:Key="FillingConverter" />
         <local:CurrentLocationStrokeConverter x:Key="CurrentLocationStrokeConverter" />
         <local:CurrentLocationThicknessConverter x:Key="CurrentLocationThicknessConverter" />
-        
+
     </Window.Resources>
-    
+
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1100" />
@@ -23,7 +23,7 @@
 
         <ScrollViewer Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Height="900" Width="900"
                       HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" >
-            
+
             <ItemsControl ItemsSource="{Binding VisualMap}" >
 
                 <ItemsControl.ItemsPanel>
@@ -56,10 +56,10 @@
         <StackPanel Grid.Column="1">
             <Button Command="{Binding SimulationFlat}">Simulate on flat map</Button>
             <StackPanel Orientation="Horizontal">
-                <TextBlock>Password: </TextBlock>
+                <TextBlock>Password:</TextBlock>
                 <TextBlock Text="{Binding Navigator.PasswordFlat}" />
             </StackPanel>
-            <Button Command="{Binding RunSimulationCube}">Simulate on cube</Button>
+            <Button Margin="0,10,0,0" Command="{Binding SimulationCube}">Simulate on cube</Button>
             <Button Command="{Binding FinishSimulationCube}">Do Simulate on cube</Button>
             <StackPanel Orientation="Horizontal">
                 <TextBlock>Password:</TextBlock>
@@ -84,7 +84,7 @@
                 <Button Grid.Column="2" Grid.Row="1" Command="{Binding MoveRight}">Right</Button>
                 <Button Grid.Column="1" Grid.Row="2" Command="{Binding MoveDown}">Down</Button>
 
-                
+
             </Grid>
 
             <StackPanel Margin="20" Orientation="Horizontal">
