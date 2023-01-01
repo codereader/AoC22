@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TilesLib
 {
-    internal enum Direction
+    public enum Direction
     {
         Right,
         Down,

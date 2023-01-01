@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TilesLib
 {
-    internal class State
+    public class State
     {
         public Vector2 Position { get; set; }
         public Direction Orientation { get; set; }

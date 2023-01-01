@@ -9,22 +9,22 @@ namespace TilesLib
 {
     public class Location
     {
-        public int PositionX { get; private set; }
-        public int PositionY { get; private set; }
+        public int PositionX { get; set; }
+        public int PositionY { get; set; }
 
-        public  Filling Fill {get; private set;}
+        public  Filling Fill {get; set;}
 
 
-        public Location(Vector2 pos, char v)
+        public Location(Vector2 pos, char fill)
         {
             PositionX = (int)pos.X;
             PositionY = (int)pos.Y;
 
-            if (v == ' ')
+            if (fill == ' ')
             {
                 Fill = Filling.Off;
             }
-            else if (v == '.')
+            else if (fill == '.')
             {
                 Fill = Filling.Path;
             }
@@ -32,6 +32,11 @@ namespace TilesLib
             {
                 Fill = Filling.Wall;
             }
+        }
+
+        public Location()
+        {
+
         }
     }
 }
