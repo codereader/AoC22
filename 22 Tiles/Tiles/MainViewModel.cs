@@ -17,8 +17,9 @@ namespace Tiles
 {
     internal class MainViewModel : ViewModelBase
     {
-        public MapNavigator Navigator { get; set; } = new MapNavigator();
+        private VisualLocation _currentVisualLocation;
 
+        public MapNavigator Navigator { get; set; } = new MapNavigator();
         public ObservableCollection<VisualLocation> VisualMap { get; private set; } = new ObservableCollection<VisualLocation>();
         public Vector2 CurrentMapPosition
         {
@@ -37,9 +38,6 @@ namespace Tiles
         }
 
 
-        private VisualLocation _currentVisualLocation;
-
-
         public MainViewModel()
         {
             var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @"Tiles.input.txt");
@@ -52,12 +50,10 @@ namespace Tiles
             }
 
             Navigator.SetupStartPosition();
-            CurrentMapPosition = Navigator.CurrentState.Position + Navigator.CurrentFace.ParseOffset;
-            _currentVisualLocation = VisualMap.Where(l => l.PositionX == CurrentMapPosition.X && l.PositionY == CurrentMapPosition.Y).First();
-            _currentVisualLocation.IsCurrentLocation = true;
+            UpdateCurrentLocation();
 
-            SimulationFlat = new RelayCommand(CanSimulationFlat, DoSimulationFlat);
-            FinishSimulationCube = new RelayCommand(CanFinishSimulationCube, DoFinishSimulationCube);
+            CalculatePasswordFlat = new RelayCommand(CanCalculatePasswordFlat, DoCalculatePasswordFlat);
+            CalculatePasswordCube = new RelayCommand(CanCalculatePasswordCube, DoCalculatePasswordCube);
             SimulationCube = new RelayCommand(CanSimulationCube, DoSimulationCube);
 
             MoveUp = new RelayCommand(CanMoveUp, DoMoveUp);
@@ -66,14 +62,26 @@ namespace Tiles
             MoveDown = new RelayCommand(CanMoveDown, DoMoveDown);
         }
 
-        public RelayCommand SimulationFlat { get; }
-        public bool CanSimulationFlat()
+        public RelayCommand CalculatePasswordFlat { get; }
+        public bool CanCalculatePasswordFlat()
         {
             return true;
         }
-        public void DoSimulationFlat()
+        public void DoCalculatePasswordFlat()
         {
-            Navigator.SimulationFlat();
+            Navigator.CalculatePasswordFlat();
+        }
+
+        public RelayCommand CalculatePasswordCube { get; }
+        public bool CanCalculatePasswordCube()
+        {
+            return true;
+        }
+        public void DoCalculatePasswordCube()
+        {
+            Navigator.SetupSimulationCube();
+            UpdateCurrentLocation();
+            Task.Run(Navigator.CalculatePasswordCube);
         }
 
         public RelayCommand SimulationCube { get; }
@@ -84,50 +92,18 @@ namespace Tiles
         public void DoSimulationCube()
         {
             Navigator.SetupSimulationCube();
-
-            CurrentMapPosition = Navigator.CurrentState.Position + Navigator.CurrentFace.ParseOffset;
-            _currentVisualLocation = VisualMap.Where(l => l.PositionX == CurrentMapPosition.X && l.PositionY == CurrentMapPosition.Y).First();
-            _currentVisualLocation.IsCurrentLocation = true;
-
+            UpdateCurrentLocation();
             Task.Run(RunSimulationCube);
         }
-
-        public RelayCommand FinishSimulationCube { get; }
-        public bool CanFinishSimulationCube()
-        {
-            return true;
-        }
-        public void DoFinishSimulationCube()
-        {
-            Navigator.SetupSimulationCube();
-
-            CurrentMapPosition = Navigator.CurrentState.Position + Navigator.CurrentFace.ParseOffset;
-            _currentVisualLocation = VisualMap.Where(l => l.PositionX == CurrentMapPosition.X && l.PositionY == CurrentMapPosition.Y).First();
-            _currentVisualLocation.IsCurrentLocation = true;
-
-            Task.Run(Navigator.SimulationCube);
-        }
-
-
         public void RunSimulationCube()
         {
             while (!Navigator.SimulationCubeDone)
             {
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    _currentVisualLocation.IsCurrentLocation = false;
-                });
-
-
                 Navigator.SimulationCubeNextStep();
 
-                CurrentMapPosition = Navigator.CurrentState.Position + Navigator.CurrentFace.ParseOffset;
-                _currentVisualLocation = VisualMap.Where(l => l.PositionX == CurrentMapPosition.X && l.PositionY == CurrentMapPosition.Y).First();
-
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    _currentVisualLocation.IsCurrentLocation = true;
-                    CurrentFace = Navigator.CurrentFace;
+                    UpdateCurrentLocation();
                 });
 
                 Thread.Sleep(50);
@@ -142,15 +118,8 @@ namespace Tiles
         }
         public void DoMoveUp()
         {
-
-            Navigator.CurrentState.Orientation = Direction.Up;
-
-            Navigator.DoMove(new Vector2(0, -1));
-
-            UpdateCurrentLocation();
-
+            DoSingleMove(Direction.Up);
         }
-
 
         public RelayCommand MoveLeft { get; }
         public bool CanMoveLeft()
@@ -159,13 +128,7 @@ namespace Tiles
         }
         public void DoMoveLeft()
         {
-
-            Navigator.CurrentState.Orientation = Direction.Left;
-
-
-            Navigator.DoMove(new Vector2(-1, 0));
-            UpdateCurrentLocation();
-
+            DoSingleMove(Direction.Left);
         }
 
         public RelayCommand MoveRight { get; }
@@ -175,11 +138,7 @@ namespace Tiles
         }
         public void DoMoveRight()
         {
-
-            Navigator.CurrentState.Orientation = Direction.Right;
-
-            Navigator.DoMove(new Vector2(1, 0));
-            UpdateCurrentLocation();
+            DoSingleMove(Direction.Right);
         }
 
         public RelayCommand MoveDown { get; }
@@ -189,22 +148,30 @@ namespace Tiles
         }
         public void DoMoveDown()
         {
-            Navigator.CurrentState.Orientation = Direction.Down;
+            DoSingleMove(Direction.Down);
+        }
 
-            Navigator.DoMove(new Vector2(0, 1));
-
+        private void DoSingleMove(Direction dir)
+        {
+            Navigator.CurrentState.Orientation = dir;
+            Navigator.DoMove();
             UpdateCurrentLocation();
         }
 
+
         private void UpdateCurrentLocation()
         {
-            _currentVisualLocation.IsCurrentLocation = false;
+            if (_currentVisualLocation != null)
+            {
+                _currentVisualLocation.IsCurrentLocation = false;
+            }
+
             CurrentMapPosition = Navigator.CurrentState.Position + Navigator.CurrentFace.ParseOffset;
             _currentVisualLocation = VisualMap.Where(l => l.PositionX == CurrentMapPosition.X && l.PositionY == CurrentMapPosition.Y).First();
             _currentVisualLocation.IsCurrentLocation = true;
+
             CurrentFace = Navigator.CurrentFace;
             CurrentOrientation = Navigator.CurrentState.Orientation;
-           
         }
 
     }

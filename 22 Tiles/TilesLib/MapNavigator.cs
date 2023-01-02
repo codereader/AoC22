@@ -9,12 +9,11 @@ namespace TilesLib
 {
     public class MapNavigator : ViewModelBase
     {
-        public Dictionary<Vector2, Location> Map { get; set; } = new Dictionary<Vector2, Location>();
+        private List<Instruction> _instructions = new List<Instruction>();
 
         private Dictionary<string, CubeFace> _faces = new Dictionary<string, CubeFace>();
 
-
-        private List<Instruction> _instructions = new List<Instruction>();
+        public Dictionary<Vector2, Location> Map { get; set; } = new Dictionary<Vector2, Location>();
 
         public State CurrentState { get; set; }
         public CubeFace CurrentFace { get; set; }
@@ -22,9 +21,6 @@ namespace TilesLib
         public int CurrentInstructionNum { get; set; }
         public int CurrentMoveNum { get; set; }
         public bool SimulationCubeDone { get; set; }
-
-
-
 
         public int MaxX { get; set; }
         public int MaxY { get; set; }
@@ -60,7 +56,6 @@ namespace TilesLib
                 {
                     MaxX = line.Length;
                 }
-
                 for (int x = 0; x < line.Length; x++)
                 {
                     var pos = new Vector2(x, y);
@@ -101,7 +96,6 @@ namespace TilesLib
             }
 
             // face connections
-
             _faces["A"].Connections.Add(Direction.Right, new Connection
             {
                 TargetFace = _faces["B"],
@@ -305,7 +299,7 @@ namespace TilesLib
         }
 
 
-        public void SimulationFlat()
+        public void CalculatePasswordFlat()
         {
             var currentState = FindStartState();
 
@@ -353,12 +347,11 @@ namespace TilesLib
             PasswordFlat = (int)(1000 * (currentState.Position.Y + 1) + 4 * (currentState.Position.X + 1) + (int)currentState.Orientation);
 
         }
-
         private State FindStartState()
         {
             var state = new State();
 
-            // first row y = 0
+            // first row y = 0 and valid filling
             var firstRow = Map.Where(p => p.Key.Y == 0 && p.Value.Fill != Filling.Off);
             var x = firstRow.Min(p => p.Key.X);
 
@@ -368,6 +361,15 @@ namespace TilesLib
             return state;
         }
 
+
+        public void CalculatePasswordCube()
+        {
+            SetupSimulationCube();
+            while (!SimulationCubeDone)
+            {
+                SimulationCubeNextStep();
+            }
+        }
 
         public void SetupSimulationCube()
         {
@@ -404,12 +406,9 @@ namespace TilesLib
             else
             {
                 // move instruction
-
                 if (CurrentMoveNum < instruction.Move)
                 {
-                    var move = GetMoveVector(CurrentState.Orientation);
-
-                    DoMove(move);
+                    DoMove();
                 }
                 else
                 {
@@ -420,13 +419,12 @@ namespace TilesLib
             }
 
             PasswordCube = (int)(1000 * (CurrentState.Position.Y + CurrentFace.ParseOffset.Y + 1) + 4 * (CurrentState.Position.X + CurrentFace.ParseOffset.X + 1) + (int)CurrentState.Orientation);
-
-
-
         }
 
-        public void DoMove(Vector2 move)
+        public void DoMove()
         {
+            var move = GetMoveVector(CurrentState.Orientation);
+
             var nextFace = CurrentFace;
             var nextOrientation = CurrentState.Orientation;
 
@@ -444,7 +442,6 @@ namespace TilesLib
             if (nextLocation.Fill == Filling.Path)
             {
                 // path, next position
-
                 CurrentState.Position = nextPosition;
                 CurrentState.Orientation = nextOrientation;
                 CurrentFace = nextFace;
@@ -458,6 +455,7 @@ namespace TilesLib
             }
         }
 
+
         private Vector2 GetMoveVector(Direction dir)
         {
             return dir switch
@@ -467,16 +465,6 @@ namespace TilesLib
                 Direction.Left => new Vector2(-1, 0),
                 Direction.Up => new Vector2(0, -1)
             };
-        }
-
-        public void SimulationCube()
-        {
-            SetupSimulationCube();
-
-            while (!SimulationCubeDone)
-            {
-                SimulationCubeNextStep();
-            }
         }
     }
 }
