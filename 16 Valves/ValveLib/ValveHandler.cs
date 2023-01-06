@@ -10,14 +10,21 @@
 
         private State _bestPressureState = new State();
 
-        private State _bestPressure2SetA;
-        private State _bestPressure2SetB;
 
-        private int _bestPressure2;
+        private Dictionary<List<int>, int> _states = new Dictionary<List<int>, int>();
+
+        private int _bestPressure2 = 0;
+        private List<int> _bestPressure2StateA;
+        private List<int> _bestPressure2StateB;
+
 
         public void Parse(List<string> input)
         {
             _valves = input.Select(l => new Valve(l)).ToList();
+            for (int i = 0; i < _valves.Count; i++)
+            {
+                _valves[i].Id = i;
+            }
             _flowValves = _valves.Where(v => v.FlowRate > 0).ToList();
 
             foreach (var valve in _valves)
@@ -83,11 +90,50 @@
             return FindMaxPressure(_flowValves, 30).Pressure;
         }
 
-        
+        // part 2: distribute flow valves to 2 people
+        public int DetermineMaxPressure2()
+        {
+            FindMaxPressure(_flowValves, 26);
 
+            while (_states.Count > 0)
+            {
+                var firstPair = _states.First();
+
+                _states.Remove(firstPair.Key);
+
+                foreach (var secondPair in _states)
+                {
+                    var canCombine = true;
+                    foreach (var valve in firstPair.Key)
+                    {
+                        if (secondPair.Key.Contains(valve)) 
+                        {
+                            canCombine = false;
+                            break;
+                        }
+                    }
+                    if (canCombine)
+                    {
+                        var pressure = firstPair.Value + secondPair.Value;
+                        if (pressure > _bestPressure2)
+                        {
+                            _bestPressure2 = pressure;
+                            _bestPressure2StateA = firstPair.Key;
+                            _bestPressure2StateB = secondPair.Key;
+
+                        }
+                    }
+                }
+            }
+
+            return _bestPressure2;
+
+        }
 
         public State FindMaxPressure(List<Valve> flowValves, int remainingTime)
         {
+            _states.Clear();
+
             var currentState = new State();
 
             currentState.CurrentValve = _startValve;
@@ -123,6 +169,9 @@
             // open valve 
             currentState.Pressure += currentState.RemainingMinutes * currentValve.FlowRate;
             currentState.OpenedValves.Add(currentValve);
+
+
+            _states.Add(currentState.OpenedValves.Select(v => v.Id).ToList(), currentState.Pressure);
 
             // next unopenend valves
             var remainingValves = flowValves.Except(currentState.OpenedValves).ToList();

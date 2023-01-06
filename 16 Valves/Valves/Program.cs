@@ -11,6 +11,9 @@ valveHandler.Parse(input);
 Console.WriteLine("Maximum pressure:");
 Console.WriteLine(valveHandler.DetermineMaxPressure());
 
+// part 2
+Console.WriteLine("Maximum pressure part 2");
+Console.WriteLine(valveHandler.DetermineMaxPressure2());
 
 
 

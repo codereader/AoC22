@@ -3,6 +3,8 @@
     public class Valve
     {
         private string _line;
+        public int Id { get; set; }
+
         internal List<string> ConnectedValveStrings { get; set; } = new List<string>();
 
         internal List<Valve> ConnectedValves { get; set; } = new List<Valve>();
