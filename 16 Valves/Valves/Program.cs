@@ -15,5 +15,3 @@ Console.WriteLine(valveHandler.DetermineMaxPressure());
 Console.WriteLine("Maximum pressure part 2");
 Console.WriteLine(valveHandler.DetermineMaxPressure2());
 
-
-

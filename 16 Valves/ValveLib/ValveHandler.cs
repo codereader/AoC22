@@ -3,13 +3,10 @@
     public class ValveHandler
     {
         private List<Valve> _valves;
-
         private List<Valve> _flowValves;
-
         private Valve _startValve;
 
         private State _bestPressureState = new State();
-
 
         private Dictionary<List<int>, int> _states = new Dictionary<List<int>, int>();
 
@@ -17,34 +14,33 @@
         private List<int> _bestPressure2StateA;
         private List<int> _bestPressure2StateB;
 
-
         public void Parse(List<string> input)
         {
             _valves = input.Select(l => new Valve(l)).ToList();
+
             for (int i = 0; i < _valves.Count; i++)
             {
-                _valves[i].Id = i;
-            }
-            _flowValves = _valves.Where(v => v.FlowRate > 0).ToList();
+                var currentValve = _valves[i];
+                currentValve.Id = i;
 
-            foreach (var valve in _valves)
-            {
-                foreach (var str in valve.ConnectedValveStrings)
+                foreach (var str in currentValve.ConnectedValveStrings)
                 {
-                    valve.ConnectedValves.Add(_valves.Where(v => v.Name == str).First());
+                    currentValve.ConnectedValves.Add(_valves.Where(v => v.Name == str).First());
                 }
             }
 
+            _flowValves = _valves.Where(v => v.FlowRate > 0).ToList();
             _startValve = _valves.Where(v => v.Name == "AA").First();
 
             DetermineShortestPaths();
-
         }
 
         public void DetermineShortestPaths()
         {
+            // shortest paths between start valve and all valves with flow rate > 0
             FindShortestPaths(_startValve);
 
+            // shortest paths between all valves with flow rate > 0
             foreach (var valve in _flowValves)
             {
                 FindShortestPaths(valve);
@@ -120,14 +116,12 @@
                             _bestPressure2 = pressure;
                             _bestPressure2StateA = firstPair.Key;
                             _bestPressure2StateB = secondPair.Key;
-
                         }
                     }
                 }
             }
 
             return _bestPressure2;
-
         }
 
         public State FindMaxPressure(List<Valve> flowValves, int remainingTime)
@@ -136,23 +130,20 @@
 
             var currentState = new State();
 
-            currentState.CurrentValve = _startValve;
             currentState.RemainingMinutes = remainingTime;
 
+            // depth first
             foreach (var valve in flowValves)
             {
                 NextValve(_startValve, valve, currentState, flowValves);
             }
 
             return _bestPressureState;
-
         }
 
         private void NextValve(Valve lastValve, Valve currentValve, State previousState, List<Valve> flowValves)
         {
             var currentState = new State(previousState);
-
-            currentState.CurrentValve = currentValve;
 
             // walk shortest path plus 1 min for opening the valve
             currentState.RemainingMinutes = previousState.RemainingMinutes - lastValve.ShortestPaths[currentValve] - 1;
@@ -169,7 +160,6 @@
             // open valve 
             currentState.Pressure += currentState.RemainingMinutes * currentValve.FlowRate;
             currentState.OpenedValves.Add(currentValve);
-
 
             _states.Add(currentState.OpenedValves.Select(v => v.Id).ToList(), currentState.Pressure);
 
