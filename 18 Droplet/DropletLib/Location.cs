@@ -8,11 +8,11 @@ namespace DropletLib
 
         public int NeighborCount { get; set; }
 
-        public Location(string line)
-        {
-            var parts = line.Split(',');
+        public int OutsideFaceCount { get; set; }
 
-            Position = new Vector3(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]));
+        public Location(Vector3 pos)
+        {
+            Position = pos;
         }
     }
 }
