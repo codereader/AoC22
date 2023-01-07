@@ -7,3 +7,5 @@ var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @
 var dropletinator = new DropletHandler();
 
 dropletinator.Parse(input);
+
+Console.WriteLine(dropletinator.GetSurfaceArea());

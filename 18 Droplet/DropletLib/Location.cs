@@ -6,9 +6,13 @@ namespace DropletLib
     {
         public Vector3 Position { get; private set; }
 
-        public Location(Vector3 pos)
+        public int NeighborCount { get; set; }
+
+        public Location(string line)
         {
-            Position = pos;
+            var parts = line.Split(',');
+
+            Position = new Vector3(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]));
         }
     }
 }
