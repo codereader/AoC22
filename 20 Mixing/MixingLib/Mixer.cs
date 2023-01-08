@@ -5,8 +5,8 @@ namespace MixingLib
     public class Mixer
     {
         private List<LinkedListNode<long>> _numbers = new List<LinkedListNode<long>>();
-
         private LinkedList<long> _chain = new LinkedList<long>();
+
         public void Parse(List<string> input)
         {
             for (int i = 0; i < input.Count; i++)
