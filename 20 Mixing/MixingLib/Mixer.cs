@@ -53,6 +53,14 @@ namespace MixingLib
             }
         }
 
+        public void ResetChain()
+        {
+            _chain.Clear();
+            foreach(var element in _numbers)
+            {
+                _chain.AddLast(element);
+            }
+        }
 
         private LinkedListNode<long> FindPreviousNode(LinkedListNode<long> currentNode)
         {
@@ -89,6 +97,12 @@ namespace MixingLib
             return targetNode.Value;
         }
 
-
+        public void MultiplyNumbers(long encryptionkey)
+        {
+            foreach (var element in _numbers) 
+            {
+                element.Value *= encryptionkey;
+            }
+        }
     }
 }
