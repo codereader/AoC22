@@ -8,4 +8,9 @@ var master = new MonkeyMaster();
 
 master.Parse(input);
 
-Console.WriteLine(master.DoMonkeyJobs());
+// part 1
+//Console.WriteLine(master.DoMonkeyJobs());
+
+// part 2
+Console.WriteLine(master.FindNumberForEquality());
+

@@ -9,17 +9,16 @@ namespace MonkeyLib
 {
     public class Monkey
     {
-        public string Name { get; set; }
-
-        public long? Number { get; set; } = null;
-
-
-        public String Partner1Name { get; set; }
-        public String Partner2Name { get; set; }
-
-        public Monkey? Partner1 { get; set; }
-        public Monkey? Partner2 { get; set; }
-
-        public String? Operation { get; set; }
+        internal string Name { get; set; }
+        
+        internal long? Number { get; set; } = null;
+        
+        internal String? Partner1Name { get; set; }
+        internal String? Partner2Name { get; set; }
+        
+        internal Monkey? Partner1 { get; set; }
+        internal Monkey? Partner2 { get; set; }
+        
+        internal String? Operation { get; set; }
     }
 }
