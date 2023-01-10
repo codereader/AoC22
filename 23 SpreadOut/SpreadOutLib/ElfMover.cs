@@ -18,6 +18,8 @@ namespace SpreadOutLib
 
         public int Round = 0;
 
+        public bool Finished { get; set; } = false;
+
         private Dictionary<string, Vector2> _moveDirections = new Dictionary<string, Vector2>()
         {
             { "NW", new Vector2(-1, -1) },
@@ -158,6 +160,10 @@ namespace SpreadOutLib
                 }
             }
 
+            if (_elvesNotMoving == _elves.Count)
+            {
+                Finished = true;
+            }
             // next round
             Round++;
         }
@@ -207,7 +213,7 @@ namespace SpreadOutLib
 
         public void RunUntilFinished()
         {
-            while (_elvesNotMoving < _elves.Count)
+            while (Finished == false)
             {
                 DoRound();
             }
