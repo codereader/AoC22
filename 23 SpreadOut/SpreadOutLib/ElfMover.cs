@@ -50,7 +50,9 @@ namespace SpreadOutLib
                     if (line[x] == '#')
                     {
                         var pos = new Vector2(x, y);
-                        _elves.Add(new Elf(pos));
+                        var elf = new Elf(pos);
+                        _elves.Add(elf);
+                        VisualElves.Add(new VisualElf(elf));
                         _elfPositions[pos] = true;
                     }
                 }
@@ -203,11 +205,9 @@ namespace SpreadOutLib
 
         public void UpdateVisuals()
         {
-            VisualElves.Clear();
-
-            foreach (var elf in _elves)
+            foreach (var visualElf in VisualElves)
             {
-                VisualElves.Add(new VisualElf((int)elf.Position.X, (int)elf.Position.Y));
+                visualElf.UpdateVisuals();
             }
         }
 
@@ -219,6 +219,17 @@ namespace SpreadOutLib
             }
             // update rectangle borders
             FindRectangle();
+        }
+
+        public void Reset()
+        {
+            _elves.Clear();
+            _elfPositions.Clear();
+            VisualElves.Clear();
+            Round = 0;
+            Finished = false;
+
+            Parse(_input);
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SpreadOutLib
 {
-    internal class Elf
+    public class Elf
     {
         public Elf(Vector2 pos)
         {

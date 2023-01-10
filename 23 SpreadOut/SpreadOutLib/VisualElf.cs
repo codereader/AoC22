@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonWPF;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,15 +7,22 @@ using System.Threading.Tasks;
 
 namespace SpreadOutLib
 {
-    public class VisualElf
+    public class VisualElf : ViewModelBase
     {
-        public int PositionX { get; set; }
-        public int PositionY { get; set; }
+        private Elf _elf;
 
-        public VisualElf(int x, int y)
+        public int PositionX => (int)_elf.Position.X;
+        public int PositionY => (int)_elf.Position.Y;
+
+        public VisualElf(Elf elf)
         {
-            PositionX = x;
-            PositionY = y;
+            _elf = elf;
+        }
+
+        public void UpdateVisuals()
+        {
+            RaisePropertyChanged(nameof(PositionX));
+            RaisePropertyChanged(nameof(PositionY));
         }
 
     }

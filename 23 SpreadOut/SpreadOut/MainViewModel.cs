@@ -3,6 +3,7 @@ using CommonWPF;
 using SpreadOutLib;
 using System;
 using System.Collections.Generic;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -20,7 +21,6 @@ namespace SpreadOut
             get => GetValue<int>();
             set => SetValue(value);
         }
-
         public int RoundsDone
         {
             get => GetValue<int>();
@@ -33,24 +33,20 @@ namespace SpreadOut
             set => SetValue(value);
         }
 
-
         public MainViewModel()
         {
             var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @"SpreadOut.input.txt");
 
             Movinator.Parse(input);
-            Movinator.UpdateVisuals();
-
-            GroundTiles = Movinator.CountEmptyGroundTiles();
+            Update();
 
             RoundsToDo = 10;
-
 
             RunRounds = new RelayCommand(CanRunRounds, DoRunRounds);
             RunRoundsSimulation = new RelayCommand(CanRunRoundsSimulation, DoRunRoundsSimulation);
             RunUntilFinished = new RelayCommand(CanRunUntilFinished, DoRunUntilFinished);
             RunSimulationUntilFinished = new RelayCommand(CanRunSimulationUntilFinished, DoRunSimulationUntilFinished);
-
+            Reset = new RelayCommand(CanReset, DoReset);
         }
 
         public RelayCommand RunRounds { get; }
@@ -61,9 +57,7 @@ namespace SpreadOut
         public void DoRunRounds()
         {
             Movinator.DoRounds(RoundsToDo);
-            GroundTiles = Movinator.CountEmptyGroundTiles();
-            RoundsDone = Movinator.Round;
-            Movinator.UpdateVisuals();
+            Update();
         }
 
         public RelayCommand RunRoundsSimulation { get; }
@@ -79,12 +73,11 @@ namespace SpreadOut
         {
             for (int i = 0; i < RoundsToDo; i++)
             {
+                Thread.Sleep(20);
                 Movinator.DoRounds(1);
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    GroundTiles = Movinator.CountEmptyGroundTiles();
-                    RoundsDone = Movinator.Round;
-                    Movinator.UpdateVisuals();
+                    Update();
 
                 });
             }
@@ -98,9 +91,7 @@ namespace SpreadOut
         public void DoRunUntilFinished()
         {
             Movinator.RunUntilFinished();
-            GroundTiles = Movinator.CountEmptyGroundTiles();
-            RoundsDone = Movinator.Round;
-            Movinator.UpdateVisuals();
+            Update();
         }
 
         public RelayCommand RunSimulationUntilFinished { get; }
@@ -116,16 +107,31 @@ namespace SpreadOut
         {
             while (!Movinator.Finished)
             {
-                Thread.Sleep(50);
+                Thread.Sleep(20);
                 Movinator.DoRounds(1);
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    GroundTiles = Movinator.CountEmptyGroundTiles();
-                    RoundsDone = Movinator.Round;
-                    Movinator.UpdateVisuals();
+                    Update();
                 });
             }
         }
 
+        public RelayCommand Reset { get; }
+        public bool CanReset()
+        {
+            return true;
+        }
+        public void DoReset()
+        {
+            Movinator.Reset();
+            Update();
+        }
+
+        public void Update()
+        {
+            RoundsDone = Movinator.Round;
+            GroundTiles = Movinator.CountEmptyGroundTiles();
+            Movinator.UpdateVisuals();
+        }
     }
 }
