@@ -11,6 +11,7 @@ namespace SpreadOutLib
     {
         private List<string> _input;
         private List<Elf> _elves = new List<Elf>();
+        private Dictionary<Vector2, bool> _elfPositions = new Dictionary<Vector2, bool>();
         private int _elvesNotMoving;
 
         public ObservableCollection<VisualElf> VisualElves { get; set; } = new ObservableCollection<VisualElf>();
@@ -46,7 +47,9 @@ namespace SpreadOutLib
                 {
                     if (line[x] == '#')
                     {
-                        _elves.Add(new Elf(new Vector2(x, y)));
+                        var pos = new Vector2(x, y);
+                        _elves.Add(new Elf(pos));
+                        _elfPositions[pos] = true;
                     }
                 }
             }
@@ -60,12 +63,15 @@ namespace SpreadOutLib
             {
                 DoRound();
             }
+            // update rectangle borders
+            FindRectangle();
         }
 
         public void DoRound()
         {
             var startDir = Round % 4;
             _elvesNotMoving = 0;
+            var proposedPositions = new Dictionary<Vector2, int>();
 
             foreach (var elf in _elves)
             {
@@ -123,28 +129,34 @@ namespace SpreadOutLib
                                 break;
                         }
 
-                        if (directionFound) 
+                        if (directionFound)
                         {
                             break;
                         }
                     }
-
                 }
 
+                if (!proposedPositions.TryGetValue(elf.ProposedPosition, out var count))
+                {
+                    proposedPositions[elf.ProposedPosition] = 1;
+                }
+                else
+                {
+                    proposedPositions[elf.ProposedPosition] = count + 1;
+                }
             }
 
             // step 2: move it
             foreach (var elf in _elves)
             {
-                if (_elves.Count(e => e.ProposedPosition == elf.ProposedPosition) == 1) 
+                if (proposedPositions[elf.ProposedPosition] == 1)
                 {
                     // only 1 elf wants to move here
+                    _elfPositions[elf.Position] = false;
                     elf.Position = elf.ProposedPosition;
+                    _elfPositions[elf.Position] = true;
                 }
             }
-
-            // update rectangle borders
-            FindRectangle();
 
             // next round
             Round++;
@@ -157,7 +169,7 @@ namespace SpreadOutLib
 
             foreach (var dir in _moveDirections)
             {
-                if (_elves.Any(e => e.Position == elfPos + dir.Value))
+                if (_elfPositions.TryGetValue(elfPos + dir.Value, out var result) && result == true)
                 {
                     elf.Neighbors[dir.Key] = true;
                 }
@@ -195,10 +207,12 @@ namespace SpreadOutLib
 
         public void RunUntilFinished()
         {
-            while (_elvesNotMoving < _elves.Count) 
+            while (_elvesNotMoving < _elves.Count)
             {
                 DoRound();
             }
+            // update rectangle borders
+            FindRectangle();
         }
     }
 }
