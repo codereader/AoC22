@@ -12,7 +12,7 @@ namespace SpreadOut
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return 3 * ((int)value + 100);
+            return 5 * ((int)value + 50);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

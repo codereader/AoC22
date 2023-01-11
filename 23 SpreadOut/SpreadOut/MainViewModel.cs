@@ -14,6 +14,8 @@ namespace SpreadOut
 {
     class MainViewModel : ViewModelBase
     {
+        private CancellationTokenSource _tokenSource;
+
         public ElfMover Movinator { get; set; } = new ElfMover();
 
         public int RoundsToDo
@@ -46,6 +48,7 @@ namespace SpreadOut
             RunRoundsSimulation = new RelayCommand(CanRunRoundsSimulation, DoRunRoundsSimulation);
             RunUntilFinished = new RelayCommand(CanRunUntilFinished, DoRunUntilFinished);
             RunSimulationUntilFinished = new RelayCommand(CanRunSimulationUntilFinished, DoRunSimulationUntilFinished);
+            Stop = new RelayCommand(CanStop, DoStop);
             Reset = new RelayCommand(CanReset, DoReset);
         }
 
@@ -65,22 +68,31 @@ namespace SpreadOut
         {
             return true;
         }
-        public void DoRunRoundsSimulation()
+        public async void DoRunRoundsSimulation()
         {
-            Task.Run(RoundsSimulation);
-        }
-        private void RoundsSimulation()
-        {
-            for (int i = 0; i < RoundsToDo; i++)
-            {
-                Thread.Sleep(20);
-                Movinator.DoRounds(1);
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    Update();
+            _tokenSource = new CancellationTokenSource();
 
-                });
+            await Task.Run(() => RoundsSimulation(_tokenSource.Token));
+
+            _tokenSource.Dispose();
+            _tokenSource = null;
+        }
+        private void RoundsSimulation(CancellationToken token)
+        {
+            try
+            {
+                for (int i = 0; i < RoundsToDo; i++)
+                {
+                    Thread.Sleep(20);
+                    Movinator.DoRounds(1);
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        Update();
+                    });
+                    token.ThrowIfCancellationRequested();
+                }
             }
+            catch (OperationCanceledException) { }
         }
 
         public RelayCommand RunUntilFinished { get; }
@@ -99,22 +111,47 @@ namespace SpreadOut
         {
             return true;
         }
-        public void DoRunSimulationUntilFinished()
+        public async void DoRunSimulationUntilFinished()
         {
-            Task.Run(SimulationUntilFinished);
+            _tokenSource = new CancellationTokenSource();
+
+            await Task.Run(() => SimulationUntilFinished(_tokenSource.Token));
+
+            _tokenSource.Dispose();
+            _tokenSource = null;
         }
-        private void SimulationUntilFinished()
+        private void SimulationUntilFinished(CancellationToken token)
         {
-            while (!Movinator.Finished)
+            try
             {
-                Thread.Sleep(20);
-                Movinator.DoRounds(1);
-                App.Current.Dispatcher.Invoke(() =>
+                while (!Movinator.Finished)
                 {
-                    Update();
-                });
+                    Thread.Sleep(20);
+                    Movinator.DoRounds(1);
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        Update();
+                    });
+                    token.ThrowIfCancellationRequested();
+                }
+            }
+            catch (OperationCanceledException) { }
+
+        }
+
+        public RelayCommand Stop { get; }
+        public bool CanStop()
+        {
+            return true;
+        }
+        public void DoStop()
+        {
+            if (_tokenSource != null)
+            {
+                _tokenSource.Cancel();
             }
         }
+
 
         public RelayCommand Reset { get; }
         public bool CanReset()

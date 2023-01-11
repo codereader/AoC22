@@ -33,7 +33,7 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Rectangle Fill="OrangeRed" Height="3" Width="3" />
+                    <Rectangle Fill="OrangeRed" Height="5" Width="5" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -50,7 +50,8 @@
             <Button Width="200" HorizontalAlignment="Left" Margin="0,20,0,0" Command="{Binding RunUntilFinished}">Run until finished</Button>
             <Button Width="200" HorizontalAlignment="Left" Margin="0,10,0,0" Command="{Binding RunSimulationUntilFinished}">Simulation until finished</Button>
                                 
-            <Button Width="200" HorizontalAlignment="Left" Margin="0,20,0,0" Command="{Binding Reset}">Reset</Button>
+            <Button Width="200" HorizontalAlignment="Left" Margin="0,20,0,0" Command="{Binding Stop}">Stop Simulation</Button>
+            <Button Width="200" HorizontalAlignment="Left" Margin="0,10,0,0" Command="{Binding Reset}">Reset</Button>
            
             <StackPanel Margin="0,20,0,0" Orientation="Horizontal">
                 <TextBlock Text="Rounds done: " />
