@@ -14,7 +14,8 @@ namespace SpreadOut
 {
     class MainViewModel : ViewModelBase
     {
-        private CancellationTokenSource _tokenSource;
+        private CancellationTokenSource? _tokenSource;
+        private bool _simulationRunning;
 
         public ElfMover Movinator { get; set; } = new ElfMover();
 
@@ -41,6 +42,7 @@ namespace SpreadOut
 
             Movinator.Parse(input);
             Update();
+            _simulationRunning = false;
 
             RoundsToDo = 10;
 
@@ -55,7 +57,7 @@ namespace SpreadOut
         public RelayCommand RunRounds { get; }
         public bool CanRunRounds()
         {
-            return true;
+            return !_simulationRunning;
         }
         public void DoRunRounds()
         {
@@ -66,17 +68,24 @@ namespace SpreadOut
         public RelayCommand RunRoundsSimulation { get; }
         public bool CanRunRoundsSimulation()
         {
-            return true;
+            return !_simulationRunning;
         }
         public async void DoRunRoundsSimulation()
         {
             _tokenSource = new CancellationTokenSource();
+            _simulationRunning = true;
+
+            CanExecuteChanged();
 
             await Task.Run(() => RoundsSimulation(_tokenSource.Token));
+            _simulationRunning = false;
+            CanExecuteChanged();
 
             _tokenSource.Dispose();
             _tokenSource = null;
         }
+
+
         private void RoundsSimulation(CancellationToken token)
         {
             try
@@ -98,7 +107,7 @@ namespace SpreadOut
         public RelayCommand RunUntilFinished { get; }
         public bool CanRunUntilFinished()
         {
-            return true;
+            return !_simulationRunning;
         }
         public void DoRunUntilFinished()
         {
@@ -109,13 +118,19 @@ namespace SpreadOut
         public RelayCommand RunSimulationUntilFinished { get; }
         public bool CanRunSimulationUntilFinished()
         {
-            return true;
+            return !_simulationRunning;
         }
         public async void DoRunSimulationUntilFinished()
         {
             _tokenSource = new CancellationTokenSource();
 
+            _simulationRunning = true;
+            CanExecuteChanged();
+
             await Task.Run(() => SimulationUntilFinished(_tokenSource.Token));
+
+            _simulationRunning = false;
+            CanExecuteChanged();
 
             _tokenSource.Dispose();
             _tokenSource = null;
@@ -142,7 +157,7 @@ namespace SpreadOut
         public RelayCommand Stop { get; }
         public bool CanStop()
         {
-            return true;
+            return _simulationRunning;
         }
         public void DoStop()
         {
@@ -156,7 +171,7 @@ namespace SpreadOut
         public RelayCommand Reset { get; }
         public bool CanReset()
         {
-            return true;
+            return !_simulationRunning;
         }
         public void DoReset()
         {
@@ -170,5 +185,16 @@ namespace SpreadOut
             GroundTiles = Movinator.CountEmptyGroundTiles();
             Movinator.UpdateVisuals();
         }
+
+        private void CanExecuteChanged()
+        {
+            RunRounds.RaiseCanExecuteChanged();
+            RunRoundsSimulation.RaiseCanExecuteChanged();
+            RunUntilFinished.RaiseCanExecuteChanged();
+            RunSimulationUntilFinished.RaiseCanExecuteChanged();
+            Stop.RaiseCanExecuteChanged();
+            Reset.RaiseCanExecuteChanged();
+        }
+
     }
 }

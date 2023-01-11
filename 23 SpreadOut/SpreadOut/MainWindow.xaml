@@ -20,7 +20,7 @@
         <ItemsControl Grid.Column="0" ItemsSource="{Binding Movinator.VisualElves}" >
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas />
+                    <Canvas Background="LightGray" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
@@ -38,7 +38,7 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <StackPanel Grid.Column="1">
+        <StackPanel Grid.Column="1" Margin="30,0,0,0">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Rounds: " />
                 <TextBox Text="{Binding RoundsToDo, Mode=TwoWay}" />
