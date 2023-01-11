@@ -85,7 +85,6 @@ namespace SpreadOut
             _tokenSource = null;
         }
 
-
         private void RoundsSimulation(CancellationToken token)
         {
             try
@@ -97,7 +96,7 @@ namespace SpreadOut
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         Update();
-                    });
+                    }, System.Windows.Threading.DispatcherPriority.Background);
                     token.ThrowIfCancellationRequested();
                 }
             }
@@ -122,19 +121,25 @@ namespace SpreadOut
         }
         public async void DoRunSimulationUntilFinished()
         {
-            _tokenSource = new CancellationTokenSource();
-
             _simulationRunning = true;
             CanExecuteChanged();
 
-            await Task.Run(() => SimulationUntilFinished(_tokenSource.Token));
+            await Task.Run(StartSimulationUntilFinished);
 
             _simulationRunning = false;
             CanExecuteChanged();
+        }
+
+        private void StartSimulationUntilFinished()
+        {
+            _tokenSource = new CancellationTokenSource();
+
+            SimulationUntilFinished(_tokenSource.Token);
 
             _tokenSource.Dispose();
             _tokenSource = null;
         }
+
         private void SimulationUntilFinished(CancellationToken token)
         {
             try
@@ -143,15 +148,16 @@ namespace SpreadOut
                 {
                     Thread.Sleep(20);
                     Movinator.DoRounds(1);
+                    
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         Update();
-                    });
+                    }, System.Windows.Threading.DispatcherPriority.Background);
+                    
                     token.ThrowIfCancellationRequested();
                 }
             }
             catch (OperationCanceledException) { }
-
         }
 
         public RelayCommand Stop { get; }
@@ -166,7 +172,6 @@ namespace SpreadOut
                 _tokenSource.Cancel();
             }
         }
-
 
         public RelayCommand Reset { get; }
         public bool CanReset()

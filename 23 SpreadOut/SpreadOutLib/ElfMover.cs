@@ -156,10 +156,16 @@ namespace SpreadOutLib
                 if (proposedPositions[elf.ProposedPosition] == 1)
                 {
                     // only 1 elf wants to move here
+                    if (elf.Position != elf.ProposedPosition)
+                    {
+                        elf.RoundsSinceLastMove = -1;
+                    }
                     _elfPositions[elf.Position] = false;
                     elf.Position = elf.ProposedPosition;
                     _elfPositions[elf.Position] = true;
                 }
+
+                elf.RoundsSinceLastMove++;
             }
 
             if (_elvesNotMoving == _elves.Count)

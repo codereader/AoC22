@@ -9,6 +9,7 @@
 
     <Window.Resources>
         <local:PositionConverter x:Key="PositionConverter" />
+        <local:ElfColorConverter x:Key="ElfColorConverter" />
     </Window.Resources>
     
     <Grid Margin="20">
@@ -33,7 +34,7 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Rectangle Fill="OrangeRed" Height="5" Width="5" />
+                    <Rectangle Fill="{Binding RoundsSinceLastMove, Converter={StaticResource ElfColorConverter}}" Height="5" Width="5" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

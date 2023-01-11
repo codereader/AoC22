@@ -14,6 +14,8 @@ namespace SpreadOutLib
         public int PositionX => (int)_elf.Position.X;
         public int PositionY => (int)_elf.Position.Y;
 
+        public int RoundsSinceLastMove => _elf.RoundsSinceLastMove;
+
         public VisualElf(Elf elf)
         {
             _elf = elf;
@@ -23,6 +25,7 @@ namespace SpreadOutLib
         {
             RaisePropertyChanged(nameof(PositionX));
             RaisePropertyChanged(nameof(PositionY));
+            RaisePropertyChanged(nameof(RoundsSinceLastMove));
         }
 
     }

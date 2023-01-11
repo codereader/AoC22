@@ -9,14 +9,17 @@ namespace SpreadOutLib
 {
     public class Elf
     {
-        public Elf(Vector2 pos)
-        {
-            Position = pos;
-        }
+        public int RoundsSinceLastMove { get; set; }
+        public int MaxRoundsSinceLastMove { get; set; } = 100;
 
         public Vector2 Position { get; set; }
 
         public Vector2 ProposedPosition { get; set; }
+        public Elf(Vector2 pos)
+        {
+            Position = pos;
+            RoundsSinceLastMove = MaxRoundsSinceLastMove;
+        }
 
         public Dictionary<string, bool> Neighbors { get; set; } = new Dictionary<string, bool>();
 
