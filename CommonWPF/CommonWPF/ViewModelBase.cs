@@ -37,14 +37,11 @@ namespace CommonWPF
                 OnPropertyChanged(propertyName);
                 changedCallback();
             }
-
         }
 
         protected void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-
     }
 }

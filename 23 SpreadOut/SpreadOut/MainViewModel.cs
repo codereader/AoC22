@@ -40,10 +40,10 @@ namespace SpreadOut
         {
             var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @"SpreadOut.input.txt");
 
+            Elf.MaxRoundsSinceLastMove = Constants.MaxRoundsSinceLastMove;
             Movinator.Parse(input);
             Update();
             _simulationRunning = false;
-
             RoundsToDo = 10;
 
             RunRounds = new RelayCommand(CanRunRounds, DoRunRounds);
@@ -74,17 +74,15 @@ namespace SpreadOut
         {
             _tokenSource = new CancellationTokenSource();
             _simulationRunning = true;
-
             CanExecuteChanged();
 
             await Task.Run(() => RoundsSimulation(_tokenSource.Token));
+
             _simulationRunning = false;
             CanExecuteChanged();
-
             _tokenSource.Dispose();
             _tokenSource = null;
         }
-
         private void RoundsSimulation(CancellationToken token)
         {
             try

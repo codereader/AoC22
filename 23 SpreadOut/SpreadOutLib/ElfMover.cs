@@ -9,7 +9,7 @@ namespace SpreadOutLib
 {
     public class ElfMover : ViewModelBase
     {
-        private List<string> _input;
+        private List<string>? _input;
         private List<Elf> _elves = new List<Elf>();
         private Dictionary<Vector2, bool> _elfPositions = new Dictionary<Vector2, bool>();
         private int _elvesNotMoving;
@@ -64,6 +64,16 @@ namespace SpreadOutLib
         public void DoRounds(int rounds)
         {
             for (int i = 0; i < rounds; i++)
+            {
+                DoRound();
+            }
+            // update rectangle borders
+            FindRectangle();
+        }
+
+        public void RunUntilFinished()
+        {
+            while (Finished == false)
             {
                 DoRound();
             }
@@ -170,6 +180,7 @@ namespace SpreadOutLib
 
             if (_elvesNotMoving == _elves.Count)
             {
+                // no more elves moving this round
                 Finished = true;
             }
             // next round
@@ -194,7 +205,6 @@ namespace SpreadOutLib
             }
         }
 
-
         private void FindRectangle()
         {
             RectangleXMin = (int)_elves.Min(e => e.Position.X);
@@ -208,23 +218,12 @@ namespace SpreadOutLib
             return (RectangleXMax - RectangleXMin + 1) * (RectangleYMax - RectangleYMin + 1) - _elves.Count;
         }
 
-
         public void UpdateVisuals()
         {
             foreach (var visualElf in VisualElves)
             {
                 visualElf.UpdateVisuals();
             }
-        }
-
-        public void RunUntilFinished()
-        {
-            while (Finished == false)
-            {
-                DoRound();
-            }
-            // update rectangle borders
-            FindRectangle();
         }
 
         public void Reset()

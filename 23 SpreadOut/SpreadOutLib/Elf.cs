@@ -10,11 +10,11 @@ namespace SpreadOutLib
     public class Elf
     {
         public int RoundsSinceLastMove { get; set; }
-        public int MaxRoundsSinceLastMove { get; set; } = 100;
+        public static int MaxRoundsSinceLastMove { get; set; }
 
         public Vector2 Position { get; set; }
-
         public Vector2 ProposedPosition { get; set; }
+
         public Elf(Vector2 pos)
         {
             Position = pos;

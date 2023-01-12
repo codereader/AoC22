@@ -34,7 +34,8 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Rectangle Fill="{Binding RoundsSinceLastMove, Converter={StaticResource ElfColorConverter}}" Height="5" Width="5" />
+                    <Rectangle Fill="{Binding RoundsSinceLastMove, Converter={StaticResource ElfColorConverter}}" 
+                               Height="{x:Static local:Constants.ElfSize}" Width="{x:Static local:Constants.ElfSize}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -64,7 +65,6 @@
                 <TextBlock Text="{Binding GroundTiles}" />
             </StackPanel>
         </StackPanel>
-        
 
     </Grid>
 </Window>

@@ -12,11 +12,7 @@ namespace SpreadOut
 {
     class ElfColorConverter : IValueConverter
     {
-
         private ColourGradient _colours = new ColourGradient();
-        private double MaxRoundsSinceLastMove = 100.0;
-
-
 
         public ElfColorConverter()
         {
@@ -27,7 +23,7 @@ namespace SpreadOut
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return _colours.GetColour((int)value / MaxRoundsSinceLastMove);
+            return _colours.GetColour((int)value / (double)Elf.MaxRoundsSinceLastMove);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
