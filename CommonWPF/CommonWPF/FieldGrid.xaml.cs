@@ -19,6 +19,18 @@ namespace CommonWPF
     /// </summary>
     public partial class FieldGrid : UserControl
     {
+        public double ItemSize
+        {
+            get
+            {
+                return ((PositionConverter)FindResource("PositionConverter")).Size;
+            }
+            set
+            {
+                ((PositionConverter)FindResource("PositionConverter")).Size = value;
+            }
+        }
+
         public static readonly DependencyProperty ItemsSourceProperty =
         DependencyProperty.Register(
             name: nameof(ItemsSource),
@@ -35,16 +47,13 @@ namespace CommonWPF
         public FieldGrid()
         {
             InitializeComponent();
-
         }
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var self = (FieldGrid)d;
-
             self.FieldGridCanvas.ItemsSource = self.ItemsSource;
         }
-
 
     }
 }

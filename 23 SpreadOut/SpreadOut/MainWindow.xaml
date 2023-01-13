@@ -8,7 +8,6 @@
         Title="MainWindow" WindowState="Maximized" Height="1000" Width="1800">
 
     <Window.Resources>
-        <local:PositionConverter x:Key="PositionConverter" />
         <local:ElfColorConverter x:Key="ElfColorConverter" />
     </Window.Resources>
     
@@ -18,7 +17,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <commonwpf:FieldGrid Grid.Column="0" ItemsSource="{Binding Movinator.VisualElves}"  />
+        <commonwpf:FieldGrid Grid.Column="0" ItemsSource="{Binding Movinator.VisualElves}" ItemSize="{x:Static local:Constants.ElfSize}"  />
 
         <!--
         <ItemsControl Grid.Column="0" ItemsSource="{Binding Movinator.VisualElves}" >
