@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace SpreadOutLib
 {
-    public class VisualElf : ViewModelBase
+    public class VisualElf : ViewModelBase, IGridItem
     {
         private Elf _elf;
 
-        public int PositionX => (int)_elf.Position.X;
-        public int PositionY => (int)_elf.Position.Y;
+        public int PositionX => (int)_elf.Position.X + 50;
+        public int PositionY => (int)_elf.Position.Y + 50;
 
         public int RoundsSinceLastMove => _elf.RoundsSinceLastMove;
 
