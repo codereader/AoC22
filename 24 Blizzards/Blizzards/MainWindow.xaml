@@ -3,10 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Blizzards"
+        xmlns:local="clr-namespace:Blizzards" 
+        xmlns:commonwpf="clr-namespace:CommonWPF;assembly=CommonWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" WindowState="Maximized" Height="1000" Width="1800">
+
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1000" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <commonwpf:FieldGrid Grid.Column="0" />
+
+        <StackPanel Margin="20,0,0,0" Grid.Column="1" >
+            <commonwpf:SimulationControl />
+        </StackPanel>
 
     </Grid>
 </Window>
