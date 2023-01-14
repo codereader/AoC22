@@ -20,6 +20,9 @@ namespace SpreadOutLib
 
         public bool Finished { get; set; } = false;
 
+        public bool SimulationFinished { get; set; } = false;
+
+
         private Dictionary<string, Vector2> _moveDirections = new Dictionary<string, Vector2>()
         {
             { "NW", new Vector2(-1, -1) },

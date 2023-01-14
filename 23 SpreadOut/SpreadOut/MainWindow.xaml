@@ -9,6 +9,7 @@
 
     <Window.Resources>
         <local:ElfColorConverter x:Key="ElfColorConverter" />
+        <local:InvertBoolConverter x:Key="InvertBoolConverter" />
     </Window.Resources>
     
     <Grid Margin="20">
@@ -19,44 +20,18 @@
 
         <commonwpf:FieldGrid Grid.Column="0" ItemsSource="{Binding Movinator.VisualElves}" ItemSize="{x:Static local:Constants.ElfSize}"  />
 
-        <!--
-        <ItemsControl Grid.Column="0" ItemsSource="{Binding Movinator.VisualElves}" >
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas Background="LightGray" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-
-            <ItemsControl.ItemContainerStyle>
-                <Style>
-                    <Setter Property="Canvas.Left" Value="{Binding PositionX, Converter={StaticResource PositionConverter}}" />
-                    <Setter Property="Canvas.Top" Value="{Binding PositionY, Converter={StaticResource PositionConverter}}" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Rectangle Fill="{Binding RoundsSinceLastMove, Converter={StaticResource ElfColorConverter}}" 
-                               Height="{x:Static local:Constants.ElfSize}" Width="{x:Static local:Constants.ElfSize}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
--->
         <StackPanel Grid.Column="1" Margin="30,0,0,0">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Rounds: " />
-                <TextBox Text="{Binding RoundsToDo, Mode=TwoWay}" />
-            </StackPanel>
             
-            <Button Width="200" HorizontalAlignment="Left" Margin="0,10,0,0" Command="{Binding RunRounds}">Run rounds</Button>
-            <Button Width="200" HorizontalAlignment="Left" Margin="0,10,0,0" Command="{Binding RunRoundsSimulation}">Simulate rounds</Button>
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Margin="10" IsChecked="{Binding Path=RunRoundsNumber}">Run rounds</RadioButton>
+                <TextBox Margin="10,0,0,0" Width="60" Height="20" Text="{Binding RoundsToDo, Mode=TwoWay}" />
+            </StackPanel>
+            <RadioButton Margin="10" IsChecked="{Binding Path=RunRoundsNumber, Converter={StaticResource InvertBoolConverter}}">Run until elves are finished</RadioButton>
+
+            <Button Width="200" HorizontalAlignment="Left" Margin="0,10,0,0" Command="{Binding ShowResult}">Show Result</Button>
                                
-            <Button Width="200" HorizontalAlignment="Left" Margin="0,20,0,0" Command="{Binding RunUntilFinished}">Run until finished</Button>
-            <Button Width="200" HorizontalAlignment="Left" Margin="0,10,0,0" Command="{Binding RunSimulationUntilFinished}">Simulation until finished</Button>
-                                
-            <Button Width="200" HorizontalAlignment="Left" Margin="0,20,0,0" Command="{Binding Stop}">Stop Simulation</Button>
-            <Button Width="200" HorizontalAlignment="Left" Margin="0,10,0,0" Command="{Binding Reset}">Reset</Button>
-           
+            <commonwpf:SimulationControl />
+
             <StackPanel Margin="0,20,0,0" Orientation="Horizontal">
                 <TextBlock Text="Rounds done: " />
                 <TextBlock Text="{Binding RoundsDone}" />

@@ -12,19 +12,18 @@ using System.Threading.Tasks;
 
 namespace SpreadOut
 {
-    class MainViewModel : ViewModelBase
+    class MainViewModel : SimulationViewModel
     {
-        private CancellationTokenSource? _tokenSource;
-        private bool _simulationRunning;
-
+        private int _startRound = 0;
         public ElfMover Movinator { get; set; } = new ElfMover();
 
-        public int RoundsToDo
+        public bool RunRoundsNumber
         {
-            get => GetValue<int>();
+            get => GetValue<bool>();
             set => SetValue(value);
         }
-        public int RoundsDone
+
+        public int RoundsToDo
         {
             get => GetValue<int>();
             set => SetValue(value);
@@ -43,160 +42,88 @@ namespace SpreadOut
             Elf.MaxRoundsSinceLastMove = Constants.MaxRoundsSinceLastMove;
             Movinator.Parse(input);
             Update();
-            _simulationRunning = false;
             RoundsToDo = 10;
+            RunRoundsNumber = false;
 
-            RunRounds = new RelayCommand(CanRunRounds, DoRunRounds);
-            RunRoundsSimulation = new RelayCommand(CanRunRoundsSimulation, DoRunRoundsSimulation);
-            RunUntilFinished = new RelayCommand(CanRunUntilFinished, DoRunUntilFinished);
-            RunSimulationUntilFinished = new RelayCommand(CanRunSimulationUntilFinished, DoRunSimulationUntilFinished);
-            Stop = new RelayCommand(CanStop, DoStop);
-            Reset = new RelayCommand(CanReset, DoReset);
+            ShowResult = new RelayCommand(CanShowResult, DoShowResult);
         }
 
-        public RelayCommand RunRounds { get; }
-        public bool CanRunRounds()
+        public RelayCommand ShowResult { get; }
+        public bool CanShowResult()
         {
-            return !_simulationRunning;
+            return !SimulationRunning;
         }
-        public void DoRunRounds()
+        public void DoShowResult()
         {
-            Movinator.DoRounds(RoundsToDo);
+            if (RunRoundsNumber)
+            {
+                Movinator.DoRounds(RoundsToDo);
+            }
+            else 
+            {
+                Movinator.RunUntilFinished();   
+            }
             Update();
         }
 
-        public RelayCommand RunRoundsSimulation { get; }
-        public bool CanRunRoundsSimulation()
-        {
-            return !_simulationRunning;
+        public override void OnSimulationStart()
+        { 
+            base.OnSimulationStart();
+            _startRound = Movinator.Round;
         }
-        public async void DoRunRoundsSimulation()
+
+        public override void OnSimulationStop()
         {
-            _tokenSource = new CancellationTokenSource();
-            _simulationRunning = true;
-            CanExecuteChanged();
-
-            await Task.Run(() => RoundsSimulation(_tokenSource.Token));
-
-            _simulationRunning = false;
-            CanExecuteChanged();
-            _tokenSource.Dispose();
-            _tokenSource = null;
+            base.OnSimulationStop();
+            SimulationFinished = false;
         }
-        private void RoundsSimulation(CancellationToken token)
+
+        public override void DoRound()
         {
-            try
+            base.DoRound();
+            Movinator.DoRounds(1);
+
+            if (RunRoundsNumber)
             {
-                for (int i = 0; i < RoundsToDo; i++)
+                if (Movinator.Round >= _startRound + RoundsToDo)
                 {
-                    Thread.Sleep(20);
-                    Movinator.DoRounds(1);
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        Update();
-                    }, System.Windows.Threading.DispatcherPriority.Background);
-                    token.ThrowIfCancellationRequested();
+                    SimulationFinished = true;
                 }
             }
-            catch (OperationCanceledException) { }
-        }
-
-        public RelayCommand RunUntilFinished { get; }
-        public bool CanRunUntilFinished()
-        {
-            return !_simulationRunning;
-        }
-        public void DoRunUntilFinished()
-        {
-            Movinator.RunUntilFinished();
-            Update();
-        }
-
-        public RelayCommand RunSimulationUntilFinished { get; }
-        public bool CanRunSimulationUntilFinished()
-        {
-            return !_simulationRunning;
-        }
-        public async void DoRunSimulationUntilFinished()
-        {
-            _simulationRunning = true;
-            CanExecuteChanged();
-
-            await Task.Run(StartSimulationUntilFinished);
-
-            _simulationRunning = false;
-            CanExecuteChanged();
-        }
-
-        private void StartSimulationUntilFinished()
-        {
-            _tokenSource = new CancellationTokenSource();
-
-            SimulationUntilFinished(_tokenSource.Token);
-
-            _tokenSource.Dispose();
-            _tokenSource = null;
-        }
-
-        private void SimulationUntilFinished(CancellationToken token)
-        {
-            try
+            else if (Movinator.Finished)
             {
-                while (!Movinator.Finished)
-                {
-                    Thread.Sleep(20);
-                    Movinator.DoRounds(1);
-                    
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        Update();
-                    }, System.Windows.Threading.DispatcherPriority.Background);
-                    
-                    token.ThrowIfCancellationRequested();
-                }
+                SimulationFinished = true;
             }
-            catch (OperationCanceledException) { }
-        }
 
-        public RelayCommand Stop { get; }
-        public bool CanStop()
-        {
-            return _simulationRunning;
-        }
-        public void DoStop()
-        {
-            if (_tokenSource != null)
+            App.Current.Dispatcher.Invoke(() =>
             {
-                _tokenSource.Cancel();
-            }
+                Update();
+            }, System.Windows.Threading.DispatcherPriority.Background);
+
         }
 
-        public RelayCommand Reset { get; }
-        public bool CanReset()
+        public override void DoReset()
         {
-            return !_simulationRunning;
-        }
-        public void DoReset()
-        {
+            base.DoReset();
+            _startRound = 0;
+            SimulationFinished = false;
             Movinator.Reset();
             Update();
         }
 
-        public void Update()
+
+        public override void Update()
         {
-            RoundsDone = Movinator.Round;
+            base.Update();
             GroundTiles = Movinator.CountEmptyGroundTiles();
+            RoundsDone = Movinator.Round;
             Movinator.UpdateVisuals();
         }
 
-        private void CanExecuteChanged()
+        public override void CanExecuteChanged()
         {
-            RunRounds.RaiseCanExecuteChanged();
-            RunRoundsSimulation.RaiseCanExecuteChanged();
-            RunUntilFinished.RaiseCanExecuteChanged();
-            RunSimulationUntilFinished.RaiseCanExecuteChanged();
-            Stop.RaiseCanExecuteChanged();
-            Reset.RaiseCanExecuteChanged();
+            base.CanExecuteChanged();
+            ShowResult.RaiseCanExecuteChanged();
         }
 
     }
