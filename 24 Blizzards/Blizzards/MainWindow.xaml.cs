@@ -22,6 +22,7 @@ namespace Blizzards
     {
         public MainWindow()
         {
+            DataContext = new MainViewModel();
             InitializeComponent();
         }
     }

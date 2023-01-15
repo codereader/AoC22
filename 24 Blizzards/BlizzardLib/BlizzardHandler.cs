@@ -1,6 +1,8 @@
 using CommonWPF;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Numerics;
 
 namespace BlizzardLib
@@ -10,18 +12,19 @@ namespace BlizzardLib
         private int _fieldWidth;
         private int _fieldHeight;
 
-        private Dictionary<Vector2, Location> _grid = new Dictionary<Vector2, Location>();
+        public Dictionary<Vector2, Location> _grid = new Dictionary<Vector2, Location>();
+
+        public List<Location> ValleyGrid { get; private set; }
+
         private Dictionary<Vector2, List<Blizzard>> _blizzardPositions = new Dictionary<Vector2, List<Blizzard>>();
 
-
-
         // Blizzards moving to the left (y, blizzard)
-        private Dictionary<int, Blizzard> _blizzardsLeft = new Dictionary<int, Blizzard>();
-        private Dictionary<int, Blizzard> _blizzardsRight = new Dictionary<int, Blizzard>();
+        private List<Blizzard> _blizzardsLeft = new List<Blizzard>();
+        private List<Blizzard> _blizzardsRight = new List<Blizzard>();
 
         // (x, blizzard)
-        private Dictionary<int, Blizzard> _blizzardsUp = new Dictionary<int, Blizzard>();
-        private Dictionary<int, Blizzard> _blizzardsDown = new Dictionary<int, Blizzard>();
+        private List<Blizzard> _blizzardsUp = new List<Blizzard>();
+        private List<Blizzard> _blizzardsDown = new List<Blizzard>();
 
         public int Round { get; private set; } = 0;
 
@@ -56,25 +59,27 @@ namespace BlizzardLib
 
                         if (character == '<')
                         {
-                            _blizzardsLeft.Add(y, new Blizzard { StartX = x, StartY = y });
+                            _blizzardsLeft.Add(new Blizzard { StartX = x, StartY = y });
                         }
 
                         else if (character == '>')
                         {
-                            _blizzardsRight.Add(y, new Blizzard { StartX = x, StartY = y });
+                            _blizzardsRight.Add(new Blizzard { StartX = x, StartY = y });
 
                         }
                         else if (character == '^')
                         {
-                            _blizzardsUp.Add(x, new Blizzard { StartX = x, StartY = y });
+                            _blizzardsUp.Add(new Blizzard { StartX = x, StartY = y });
                         }
                         else
                         {
-                            _blizzardsDown.Add(x, new Blizzard { StartX = x, StartY = y });
+                            _blizzardsDown.Add(new Blizzard { StartX = x, StartY = y });
                         }
                     }
                 }
             }
+
+            ValleyGrid = new List<Location>(_grid.Values.ToList());
         }
 
 

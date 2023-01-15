@@ -13,8 +13,8 @@ namespace Blizzards
     internal class VisualLocation : IGridItem
     {
         private Location _location;
-        public int PositionX => (int)_location.Position.X;
 
+        public int PositionX => (int)_location.Position.X;
         public int PositionY => (int)_location.Position.Y;
 
         public Brush BackGroundColor
@@ -24,7 +24,7 @@ namespace Blizzards
                 return Fill switch
                 {
                     Filling.Wall => new SolidColorBrush(Colors.DarkGray),
-                    Filling.Blizzard => new SolidColorBrush(Colors.Azure),
+                    Filling.Blizzard => new SolidColorBrush(Colors.Cyan),
                     Filling.Clear => new SolidColorBrush(Colors.White),
                     Filling.Player => new SolidColorBrush(Colors.Red),
                     _ => new SolidColorBrush(Colors.White),

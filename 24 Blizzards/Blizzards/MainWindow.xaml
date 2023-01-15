@@ -9,14 +9,14 @@
         Title="MainWindow" WindowState="Maximized" Height="1000" Width="1800">
 
     <Grid Margin="20">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1000" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-        <commonwpf:FieldGrid Grid.Column="0" />
+        <commonwpf:FieldGrid Grid.Row="0" ItemsSource="{Binding Valley}" ItemSize="15" />
 
-        <StackPanel Margin="20,0,0,0" Grid.Column="1" >
+        <StackPanel Margin="20,0,0,0" Grid.Row="1" >
             <commonwpf:SimulationControl />
         </StackPanel>
 
