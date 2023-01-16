@@ -11,13 +11,5 @@ namespace BlizzardLib
         public int StartX { get; set; }
         public int StartY { get; set; }
 
-        public int CurrentX { get; set; }
-        public int CurrentY { get; set; }
-
-        public Blizzard()
-        {
-            CurrentX = StartX;
-            CurrentY = StartY;
-        }
     }
 }

@@ -10,7 +10,7 @@ using System.Windows.Navigation;
 
 namespace Blizzards
 {
-    internal class VisualLocation : IGridItem
+    internal class VisualLocation : ViewModelBase, IGridItem
     {
         private Location _location;
 
@@ -37,6 +37,11 @@ namespace Blizzards
         public VisualLocation(Location location)
         {
             _location = location;
+        }
+
+        public void UpdateVisuals()
+        {
+            RaisePropertyChanged(nameof(BackGroundColor));
         }
     }
 }
