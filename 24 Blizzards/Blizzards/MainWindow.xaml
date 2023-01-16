@@ -28,11 +28,11 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <RadioButton Margin="10" IsChecked="{Binding Path=RunTwice, Converter={StaticResource InvertBoolConverter}}">Start -> Destination</RadioButton>
-                <RadioButton Margin="10" IsChecked="{Binding Path=RunTwice}">Run twice</RadioButton>
+                <RadioButton IsChecked="{Binding Path=RunTwice, Converter={StaticResource InvertBoolConverter}}">Start -> Destination</RadioButton>
+                <RadioButton Margin="0,10,0,0" IsChecked="{Binding Path=RunTwice}">Run twice</RadioButton>
             </StackPanel>
 
-            <commonwpf:SimulationControl Grid.Column="1" />
+            <commonwpf:SimulationControl Grid.Column="1" Margin="20,0,0,0" />
 
             <StackPanel Grid.Column="2" Margin="20,0,0,0">
                 <StackPanel Orientation="Horizontal">
