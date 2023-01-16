@@ -119,12 +119,12 @@ namespace BlizzardLib
 
         public void CalculatePath(Vector2 startPosition, Vector2 endPosition)
         {
-            var availablePositions = new List<State>();
+            var availablePositions = new Dictionary<Vector2, State>();
 
             var start = new State();
             start.CurrentPosition = startPosition;
             start.Positions.Add(_round, startPosition);
-            availablePositions.Add(start);
+            availablePositions.Add(start.CurrentPosition, start);
 
             var destinationReached = false;
 
@@ -135,20 +135,20 @@ namespace BlizzardLib
                 // calculate blizzard positions for round
                 CalculateBlizzardPositions(_round, _blizzardPositions);
 
-                var nextAvailablePositions = new List<State>();
+                var nextAvailablePositions = new Dictionary<Vector2, State>();
 
-                foreach (var currentState in availablePositions)
+                foreach (var currentState in availablePositions.Values)
                 {
                     var reachablePositions = FindReachablePositions(currentState);
 
                     foreach (var reachablePos in reachablePositions)
                     {
-                        if (!nextAvailablePositions.Any(s => s.CurrentPosition == reachablePos))
+                        if (!nextAvailablePositions.TryGetValue(reachablePos, out var _))
                         {
                             var newState = new State(currentState);
                             newState.CurrentPosition = reachablePos;
                             newState.Positions.Add(_round, reachablePos);
-                            nextAvailablePositions.Add(newState);
+                            nextAvailablePositions.Add(reachablePos, newState);
 
                             if (reachablePos == endPosition)
                             {
