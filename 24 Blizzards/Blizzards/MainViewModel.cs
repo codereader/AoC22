@@ -30,14 +30,17 @@ namespace Blizzards
             set => SetValue(value);
         }
 
-
         public MainViewModel()
         {
             var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @"Blizzards.input.txt");
 
             Blizzardinator.Parse(input);
             RunTwice = false;
-            ResetValley();
+
+            foreach (var location in Blizzardinator.ValleyGrid)
+            {
+                Valley.Add(new VisualLocation(location));
+            }
         }
 
         public override void OnSimulationStart()
@@ -59,9 +62,8 @@ namespace Blizzards
             base.DoRound();
 
             Blizzardinator.DoRound();
-            RoundsDone = Blizzardinator.Round;
 
-            if (RoundsDone == Blizzardinator.MaxRound)
+            if (Blizzardinator.Round >= Blizzardinator.MaxRound)
             {
                 SimulationFinished = true;
             }
@@ -69,9 +71,17 @@ namespace Blizzards
             App.Current.Dispatcher.Invoke(() =>
             {
                 UpdateVisuals();
+                RoundsDone = Blizzardinator.Round;
+
             }, System.Windows.Threading.DispatcherPriority.Background);
 
-            Thread.Sleep(10);
+            Thread.Sleep(20);
+        }
+
+        public override void OnSimulationStop()
+        {
+            base.OnSimulationStop();
+            SimulationFinished = false;
         }
 
         public void UpdateVisuals()
@@ -86,17 +96,9 @@ namespace Blizzards
         {
             base.DoReset();
 
-            ResetValley();
-        }
-
-        private void ResetValley()
-        {
+            RoundsUntilFinished = 0;
             Blizzardinator.ResetVisuals();
-            Valley.Clear();
-            foreach (var location in Blizzardinator.ValleyGrid)
-            {
-                Valley.Add(new VisualLocation(location));
-            }
+            UpdateVisuals();
         }
 
 

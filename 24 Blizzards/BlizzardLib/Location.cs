@@ -10,7 +10,6 @@ namespace BlizzardLib
     public class Location
     {
         public Vector2 Position { get; set; }
-
         public Filling Fill { get; set; }
     }
 }

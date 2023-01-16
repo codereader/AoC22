@@ -17,6 +17,7 @@ namespace Blizzards
         public int PositionX => (int)_location.Position.X;
         public int PositionY => (int)_location.Position.Y;
 
+        public Filling Fill => _location.Fill;
         public Brush BackGroundColor
         {
             get
@@ -27,12 +28,10 @@ namespace Blizzards
                     Filling.Blizzard => new SolidColorBrush(Colors.Cyan),
                     Filling.Clear => new SolidColorBrush(Colors.White),
                     Filling.Player => new SolidColorBrush(Colors.Red),
-                    _ => new SolidColorBrush(Colors.White),
+                    _ => new SolidColorBrush(Colors.White)
                 };
             }
         }
-
-        public Filling Fill => _location.Fill;
 
         public VisualLocation(Location location)
         {

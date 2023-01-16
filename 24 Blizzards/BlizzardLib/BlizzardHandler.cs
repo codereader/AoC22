@@ -2,6 +2,7 @@ using CommonWPF;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Numerics;
 
@@ -20,7 +21,7 @@ namespace BlizzardLib
         private int _round;
 
         // start configuration
-        private Dictionary<Vector2, Location> _grid = new Dictionary<Vector2, Location>();
+        private Dictionary<Vector2, Filling> _grid = new Dictionary<Vector2, Filling>();
 
         private List<Vector2> _directions = new List<Vector2>
         {
@@ -43,10 +44,10 @@ namespace BlizzardLib
         // contains list of movements
         private List<State> _bestPaths = new List<State>();
 
-
+        // Visuals
         public int Round { get; private set; } = 0;
         public int MaxRound { get; private set; } = 0;
-        public List<Location> ValleyGrid { get; private set; }
+        public List<Location> ValleyGrid { get; private set; } = new List<Location>();
 
         public void Parse(List<string> input)
         {
@@ -67,16 +68,16 @@ namespace BlizzardLib
 
                     if (character == '#')
                     {
-                        _grid.Add(pos, new Location { Position = pos, Fill = Filling.Wall });
+                        _grid.Add(pos, Filling.Wall);
                     }
                     else if (character == '.')
                     {
-                        _grid.Add(pos, new Location { Position = pos, Fill = Filling.Clear });
+                        _grid.Add(pos, Filling.Clear);
                     }
                     else
                     {
                         // blizzard
-                        _grid.Add(pos, new Location { Position = pos, Fill = Filling.Blizzard });
+                        _grid.Add(pos, Filling.Blizzard);
 
                         if (character == '<')
                         {
@@ -101,9 +102,10 @@ namespace BlizzardLib
             _startPosition = new Vector2(1, 0);
             _endPosition = new Vector2(_fieldWidth, _fieldHeight + 1);
 
-            ResetVisuals();
-        }
+            _grid[_startPosition] = Filling.Player;
 
+            ValleyGrid = new List<Location>(_grid.Select(v => new Location { Position = v.Key, Fill= v.Value }));
+        }
 
         public void CalculatePathStartToEnd()
         {
@@ -159,7 +161,6 @@ namespace BlizzardLib
                         }
                     }
                 }
-
                 availablePositions = nextAvailablePositions;
             }
         }
@@ -210,16 +211,16 @@ namespace BlizzardLib
 
                 if (testPos.X >= 0 && testPos.X < _maxX &&
                     testPos.Y >= 0 && testPos.Y < _maxY &&
-                    _grid[testPos].Fill != Filling.Wall &&
+                    _grid[testPos] != Filling.Wall &&
                     (!_blizzardPositions.TryGetValue(testPos, out var blzzardList) || blzzardList.Count == 0))
                 {
                     positions.Add(testPos);
                 }
             }
-
             return positions;
         }
 
+        // simulation round
         public void DoRound()
         {
             Round++;
@@ -239,7 +240,7 @@ namespace BlizzardLib
             foreach (var location in ValleyGrid)
             {
                 var pos = location.Position;
-                if (_grid[pos].Fill != Filling.Wall)
+                if (_grid[pos] != Filling.Wall)
                 {
                     if (!_simulationBlizzardPositions.TryGetValue(pos, out var blizzardlist) || blizzardlist.Count == 0)
                     {
@@ -257,7 +258,6 @@ namespace BlizzardLib
                         location.Fill = Filling.Blizzard;
                     }
                 }
-
             }
         }
 
@@ -266,7 +266,13 @@ namespace BlizzardLib
             _round = 0;
             _bestPaths.Clear();
             Round = 0;
-            ValleyGrid = new List<Location>(_grid.Values.ToList());
+            MaxRound = 0;
+
+            foreach (var location in ValleyGrid)
+            {
+                location.Fill = _grid[location.Position];
+            }
         }
+
     }
 }
