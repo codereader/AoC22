@@ -7,3 +7,5 @@ var input = ResourceUtils.GetDataFromResource(Assembly.GetExecutingAssembly(), @
 var snafu = new SnafuHandler();
 
 snafu.Parse(input);
+
+Console.WriteLine(snafu.AddNumbers());
